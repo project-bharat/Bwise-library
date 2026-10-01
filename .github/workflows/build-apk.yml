@@ -1,0 +1,66 @@
+name: Build APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      # optional build-time defaults (users can still change them in-app: menu > Sync Settings)
+      VITE_GAS_URL: ${{ vars.GAS_URL }}
+      VITE_GAS_TOKEN: ${{ secrets.GAS_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JS dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Install Pillow
+        run: pip install pillow
+
+      - name: Generate in-app brand icon from ic_launcher_* source PNGs
+        run: python scripts/generate-icons.py --brand
+
+      - name: Build web assets
+        run: npm run build
+
+      - name: Generate Android project (not committed to git)
+        run: |
+          npx cap add android
+          npx cap sync android
+
+      - name: Launcher icons + manifest + version
+        run: |
+          python scripts/generate-icons.py --android
+          python scripts/android-post-setup.py ${{ github.run_number }} "1.0.${{ github.run_number }}"
+
+      - name: Build debug APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: bwise-library-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
