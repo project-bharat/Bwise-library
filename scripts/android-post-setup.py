@@ -13,6 +13,12 @@ name = sys.argv[2] if len(sys.argv) > 2 else '1.0'
 
 manifest = os.path.join(ROOT, 'src', 'main', 'AndroidManifest.xml')
 s = open(manifest, encoding='utf-8').read()
+# Declare runtime permissions for device contact selection and Android 13 notifications.
+for permission in ('android.permission.READ_CONTACTS', 'android.permission.POST_NOTIFICATIONS'):
+    declaration = f'<uses-permission android:name="{permission}" />'
+    if declaration not in s:
+        s = s.replace('<application', f'    {declaration}\\n    <application', 1)
+        print('manifest: added', permission)
 if 'android:screenOrientation' not in s:
     s = s.replace('<activity', '<activity android:screenOrientation="portrait"', 1)
     open(manifest, 'w', encoding='utf-8').write(s)
