@@ -7,7 +7,7 @@
     "CapacitorHttp": { "enabled": true },
     "SplashScreen": {
       "launchShowDuration": 1800,
-      "launchAutoHide": true,
+      "launchAutoHide": false,
       "backgroundColor": "#1E3535",
       "showSpinner": false
     },

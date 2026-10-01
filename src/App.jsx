@@ -3,6 +3,7 @@ import html2pdf from 'html2pdf.js';
 import { App as CapApp } from '@capacitor/app';
 import brandIcon from './assets/brand-icon.png?inline';
 import { isNative } from './native/storage';
+import { hideNativeSplash } from './native/init';
 import { requestInitialDevicePermissions } from './native/contacts';
 import { scheduleDueDateNotifications } from './native/dueNotifications';
 import { saveAndShareBlob, isShareCancel } from './native/files';
@@ -140,7 +141,8 @@ export default function App() {
   };
 
   useEffect(() => {
-    const splashTimer = setTimeout(() => setSplashMinElapsed(true), 1400);
+    hideNativeSplash().catch(error => console.warn('[splash] native splash hide failed', error));
+    const splashTimer = setTimeout(() => setSplashMinElapsed(true), 2200);
     return () => clearTimeout(splashTimer);
   }, []);
 

@@ -1,6 +1,7 @@
 import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { Browser } from '@capacitor/browser';
+import { SplashScreen } from '@capacitor/splash-screen';
 import { registerDueNotificationActions } from './dueNotifications';
 
 export async function initNative() {
@@ -16,4 +17,9 @@ export async function initNative() {
   registerDueNotificationActions().catch(error => console.warn('[notifications] init failed', error));
   // Let Capacitor's configured launchAutoHide/launchShowDuration display the native
   // launcher-mark splash first; React then shows the branded horizontal-logo splash.
+}
+
+export async function hideNativeSplash() {
+  if (!Capacitor.isNativePlatform()) return;
+  try { await SplashScreen.hide(); } catch (error) { console.warn('[splash] hide failed', error); }
 }
