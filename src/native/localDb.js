@@ -6,6 +6,7 @@ import { EMPTY_INITIAL_DATA } from '../utils';
 const DATA_FILE = 'bwise-library-data.json';
 const LEGACY_CACHE_KEY = 'bwise_payload_cache_v1';
 let writeQueue = Promise.resolve();
+let mutationQueue = Promise.resolve();
 
 const clone = (value) => JSON.parse(JSON.stringify(value));
 
@@ -73,7 +74,7 @@ async function loadPayload() {
 
 async function persistPayload(payload) {
   const serialized = JSON.stringify(normalizePayload(payload));
-  writeQueue = writeQueue.then(async () => {
+  writeQueue = writeQueue.catch(() => {}).then(async () => {
     if (Capacitor.isNativePlatform()) {
       await writeFile(serialized);
     } else {
@@ -125,7 +126,7 @@ export async function getLocalPayload() {
   return clone(rebuildPeople(payload));
 }
 
-export async function mutateLocal(method, args = []) {
+async function mutateLocalNow(method, args = []) {
   const payload = await loadPayload();
   const value = args[0];
 
@@ -288,4 +289,12 @@ function parseCsv(text) {
   }
   if (cell.length || row.length) { row.push(cell.replace(/\r$/, '')); rows.push(row); }
   return rows;
+}
+
+// Serialize complete read-modify-write operations so rapid edits cannot overwrite each other.
+export function mutateLocal(method, args = []) {
+  const operation = () => mutateLocalNow(method, args);
+  const result = mutationQueue.then(operation, operation);
+  mutationQueue = result.catch(() => {});
+  return result;
 }
