@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "B-wise Library - native Android app (Capacitor) for the Google Sheets based library lending manager",
+  "description": "B-wise Library - local-first native Android library manager with on-device storage and portable backups",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
