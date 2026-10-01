@@ -27,8 +27,8 @@ def centered_foreground(source, canvas_size):
     if not bbox:
         return Image.new('RGBA', (canvas_size, canvas_size), (0, 0, 0, 0))
     mark = source.crop(bbox)
-    # Keep the mark within the adaptive-icon safe area while removing uneven source padding.
-    target = int(canvas_size * 0.68)
+    # Re-center visible artwork and scale conservatively inside the adaptive-icon safe area.
+    target = int(canvas_size * 0.52)
     scale = min(target / mark.width, target / mark.height)
     mark = mark.resize((max(1, round(mark.width * scale)), max(1, round(mark.height * scale))), Image.LANCZOS)
     canvas = Image.new('RGBA', (canvas_size, canvas_size), (0, 0, 0, 0))
@@ -43,10 +43,9 @@ def composite():
     return img
 
 def legacy_square():
-    # adaptive artwork keeps a safe margin; crop the centre ~67% so legacy icons are not tiny
-    c = composite()
-    m = int(S * 0.165)
-    return c.crop((m, m, S - m, S - m))
+    # Keep the complete source canvas for legacy icons too. Cropping here zoomed the
+    # mark into the launcher mask and clipped its lower/right edges on some launchers.
+    return composite()
 
 def rounded(img, radius_ratio):
     size = img.size[0]
