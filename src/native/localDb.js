@@ -96,7 +96,7 @@ function rebuildPeople(payload) {
   });
 
   payload.books.forEach(book => {
-    const name = String(book.person || '').trim();
+    const name = String(book.person || (String(book.personStatus || '').toLowerCase() === 'returned' ? book.prevPerson : '') || '').trim();
     if (!name) return;
     const key = name.toLowerCase();
     if (!peopleByName.has(key)) peopleByName.set(key, { name, phone: '', address: '', email: '', records: [] });
@@ -205,6 +205,11 @@ export async function mutateLocal(method, args = []) {
     case 'deletePerson': {
       const name = typeof value === 'object' ? value.name : value;
       payload.people = payload.people.filter(person => String(person.name) !== String(name));
+      payload.books = payload.books.map(book => ({
+        ...book,
+        person: book.person === name ? '' : book.person,
+        prevPerson: book.prevPerson === name ? '' : book.prevPerson
+      }));
       break;
     }
 
