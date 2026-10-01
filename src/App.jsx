@@ -466,12 +466,12 @@ export default function App() {
   })();
   const dueDateKey = (value) => {
     const raw = String(value || '').trim();
-    const iso = raw.match(/^(\\d{4}-\\d{2}-\\d{2})/);
+    const iso = raw.match(/^(\d{4}-\d{2}-\d{2})/);
     if (iso) return iso[1];
-    const named = raw.match(/^(\\d{1,2})[-\\s/]([A-Za-z]{3})[-\\s/](\\d{4})$/);
+    const named = raw.match(/^(\d{1,2})[-\s/]([A-Za-z]{3})[-\s/](\d{4})$/);
     if (named) {
       const month = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'].indexOf(named[2].toLowerCase());
-      if (month >= 0) return `${named[3]}-${String(month + 1).padStart(2, '0')}-${String(named[1]).padStart(2, '0')}`;
+      if (month >= 0) return named[3] + '-' + String(month + 1).padStart(2, '0') + '-' + String(named[1]).padStart(2, '0');
     }
     return '';
   };
@@ -711,7 +711,7 @@ export default function App() {
               <p className="text-[10px] font-black uppercase text-rose-700">Due today · {dueTodayBooks.length}</p>
               {dueTodayBooks.slice(0, 5).map(book => {
                 const reader = (appData.people || []).find(p => String(p.name || '').toLowerCase() === String(book.person || '').toLowerCase());
-                const phone = String(reader?.phone || '').replace(/\\D/g, '');
+                const phone = String(reader?.phone || '').replace(/\D/g, '');
                 const message = `Hi ${book.person}, the book \"${book.title}\" borrowed from my library is due today (${localTodayKey}). Please return it when convenient. Thank you!`;
                 const waUrl = phone ? `https://wa.me/${phone.length === 10 ? '91' : ''}${phone}?text=${encodeURIComponent(message)}` : `https://wa.me/?text=${encodeURIComponent(message)}`;
                 return <div key={book.id} className="flex items-center justify-between gap-2">
