@@ -367,7 +367,7 @@ export default function App() {
         .withSuccessHandler((csvString) => {
           const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
           const fileName = `Library_Backup_${new Date().toISOString().split('T')[0]}.csv`;
-          saveAndShareBlob(blob, fileName, 'Save backup')
+          saveAndShareBlob(blob, fileName, 'Back up to Google Drive or Files')
             .then(() => triggerStatus('Backup exported!', true))
             .catch((err) => {
               if (isShareCancel(err)) triggerStatus('Backup exported!', true);
