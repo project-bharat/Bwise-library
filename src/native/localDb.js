@@ -167,8 +167,66 @@ async function mutateLocalNow(method, args = []) {
     case 'saveWishlistBook': {
       const item = { ...(value || {}) };
       const index = payload.wishlist.findIndex(record => String(record.id) === String(item.id) && item.id !== '');
-      if (index >= 0) payload.wishlist[index] = { ...payload.wishlist[index], ...item };
-      else {
+      const rawStatus = String(item.status || '').toLowerCase().trim();
+      const isInPossession = rawStatus.includes('in possession') && !rawStatus.includes('not in possession');
+
+      if (isInPossession) {
+        // Promote the wishlist row into inventory and remove the wishlist record in one local transaction.
+        const titleKey = String(item.title || '').trim().toLowerCase();
+        const existingIndex = payload.books.findIndex(book =>
+          String(book.title || '').trim().toLowerCase() === titleKey
+        );
+        const today = new Date().toISOString().slice(0, 10);
+        if (existingIndex >= 0) {
+          const existing = payload.books[existingIndex];
+          const wasWishlistOnly =
+            String(existing.readingStatus || '').toUpperCase() === 'WISHLISTED' ||
+            String(existing.currentStatus || '').toUpperCase() === 'WISHLISTED';
+          if (wasWishlistOnly) {
+            payload.books[existingIndex] = {
+              ...existing,
+              title: item.title || existing.title,
+              author: item.author || existing.author || 'Unknown',
+              category: item.category || existing.category || 'Literature',
+              language: item.language || existing.language || 'English',
+              amount: Number(item.amount) || 0,
+              initialStatus: item.initialStatus || 'Purchased',
+              currentStatus: item.currentStatus || 'COLLECTED',
+              readingStatus: 'UNREAD',
+              location: existing.location || 'At Home',
+              bookInDate: existing.bookInDate || today,
+              eventDate: today,
+              notes: item.notes || existing.notes || '',
+              person: '',
+              personStatus: 'Returned'
+            };
+          }
+        } else {
+          payload.books.push({
+            id: nextId('book'),
+            title: String(item.title || '').trim(),
+            author: item.author || 'Unknown',
+            category: item.category || 'Literature',
+            language: item.language || 'English',
+            amount: Number(item.amount) || 0,
+            initialStatus: item.initialStatus || 'Purchased',
+            currentStatus: item.currentStatus || 'COLLECTED',
+            readingStatus: 'UNREAD',
+            location: 'At Home',
+            bookInDate: today,
+            eventDate: today,
+            person: '',
+            personStatus: 'Returned',
+            promiseReturnDate: '',
+            notes: item.notes || '',
+            journey: []
+          });
+        }
+        // Remove the source wishlist row. Existing inventory with the same title is not duplicated.
+        payload.wishlist = payload.wishlist.filter(record => String(record.id) !== String(item.id));
+      } else if (index >= 0) {
+        payload.wishlist[index] = { ...payload.wishlist[index], ...item };
+      } else {
         item.id = item.id || nextId('wish');
         payload.wishlist.push(item);
       }
