@@ -21,10 +21,10 @@ for permission in ('android.permission.READ_CONTACTS', 'android.permission.POST_
         print('manifest: added', permission)
 if 'android:screenOrientation' not in s:
     s = s.replace('<activity', '<activity android:screenOrientation="portrait"', 1)
-    open(manifest, 'w', encoding='utf-8').write(s)
     print('manifest: portrait lock added')
 else:
     print('manifest: portrait lock already present')
+open(manifest, 'w', encoding='utf-8').write(s)
 
 gradle = os.path.join(ROOT, 'build.gradle')
 g = open(gradle, encoding='utf-8').read()
