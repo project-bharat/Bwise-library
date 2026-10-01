@@ -320,6 +320,14 @@ async function mutateLocalNow(method, args = []) {
       break;
     }
 
+    case 'deleteAdminConfigItem': {
+      const type = String(args[0] || '');
+      const item = String(args[1] || '').trim();
+      const configKey = ({ Category: 'categories', Location: 'locations', Current_Status: 'currentStatuses', Current_Statuses: 'currentStatuses', Initial_Status: 'initialStatuses' })[type] || (type.toLowerCase().includes('categor') ? 'categories' : type.toLowerCase().includes('location') ? 'locations' : 'currentStatuses');
+      payload.config[configKey] = (payload.config[configKey] || []).filter(value => String(value) !== item);
+      break;
+    }
+
     case 'addAdminConfigItem': {
       const type = String(args[0] || '');
       const item = String(args[1] || '').trim();

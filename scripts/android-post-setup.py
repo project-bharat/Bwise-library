@@ -24,6 +24,34 @@ if 'android:screenOrientation' not in s:
     print('manifest: portrait lock added')
 else:
     print('manifest: portrait lock already present')
+shortcuts_filter = '''\n        <intent-filter>\n            <action android:name="android.intent.action.VIEW" />\n            <category android:name="android.intent.category.DEFAULT" />\n            <category android:name="android.intent.category.BROWSABLE" />\n            <data android:scheme="bwise" />\n        </intent-filter>'''
+activity_match = re.search(r'<activity\\b[\\s\\S]*?</activity>', s)
+if activity_match and 'android.intent.action.MAIN' in activity_match.group(0):
+    activity = activity_match.group(0)
+    if 'android.app.shortcuts' not in activity:
+        activity = activity.replace('</activity>', '        <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />\\n    </activity>')
+    if 'android:scheme="bwise"' not in activity:
+        activity = activity.replace('</activity>', shortcuts_filter + '\\n    </activity>')
+    s = s[:activity_match.start()] + activity + s[activity_match.end():]
+    print('manifest: launcher shortcuts and bwise deep links configured')
+else:
+    print('manifest: launcher activity not found; shortcuts metadata skipped')
+
+xml_dir = os.path.join(ROOT, 'src', 'main', 'res', 'xml')
+os.makedirs(xml_dir, exist_ok=True)
+shortcuts_xml = '''<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut android:shortcutId="new_book" android:enabled="true" android:icon="@mipmap/ic_launcher" android:shortcutShortLabel="Add book" android:shortcutLongLabel="Add a book to your library">
+        <intent android:action="android.intent.action.VIEW" android:targetPackage="com.bharatrasve.bwiselibrary" android:targetClass="com.bharatrasve.bwiselibrary.MainActivity" android:data="bwise://new-book" />
+    </shortcut>
+    <shortcut android:shortcutId="wishlist_book" android:enabled="true" android:icon="@mipmap/ic_launcher" android:shortcutShortLabel="Add wishlist" android:shortcutLongLabel="Add a book to your wishlist">
+        <intent android:action="android.intent.action.VIEW" android:targetPackage="com.bharatrasve.bwiselibrary" android:targetClass="com.bharatrasve.bwiselibrary.MainActivity" android:data="bwise://wishlist-book" />
+    </shortcut>
+</shortcuts>
+'''
+with open(os.path.join(xml_dir, 'shortcuts.xml'), 'w', encoding='utf-8') as shortcut_file:
+    shortcut_file.write(shortcuts_xml)
+
 open(manifest, 'w', encoding='utf-8').write(s)
 
 gradle = os.path.join(ROOT, 'build.gradle')

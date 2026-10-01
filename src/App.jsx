@@ -23,6 +23,8 @@ import SyncSettingsModal from './components/modals/SyncSettingsModal';
 export default function App() {
   const [appData, setAppData] = useState(EMPTY_INITIAL_DATA);
   const [bootSplash, setBootSplash] = useState(true);
+  const [splashMinElapsed, setSplashMinElapsed] = useState(false);
+  const [alertsOpen, setAlertsOpen] = useState(false);
   const [loadingState, setLoadingState] = useState({ text: 'Loading data...', visible: true, isSuccess: false });
   const [activeTab, setActiveTab] = useState('home');
   const [selectedPerson, setSelectedPerson] = useState(null);
@@ -133,9 +135,14 @@ export default function App() {
         })
         .getLibraryPayload(force);
     } else {
-      setTimeout(() => triggerStatus('Data loaded', true), 600);
+      setTimeout(() => { setBootSplash(false); triggerStatus('Local data ready', true); }, 600);
     }
   };
+
+  useEffect(() => {
+    const splashTimer = setTimeout(() => setSplashMinElapsed(true), 1400);
+    return () => clearTimeout(splashTimer);
+  }, []);
 
   useEffect(() => {
     // Request Android runtime permissions on first launch. The app remains usable if either is denied.
@@ -368,7 +375,7 @@ export default function App() {
     downloadPdfBlob(worker, fileName || 'Library_Report.pdf');
   };
 
-  const handleExportFullBackup = () => {
+  const handleExportFullBackup = (shareTitle = 'Export full library data') => {
     setDrawerOpen(false);
     triggerStatus('Generating backup...', false);
     if (window.google && google.script && google.script.run) {
@@ -376,7 +383,7 @@ export default function App() {
         .withSuccessHandler((csvString) => {
           const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
           const fileName = `Library_Backup_${new Date().toISOString().split('T')[0]}.csv`;
-          saveAndShareBlob(blob, fileName, 'Back up to Google Drive or Files')
+          saveAndShareBlob(blob, fileName, shareTitle)
             .then(() => triggerStatus('Backup exported!', true))
             .catch((err) => {
               if (isShareCancel(err)) triggerStatus('Backup exported!', true);
@@ -453,6 +460,31 @@ export default function App() {
     return { authors, languages };
   }, [appData.books]);
 
+  const localTodayKey = (() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  })();
+  const dueDateKey = (value) => {
+    const raw = String(value || '').trim();
+    const iso = raw.match(/^(\\d{4}-\\d{2}-\\d{2})/);
+    if (iso) return iso[1];
+    const named = raw.match(/^(\\d{1,2})[-\\s/]([A-Za-z]{3})[-\\s/](\\d{4})$/);
+    if (named) {
+      const month = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'].indexOf(named[2].toLowerCase());
+      if (month >= 0) return `${named[3]}-${String(month + 1).padStart(2, '0')}-${String(named[1]).padStart(2, '0')}`;
+    }
+    return '';
+  };
+  const dueTodayBooks = (appData.books || []).filter(book =>
+    dueDateKey(book.promiseReturnDate) === localTodayKey &&
+    String(book.currentStatus || '').toUpperCase() === 'LENT' &&
+    String(book.personStatus || 'HOLDING').toUpperCase() === 'HOLDING' && Boolean(book.person)
+  );
+  const wishlistAlertCount = (appData.wishlist || []).filter(item => {
+    const status = String(item.status || '').toUpperCase();
+    return status.includes('NOT IN POSSESSION') || !status.includes('IN POSSESSION');
+  }).length;
+
   // ---- Android hardware back button: close overlays -> go up one screen -> home -> exit ----
   const backRef = useRef(null);
   backRef.current = () => {
@@ -480,9 +512,28 @@ export default function App() {
     return () => { if (handle) handle.remove(); };
   }, []);
 
+  useEffect(() => {
+    if (!isNative()) return undefined;
+    let listener = null;
+    let active = true;
+    const openShortcut = (url) => {
+      if (!url || !String(url).startsWith('bwise://')) return;
+      if (String(url).includes('new-book')) {
+        setActiveTab('books');
+        setBookModal({ isNew: true, book: {} });
+      } else if (String(url).includes('wishlist-book')) {
+        setActiveTab('wishlist');
+        setWishlistModal({ isNew: true, item: {} });
+      }
+    };
+    CapApp.addListener('appUrlOpen', event => openShortcut(event?.url)).then(h => { listener = h; });
+    CapApp.getLaunchUrl().then(result => { if (active && result?.url) openShortcut(result.url); }).catch(() => {});
+    return () => { active = false; if (listener) listener.remove(); };
+  }, []);
+
   return (
     <div className="min-h-screen max-w-xl mx-auto flex flex-col justify-between relative shadow-2xl bg-alabaster m-0 p-0 border-0 overflow-x-hidden">
-      {bootSplash && (
+      {(bootSplash || !splashMinElapsed) && (
         <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center px-8" style={{ background: 'linear-gradient(145deg, #123D3B 0%, #047372 52%, #0A5550 100%)' }}>
           <img src="/horizontal-logo.png" alt="B-wise Library" className="w-full max-w-[300px] max-h-[120px] object-contain" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
           <p className="mt-5 text-white/85 text-xs font-semibold tracking-[0.22em] uppercase">Your library. Always with you.</p>
@@ -521,7 +572,8 @@ export default function App() {
         onAddCategory={() => { setDrawerOpen(false); setAdminConfigModal({ type: 'Category' }); }}
         onAddLocation={() => { setDrawerOpen(false); setAdminConfigModal({ type: 'Location' }); }}
         onAddStatus={() => { setDrawerOpen(false); setAdminConfigModal({ type: 'Current_Status' }); }}
-        onExportBackup={handleExportFullBackup}
+        onBackupWithGoogle={() => handleExportFullBackup('Choose Google Drive in the share sheet to save your backup')}
+        onExportBackup={() => handleExportFullBackup('Export full library data')}
         onRestoreClick={() => backupFileInputRef.current.click()}
         onSyncSettings={() => { setDrawerOpen(false); setSyncModal(true); }}
         onCallDeveloper={() => handleDirectDial('917218838122')}
@@ -636,14 +688,47 @@ export default function App() {
             )}
           </div>
           <div className="flex items-center space-x-1 flex-none">
-            <button onClick={() => fetchData(true)} className="p-2 text-white hover:opacity-80 active:scale-95 transition-all text-sm" title="Refresh local data">
-              <i className={`fa-solid fa-rotate ${loadingState.visible && !loadingState.isSuccess ? 'animate-spin' : ''}`}></i>
+            <button onClick={() => setDrawerOpen(true)} className="relative p-2 text-white hover:opacity-80 active:scale-95 transition-all text-sm" title="Local library and backup status: saved on this phone">
+              <i className="fa-solid fa-cloud-arrow-up"></i>
+            </button>
+            <button onClick={() => setAlertsOpen(value => !value)} className="relative p-2 text-white hover:opacity-80 active:scale-95 transition-all text-sm" title="Notifications and reminders" aria-label="Notifications">
+              <i className="fa-regular fa-bell"></i>
+              {(dueTodayBooks.length + wishlistAlertCount > 0) && <span className="absolute right-0 top-0 min-w-[15px] h-[15px] px-1 rounded-full bg-rose-500 text-white text-[9px] font-black flex items-center justify-center">{Math.min(99, dueTodayBooks.length + wishlistAlertCount)}</span>}
             </button>
             <button onClick={() => setDrawerOpen(true)} className="p-2 text-white hover:opacity-80 active:scale-95 transition-all text-base" title="Open Menu">
               <i className="fa-solid fa-bars"></i>
             </button>
           </div>
         </header>
+
+        {alertsOpen && (
+          <div className="fixed top-[58px] right-2 z-[60] w-[min(340px,calc(100vw-16px))] rounded-xl border border-sand/60 bg-white text-charcoal shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between px-3 py-2 bg-forest text-white">
+              <h3 className="text-xs font-black uppercase tracking-wide">Notifications</h3>
+              <button onClick={() => setAlertsOpen(false)} aria-label="Close notifications"><i className="fa-solid fa-xmark"></i></button>
+            </div>
+            {dueTodayBooks.length > 0 && <div className="p-3 border-b border-sand/40 space-y-2">
+              <p className="text-[10px] font-black uppercase text-rose-700">Due today · {dueTodayBooks.length}</p>
+              {dueTodayBooks.slice(0, 5).map(book => {
+                const reader = (appData.people || []).find(p => String(p.name || '').toLowerCase() === String(book.person || '').toLowerCase());
+                const phone = String(reader?.phone || '').replace(/\\D/g, '');
+                const message = `Hi ${book.person}, the book \"${book.title}\" borrowed from my library is due today (${localTodayKey}). Please return it when convenient. Thank you!`;
+                const waUrl = phone ? `https://wa.me/${phone.length === 10 ? '91' : ''}${phone}?text=${encodeURIComponent(message)}` : `https://wa.me/?text=${encodeURIComponent(message)}`;
+                return <div key={book.id} className="flex items-center justify-between gap-2">
+                  <button className="min-w-0 flex-1 text-left" onClick={() => { setSelectedBook(book); setActiveTab('bookDetail'); setAlertsOpen(false); }}>
+                    <span className="block text-[11px] font-bold truncate">{book.title}</span><span className="block text-[10px] text-stone-500 truncate">Held by {book.person}</span>
+                  </button>
+                  <button onClick={() => { window.open(waUrl, '_blank'); setAlertsOpen(false); }} className="shrink-0 rounded-full bg-emerald-600 text-white px-2.5 py-1.5 text-[10px] font-bold"><i className="fa-brands fa-whatsapp mr-1"></i>Remind</button>
+                </div>;
+              })}
+            </div>}
+            <button onClick={() => { setActiveTab('wishlist'); setAlertsOpen(false); }} className="w-full p-3 text-left flex items-center justify-between hover:bg-sand/20">
+              <span><span className="block text-[11px] font-bold">Wishlist</span><span className="block text-[10px] text-stone-500">You have {wishlistAlertCount} item{wishlistAlertCount === 1 ? '' : 's'} to get.</span></span>
+              <i className="fa-solid fa-chevron-right text-stone-400"></i>
+            </button>
+            {dueTodayBooks.length === 0 && wishlistAlertCount === 0 && <p className="p-4 text-center text-xs text-stone-500">You’re all caught up.</p>}
+          </div>
+        )}
 
         {/* DARK GRADIENT TOP KPI CARD (Dynamic Titles per Active Screen) */}
         {activeTab !== 'personDetail' && activeTab !== 'bookDetail' && (
@@ -1097,7 +1182,6 @@ export default function App() {
                         const q = searchQuery.toLowerCase().trim();
                         const visiblePersons = (appData.people || []).filter((p) => {
                           const allRecs = p.records || [];
-                          if (allRecs.length === 0) return false;
                           const matchesQ = !q || p.name.toLowerCase().includes(q) || (p.phone || '').includes(q) || allRecs.some(r => (r.title || '').toLowerCase().includes(q));
                           if (!matchesQ) return false;
                           if (personStatusFilter === 'ALL') return true;
@@ -1136,6 +1220,20 @@ export default function App() {
                                       <i className="fa-solid fa-phone"></i>
                                     </button>
                                   )}
+                                  <button
+                                    onClick={() => setPersonModal({ isNew: false, person: p })}
+                                    className="w-7 h-7 bg-sand/50 text-forest rounded flex items-center justify-center text-xs active:scale-90 shadow-xs"
+                                    title="Edit reader profile"
+                                  >
+                                    <i className="fa-solid fa-pen"></i>
+                                  </button>
+                                  <button
+                                    onClick={() => { if (window.confirm(`Delete reader ${p.name}? Their book history will remain, but the reader assignment will be cleared.`)) google.script.run.withSuccessHandler(payload => { if (payload) setAppData(payload); triggerStatus('Reader deleted', true); }).withFailureHandler(err => triggerStatus('Delete failed: ' + (err?.message || ''), false)).deletePerson(p.name); }}
+                                    className="w-7 h-7 bg-rose-50 text-rose-700 border border-rose-200 rounded flex items-center justify-center text-xs active:scale-90 shadow-xs"
+                                    title="Delete reader"
+                                  >
+                                    <i className="fa-solid fa-trash"></i>
+                                  </button>
                                   <button
                                     onClick={() => { setSelectedPerson(p); setActiveTab('personDetail'); }}
                                     className="w-7 h-7 bg-forest text-alabaster rounded flex items-center justify-center text-xs active:scale-90 shadow-xs"
@@ -1451,6 +1549,7 @@ export default function App() {
       {adminConfigModal && (
         <AdminConfigModal
           type={adminConfigModal.type}
+          config={appData.config}
           onClose={() => setAdminConfigModal(null)}
           onSuccess={(payload) => {
             setAdminConfigModal(null);
@@ -1496,7 +1595,7 @@ export default function App() {
               <h3 className="text-sm font-black uppercase tracking-wide">Restore Database</h3>
             </div>
             <p className="text-xs text-charcoal font-medium">
-              Restoring <b>{restoreConfirmFile.name}</b> will overwrite existing books, reader records, and wishlist sheets.
+              Restoring <b>{restoreConfirmFile.name}</b> will replace this phone’s books, reader records, configuration, and wishlist data.
             </p>
             <p className="text-[11px] text-stone-500 italic">
               Are you sure you want to proceed with this restore operation?

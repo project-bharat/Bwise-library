@@ -1,7 +1,7 @@
 import React from 'react';
 import brandIcon from '../assets/brand-icon.png?inline';
 
-export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddPerson, onAddCategory, onAddLocation, onAddStatus, onExportBackup, onRestoreClick, onSyncSettings, onCallDeveloper }) {
+export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddPerson, onAddCategory, onAddLocation, onAddStatus, onBackupWithGoogle, onExportBackup, onRestoreClick, onSyncSettings, onCallDeveloper }) {
   return (
     <div className={`fixed inset-0 z-50 transition-all duration-300 ${isOpen ? 'visible opacity-100' : 'invisible opacity-0'}`}>
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
@@ -26,16 +26,13 @@ export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddP
             <div>
               <p className="text-[9px] font-black uppercase tracking-widest text-stone-400 mb-1 px-1">Reader Directory</p>
               <button onClick={onOpenPersonManage} className="w-full text-left p-2 rounded-lg hover:bg-stone-100 flex items-center space-x-2">
-                <i className="fa-solid fa-users text-forest w-5"></i> <span>Manage Readers</span>
-              </button>
-              <button onClick={onAddPerson} className="w-full text-left p-2 rounded-lg hover:bg-stone-100 flex items-center space-x-2">
-                <i className="fa-solid fa-user-plus text-forest w-5"></i> <span>Add New Reader</span>
+                <i className="fa-solid fa-users text-forest w-5"></i> <span>Manage &amp; Add Readers</span>
               </button>
             </div>
             <div>
               <p className="text-[9px] font-black uppercase tracking-widest text-stone-400 mb-1 px-1">Configuration</p>
               <button onClick={onAddCategory} className="w-full text-left p-2 rounded-lg hover:bg-stone-100 flex items-center space-x-2">
-                <i className="fa-solid fa-tags text-ochre w-5"></i> <span>Add Genre</span>
+                <i className="fa-solid fa-tags text-ochre w-5"></i> <span>Manage &amp; Add Genre</span>
               </button>
               <button onClick={onAddLocation} className="w-full text-left p-2 rounded-lg hover:bg-stone-100 flex items-center space-x-2">
                 <i className="fa-solid fa-location-dot text-ochre w-5"></i> <span>Add Location</span>
@@ -46,15 +43,15 @@ export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddP
             </div>
             <div>
               <p className="text-[9px] font-black uppercase tracking-widest text-stone-400 mb-1 px-1">Local & Cloud Backup</p>
+              <button onClick={onBackupWithGoogle} className="w-full text-left p-2 rounded-lg hover:bg-stone-100 text-forest flex items-center space-x-2">
+                <i className="fa-brands fa-google-drive w-5"></i> <span>Backup with Google</span>
+              </button>
               <button onClick={onExportBackup} className="w-full text-left p-2 rounded-lg hover:bg-stone-100 text-forest flex items-center space-x-2">
-                <i className="fa-brands fa-google-drive w-5"></i> <span>Backup to Drive / Export CSV</span>
+                <i className="fa-solid fa-file-csv w-5"></i> <span>Export Full Data (CSV)</span>
               </button>
               <button onClick={onRestoreClick} className="w-full text-left p-2 rounded-lg hover:bg-stone-100 text-rose-700 flex items-center space-x-2">
                 <i className="fa-solid fa-cloud-arrow-up w-5"></i> <span>Restore Full Backup (CSV)</span>
               </button>
-            </div>
-            <div>
-              <p className="px-1 text-[9px] leading-relaxed font-medium text-stone-500">Your library is saved on this phone. Choose Google Drive in the Android share menu to keep a cloud copy.</p>
             </div>
           </div>
         </div>
