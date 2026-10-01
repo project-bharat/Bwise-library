@@ -47,22 +47,19 @@ export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddP
             <div>
               <p className="text-[9px] font-black uppercase tracking-widest text-stone-400 mb-1 px-1">System Backup</p>
               <button onClick={onExportBackup} className="w-full text-left p-2 rounded-lg hover:bg-stone-100 text-forest flex items-center space-x-2">
-                <i className="fa-solid fa-cloud-arrow-down w-5"></i> <span>Backup Data (CSV)</span>
+                <i className="fa-brands fa-google-drive w-5"></i> <span>Backup to Drive / Export CSV</span>
               </button>
               <button onClick={onRestoreClick} className="w-full text-left p-2 rounded-lg hover:bg-stone-100 text-rose-700 flex items-center space-x-2">
-                <i className="fa-solid fa-cloud-arrow-up w-5"></i> <span>Restore Data (CSV)</span>
+                <i className="fa-solid fa-cloud-arrow-up w-5"></i> <span>Restore Full Backup (CSV)</span>
               </button>
             </div>
             <div>
-              <p className="text-[9px] font-black uppercase tracking-widest text-stone-400 mb-1 px-1">Google Sheet Link</p>
-              <button onClick={onSyncSettings} className="w-full text-left p-2 rounded-lg hover:bg-stone-100 text-forest flex items-center space-x-2">
-                <i className="fa-solid fa-link w-5"></i> <span>Sync Settings</span>
-              </button>
+              <p className="px-1 text-[9px] leading-relaxed font-medium text-stone-500">Your library is saved on this phone. Choose Google Drive in the Android share menu to keep a cloud copy.</p>
             </div>
           </div>
         </div>
         <div className="p-3.5 border-t border-sand/40 bg-stone-50 text-center select-none flex flex-col items-center justify-center">
-          <img src={brandIcon} alt="" className="w-7 h-7 rounded-lg mb-1 shadow-sm" />
+          <img src="/horizontal-logo.png" alt="B-wise Library" className="w-36 max-w-full h-auto max-h-10 object-contain mb-2" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
           <p className="text-[8px] font-black text-stone-500 tracking-widest mb-1.5 uppercase">DEVELOPED BY - BHARAT RASVE © 2026</p>
           <div className="flex items-center space-x-2">
             <button onClick={onCallDeveloper} className="w-6 h-6 rounded-full bg-forest text-alabaster hover:bg-ochre flex items-center justify-center text-[10px] active:scale-95 transition-colors shadow-xs" title="Call Developer">
