@@ -286,7 +286,7 @@ export default function App() {
     const catStr = (book.category && book.category !== book.title) ? ` (${book.category})` : '';
     const msg = `Hi ${borrowerName}, you have borrowed "${book.title}"${authorStr}${catStr} from my library. Please return it by ${dueDate}. Thank you!`;
     const waUrl = phone ? `https://wa.me/91${phone.slice(-10)}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`;
-    window.open(waUrl, '_blank');
+    window.location.href = waUrl; // Follow the WhatsApp universal link so Android can open the installed app.
   };
 
   const handleSendAllHoldingWhatsAppReminder = (personObj) => {
@@ -310,7 +310,7 @@ export default function App() {
     const waUrl = phone
       ? `https://wa.me/91${phone.slice(-10)}?text=${encodeURIComponent(msg)}`
       : `https://wa.me/?text=${encodeURIComponent(msg)}`;
-    window.open(waUrl, '_blank');
+    window.location.href = waUrl; // Follow the WhatsApp universal link so Android can open the installed app.
   };
 
   const handleExportPdf = (elementId, fileName, customReportTitle) => {
