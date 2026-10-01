@@ -137,10 +137,35 @@ async function mutateLocalNow(method, args = []) {
     case 'saveBook': {
       const book = { ...(value || {}) };
       const index = payload.books.findIndex(item => String(item.id) === String(book.id) && book.id !== '');
-      if (index >= 0) payload.books[index] = { ...payload.books[index], ...book };
-      else {
+      if (index >= 0) {
+        const previous = payload.books[index];
+        const merged = { ...previous, ...book };
+        const trackedFields = ['currentStatus', 'readingStatus', 'location', 'person', 'personStatus', 'promiseReturnDate'];
+        const changed = trackedFields.some(field =>
+          String(previous[field] || '') !== String(merged[field] || '')
+        );
+        const journey = Array.isArray(previous.journey) ? [...previous.journey] : [];
+        if (changed) {
+          const today = new Date().toISOString().slice(0, 10);
+          const reading = merged.readingStatus ? ` · Reading: ${merged.readingStatus}` : '';
+          const borrower = merged.person ? ` · Reader: ${merged.person}` : '';
+          const due = merged.promiseReturnDate ? ` · Due: ${merged.promiseReturnDate}` : '';
+          journey.push({
+            journeyId: nextId('journey'),
+            changeDate: merged.eventDate || today,
+            newStatus: merged.currentStatus || previous.currentStatus || 'Status Updated',
+            readingStatus: merged.readingStatus || '',
+            location: merged.location || 'At Home',
+            person: merged.person || '',
+            personStatus: merged.personStatus || '',
+            promiseReturnDate: merged.promiseReturnDate || '',
+            notes: `Updated status to ${merged.currentStatus || 'current stage'}${reading}${borrower}${due}`
+          });
+        }
+        payload.books[index] = { ...merged, journey };
+      } else {
         book.id = book.id || nextId('book');
-        payload.books.push(book);
+        payload.books.push({ ...book, journey: Array.isArray(book.journey) ? book.journey : [] });
       }
       break;
     }
@@ -154,7 +179,30 @@ async function mutateLocalNow(method, args = []) {
     case 'updateBookStatus': {
       const book = value || {};
       const index = payload.books.findIndex(item => String(item.id) === String(book.id));
-      if (index >= 0) payload.books[index] = { ...payload.books[index], ...book };
+      if (index >= 0) {
+        const previous = payload.books[index];
+        const merged = { ...previous, ...book };
+        const trackedFields = ['currentStatus', 'readingStatus', 'location', 'person', 'personStatus', 'promiseReturnDate'];
+        const changed = trackedFields.some(field =>
+          String(previous[field] || '') !== String(merged[field] || '')
+        );
+        const journey = Array.isArray(previous.journey) ? [...previous.journey] : [];
+        if (changed) {
+          const today = new Date().toISOString().slice(0, 10);
+          journey.push({
+            journeyId: nextId('journey'),
+            changeDate: merged.eventDate || today,
+            newStatus: merged.currentStatus || previous.currentStatus || 'Status Updated',
+            readingStatus: merged.readingStatus || '',
+            location: merged.location || 'At Home',
+            person: merged.person || '',
+            personStatus: merged.personStatus || '',
+            promiseReturnDate: merged.promiseReturnDate || '',
+            notes: `Updated status to ${merged.currentStatus || 'current stage'}${merged.readingStatus ? ` · Reading: ${merged.readingStatus}` : ''}${merged.person ? ` · Reader: ${merged.person}` : ''}${merged.promiseReturnDate ? ` · Due: ${merged.promiseReturnDate}` : ''}`
+          });
+        }
+        payload.books[index] = { ...merged, journey };
+      }
       break;
     }
 
