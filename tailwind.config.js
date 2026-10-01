@@ -7,10 +7,13 @@ export default {
         forest: '#1E3535',
         moss: '#868d7d',
         ochre: '#047372',
+        lagoon: '#17AAA3',
+        forestMid: '#115453',
+        stone: '#5F7372',
         sage: '#7B8C7D',
         sand: '#D4C1A3',
-        alabaster: '#F4F1EA',
-        charcoal: '#0F1E1E'
+        alabaster: '#EEF5F4',
+        charcoal: '#293B3B'
       },
       fontFamily: { sans: ['"Mukta"', '"Noto Sans Devanagari"', 'sans-serif'] },
       boxShadow: {
