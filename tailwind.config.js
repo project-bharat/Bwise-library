@@ -9,7 +9,7 @@ export default {
         ochre: '#047372',
         lagoon: '#17AAA3',
         forestMid: '#115453',
-        stone: '#5F7372',
+        brandStone: '#5F7372',
         sage: '#7B8C7D',
         sand: '#D4C1A3',
         alabaster: '#EEF5F4',
