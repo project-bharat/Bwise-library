@@ -8,7 +8,7 @@ export async function initNative() {
   try {
     await StatusBar.setOverlaysWebView({ overlay: false });
     await StatusBar.setBackgroundColor({ color: '#1E3535' });
-    await StatusBar.setStyle({ style: Style.Dark });
+    await StatusBar.setStyle({ style: Style.Light });
   } catch (e) { /* ignore */ }
   // WhatsApp / LinkedIn / GitHub links opened with window.open() -> system browser / app
   window.open = (url) => { if (url) Browser.open({ url: String(url) }); return null; };
