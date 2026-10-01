@@ -47,16 +47,35 @@ xml_dir = os.path.join(ROOT, 'src', 'main', 'res', 'xml')
 os.makedirs(xml_dir, exist_ok=True)
 shortcuts_xml = '''<?xml version="1.0" encoding="utf-8"?>
 <shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
-    <shortcut android:shortcutId="new_book" android:enabled="true" android:icon="@mipmap/ic_launcher" android:shortcutShortLabel="Add book" android:shortcutLongLabel="Add a book to your library">
+    <shortcut android:shortcutId="new_book" android:enabled="true" android:icon="@mipmap/ic_launcher" android:shortcutShortLabel="@string/shortcut_add_book" android:shortcutLongLabel="@string/shortcut_add_book_long">
         <intent android:action="android.intent.action.VIEW" android:targetPackage="com.bharatrasve.bwiselibrary" android:targetClass="com.bharatrasve.bwiselibrary.MainActivity" android:data="bwise://new-book" />
     </shortcut>
-    <shortcut android:shortcutId="wishlist_book" android:enabled="true" android:icon="@mipmap/ic_launcher" android:shortcutShortLabel="Add wishlist" android:shortcutLongLabel="Add a book to your wishlist">
+    <shortcut android:shortcutId="wishlist_book" android:enabled="true" android:icon="@mipmap/ic_launcher" android:shortcutShortLabel="@string/shortcut_add_wishlist" android:shortcutLongLabel="@string/shortcut_add_wishlist_long">
         <intent android:action="android.intent.action.VIEW" android:targetPackage="com.bharatrasve.bwiselibrary" android:targetClass="com.bharatrasve.bwiselibrary.MainActivity" android:data="bwise://wishlist-book" />
     </shortcut>
 </shortcuts>
 '''
 with open(os.path.join(xml_dir, 'shortcuts.xml'), 'w', encoding='utf-8') as shortcut_file:
     shortcut_file.write(shortcuts_xml)
+
+values_dir = os.path.join(ROOT, 'src', 'main', 'res', 'values')
+os.makedirs(values_dir, exist_ok=True)
+strings_path = os.path.join(values_dir, 'strings.xml')
+if os.path.isfile(strings_path):
+    strings_xml = open(strings_path, encoding='utf-8').read()
+else:
+    strings_xml = '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n</resources>\n'
+shortcut_strings = {
+    'shortcut_add_book': 'Add book',
+    'shortcut_add_book_long': 'Add a book to your library',
+    'shortcut_add_wishlist': 'Add wishlist',
+    'shortcut_add_wishlist_long': 'Add a book to your wishlist'
+}
+for key, value in shortcut_strings.items():
+    if f'<string name="{key}">' not in strings_xml:
+        strings_xml = strings_xml.replace('</resources>', f'    <string name="{key}">{value}</string>\n</resources>')
+with open(strings_path, 'w', encoding='utf-8') as strings_file:
+    strings_file.write(strings_xml)
 
 open(manifest, 'w', encoding='utf-8').write(s)
 
