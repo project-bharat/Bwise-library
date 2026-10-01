@@ -1,6 +1,7 @@
 import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { Browser } from '@capacitor/browser';
+import { registerDueNotificationActions } from './dueNotifications';
 
 export async function initNative() {
   if (!Capacitor.isNativePlatform()) return;
@@ -11,6 +12,8 @@ export async function initNative() {
   } catch (e) { /* ignore */ }
   // WhatsApp / LinkedIn / GitHub links opened with window.open() -> system browser / app
   window.open = (url) => { if (url) Browser.open({ url: String(url) }); return null; };
+  // Register notification actions so the WhatsApp action opens the prefilled chat.
+  registerDueNotificationActions().catch(error => console.warn('[notifications] init failed', error));
   // Let Capacitor's configured launchAutoHide/launchShowDuration display the native
   // launcher-mark splash first; React then shows the branded horizontal-logo splash.
 }
