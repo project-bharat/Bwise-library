@@ -14,9 +14,28 @@ from PIL import Image, ImageDraw
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 SRC = os.path.join(ROOT, 'resources', 'icons')
-FG = Image.open(os.path.join(SRC, 'ic_launcher_foreground.png')).convert('RGBA')
+_FG_SOURCE = Image.open(os.path.join(SRC, 'ic_launcher_foreground.png')).convert('RGBA')
 BG = Image.open(os.path.join(SRC, 'ic_launcher_background.png')).convert('RGBA')
-S = FG.size[0]
+S = max(_FG_SOURCE.size)
+
+def centered_foreground(source, canvas_size):
+    """Trim transparent padding, then re-center the visible mark on the adaptive-icon canvas."""
+    alpha = source.getchannel('A')
+    # Ignore tiny antialiasing/noise pixels when determining the visible logo bounds.
+    alpha = alpha.point(lambda value: 255 if value > 8 else 0)
+    bbox = alpha.getbbox()
+    if not bbox:
+        return Image.new('RGBA', (canvas_size, canvas_size), (0, 0, 0, 0))
+    mark = source.crop(bbox)
+    # Keep the mark within the adaptive-icon safe area while removing uneven source padding.
+    target = int(canvas_size * 0.68)
+    scale = min(target / mark.width, target / mark.height)
+    mark = mark.resize((max(1, round(mark.width * scale)), max(1, round(mark.height * scale))), Image.LANCZOS)
+    canvas = Image.new('RGBA', (canvas_size, canvas_size), (0, 0, 0, 0))
+    canvas.alpha_composite(mark, ((canvas_size - mark.width) // 2, (canvas_size - mark.height) // 2))
+    return canvas
+
+FG = centered_foreground(_FG_SOURCE, S)
 
 def composite():
     img = BG.resize(FG.size, Image.LANCZOS).copy()
