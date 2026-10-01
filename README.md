@@ -1,49 +1,67 @@
-# B-wise Library — Native Android App
+# B-wise Library — Local-first Android app
 
-Pixel-identical Android version of the B-wise Library web app (Book Library & Reader Lending Management).
+B-wise Library is a React + Capacitor Android app for managing a personal book collection, readers, lending history and wishlist.
 
-* **UI**: the exact same React + Tailwind screens, bundled locally (no CDN), fonts & Font Awesome included offline.
-* **Data**: your Google Sheet stays the database. The app talks to it through the Apps Script Web App (`backend/ApiBridge.gs`).
-* **Native extras**: PDF / CSV exports open the Android share sheet, hardware Back button navigates, status bar themed, WhatsApp / call links open the real apps, last data cached for offline viewing.
-* **Build**: GitHub Actions builds the APK. Nothing to install locally.
+## Data storage and privacy
 
-## Icons
-Source artwork lives in `resources/icons/`:
+- **Phone storage is the primary database.** The native app saves its library to a persistent JSON file in the app's private data directory. It does not require a Google Sheet, internet access, a Google login, or an Apps Script URL to read and write entries.
+- The app migrates the previous offline-viewing cache into the local database when available.
+- App data stays in the app's private storage. Uninstalling the app or clearing its data may remove the local copy, so export backups regularly.
+- Browser development uses local browser storage instead of the Android data file.
 
-* `ic_launcher_foreground.png` (1024×1024, transparent, art inside the central ~60 %)
-* `ic_launcher_background.png` (1024×1024)
+## Back up and restore
 
-Replace both files with your own artwork (same names) and push – CI regenerates:
-launcher icons (all densities, adaptive + round), the in-app brand icon shown in **every page footer, the side drawer and the PDF slip footer**.
-(Placeholders are included: forest→teal gradient + open book.)
+1. Open the app menu and select **Backup to Drive / Export CSV**.
+2. On Android, the system share sheet opens. Select **Google Drive** (or another file/storage app) and save the backup. If Drive is not listed, install/update Google Drive and sign in to it, or save the CSV to Files.
+3. To restore, put the backup CSV on the phone, select **Restore Full Backup (CSV)**, and choose that file.
+4. Restore replaces the app's current local library with the backup contents. Keep a separate copy before restoring.
 
-## Backend setup (once)
-1. Open the Google Sheet → Extensions → Apps Script. Keep `Code.gs` and `SetupDatabase.gs`.
-2. Add a new file **ApiBridge.gs** with the contents of `backend/ApiBridge.gs`.
-3. Run `generateApiToken` once → open *Executions / Logs* and copy the printed token.
-4. Deploy → **New deployment** → type *Web app* → Execute as **Me**, Who has access **Anyone** → copy the `/exec` URL.
-5. After any later `.gs` change: Deploy → Manage deployments → ✏️ → Version: *New version* → Deploy (the URL stays the same).
+The exported CSV contains a versioned full-data payload so the app can restore books, reader profiles, wishlist and configuration. This is a user-initiated file backup, not automatic background synchronisation. The user chooses Google Drive in Android's share sheet; the app does not request Google Drive OAuth access.
+
+## Branding assets
+
+### Android launcher icon
+
+Source artwork is in `resources/icons/`:
+
+- `ic_launcher_foreground.png` — 1024 × 1024 transparent PNG with the white mark.
+- `ic_launcher_background.png` — 1024 × 1024 background artwork.
+
+The icon-generation script trims transparent padding and centers the visible logo inside Android's adaptive-icon safe area. CI regenerates launcher icons for all Android densities.
+
+### Horizontal logo
+
+Upload the white horizontal logo as:
+
+- `public/horizontal-logo.png`
+
+Use a transparent PNG with the white wordmark/app name, preferably around 1200 × 300 px. It is used on the custom in-app startup screen and the page footer. Keep the filename exactly `horizontal-logo.png`; no source-code edit is required after upload.
+
+### Favicon and generated brand icon
+
+- `public/favicon.png` — web favicon.
+- `src/assets/brand-icon.png` — generated from the launcher artwork for PDF branding and the side drawer.
 
 ## Build the APK
-1. Push this folder to your GitHub repo (`main` branch).
-2. Actions → **Build APK** (runs automatically on push, or *Run workflow*).
-3. Download artifact **bwise-library-debug-apk** → unzip → install `app-debug.apk`.
 
-Optional: set repo variable `GAS_URL` and secret `GAS_TOKEN` (Settings → Secrets and variables → Actions) to pre-fill the connection in the build. Otherwise enter them in the app on first launch (the Sync Settings dialog opens automatically; later via menu → Sync Settings).
+1. Push changes to the `main` branch.
+2. Open **Actions → Build Android APK**. The workflow runs on push or can be started with **Run workflow**.
+3. Wait for a successful run, open it, then download the `bwise-library-debug-apk` artifact.
+4. Extract the artifact ZIP and install `app-debug.apk` on an Android device.
 
-## Local development (optional)
+This is a debug APK for testing/personal installation. A signed release build is a separate step.
+
+## Local development
+
 ```bash
 npm install
-npm run dev        # browser preview at http://localhost:5173 (uses the same Sync Settings dialog)
+npm run dev
 npm run build
 ```
 
-## What changed vs. the web version (only these)
-| Area | Change |
-|------|--------|
-| `google.script.run` | replaced by `src/native/gasShim.js` (same call style, HTTPS to the Web App) – UI code untouched |
-| PDF / CSV backup | browser blob-download → Android share sheet (`src/native/files.js`) |
-| Back button | closes dialogs → previous screen → Home → exits |
-| Drawer | + "Sync Settings" entry |
-| Branding | app icon added above the developer footer, in the drawer, and in PDF slip footers |
-| Fonts/CSS/icons | bundled with npm instead of CDN links |
+## Native features
+
+- Local-first book, reader, lending, wishlist and configuration data.
+- Full-data CSV backup and restore through the Android file/share sheet.
+- PDF exports, Android share sheet, hardware Back button and native external links.
+- Fonts and icons bundled locally for offline UI rendering.
