@@ -45,7 +45,7 @@ export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddP
               </button>
             </div>
             <div>
-              <p className="text-[9px] font-black uppercase tracking-widest text-stone-400 mb-1 px-1">System Backup</p>
+              <p className="text-[9px] font-black uppercase tracking-widest text-stone-400 mb-1 px-1">Local & Cloud Backup</p>
               <button onClick={onExportBackup} className="w-full text-left p-2 rounded-lg hover:bg-stone-100 text-forest flex items-center space-x-2">
                 <i className="fa-brands fa-google-drive w-5"></i> <span>Backup to Drive / Export CSV</span>
               </button>
