@@ -6,7 +6,7 @@
   "plugins": {
     "CapacitorHttp": { "enabled": true },
     "SplashScreen": {
-      "launchShowDuration": 600,
+      "launchShowDuration": 900,
       "launchAutoHide": true,
       "backgroundColor": "#1E3535",
       "showSpinner": false
