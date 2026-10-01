@@ -3,7 +3,6 @@ import html2pdf from 'html2pdf.js';
 import { App as CapApp } from '@capacitor/app';
 import brandIcon from './assets/brand-icon.png?inline';
 import { isNative } from './native/storage';
-import { isConfigured } from './native/config';
 import { saveAndShareBlob, isShareCancel } from './native/files';
 import { formatDisplayDate, getStatusBadgeStyle, displayStatus, EMPTY_INITIAL_DATA } from './utils';
 
@@ -21,6 +20,7 @@ import SyncSettingsModal from './components/modals/SyncSettingsModal';
 
 export default function App() {
   const [appData, setAppData] = useState(EMPTY_INITIAL_DATA);
+  const [bootSplash, setBootSplash] = useState(true);
   const [loadingState, setLoadingState] = useState({ text: 'Loading data...', visible: true, isSuccess: false });
   const [activeTab, setActiveTab] = useState('home');
   const [selectedPerson, setSelectedPerson] = useState(null);
@@ -118,13 +118,16 @@ export default function App() {
         .withSuccessHandler(res => {
           if (res && res.status === 'success') {
             setAppData(res);
-            triggerStatus(res.offline ? 'Offline: showing saved data' : 'Data loaded', true);
+            setBootSplash(false);
+            triggerStatus('Local data ready', true);
           } else {
-            triggerStatus('Failed to load data', false);
+            setBootSplash(false);
+          triggerStatus('Failed to load local data', false);
           }
         })
         .withFailureHandler(err => {
-          triggerStatus('Sync error: ' + (err.message || 'Check connection'), false);
+          setBootSplash(false);
+          triggerStatus('Local storage error: ' + (err.message || 'Check device storage'), false);
         })
         .getLibraryPayload(force);
     } else {
@@ -133,11 +136,8 @@ export default function App() {
   };
 
   useEffect(() => {
-    // First launch: ask for Sheet link before the first fetch
-    isConfigured().then((ok) => {
-      if (ok) fetchData(false);
-      else { setSyncModal(true); triggerStatus('Sync error: set up Google Sheet link', false); }
-    });
+    // Local-first startup: load the phone database without requiring a Google account or server.
+    fetchData(false);
   }, []);
 
   const handleResetFilters = () => {
@@ -473,6 +473,13 @@ export default function App() {
 
   return (
     <div className="min-h-screen max-w-xl mx-auto flex flex-col justify-between relative shadow-2xl bg-alabaster m-0 p-0 border-0 overflow-x-hidden">
+      {bootSplash && (
+        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center px-8" style={{ background: 'linear-gradient(145deg, #123D3B 0%, #047372 52%, #0A5550 100%)' }}>
+          <img src="/horizontal-logo.png" alt="B-wise Library" className="w-full max-w-[300px] max-h-[120px] object-contain" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+          <p className="mt-5 text-white/85 text-xs font-semibold tracking-[0.22em] uppercase">Your library. Always with you.</p>
+          <div className="absolute bottom-10 text-white/65 text-[10px] tracking-widest uppercase">B-wise Library</div>
+        </div>
+      )}
 
       {/* Status Toast: Bottom Notification Pill with High Contrast Badging */}
       {loadingState.visible && (
@@ -620,7 +627,7 @@ export default function App() {
             )}
           </div>
           <div className="flex items-center space-x-1 flex-none">
-            <button onClick={() => fetchData(true)} className="p-2 text-white hover:opacity-80 active:scale-95 transition-all text-sm" title="Sync Google Sheet">
+            <button onClick={() => fetchData(true)} className="p-2 text-white hover:opacity-80 active:scale-95 transition-all text-sm" title="Refresh local data">
               <i className={`fa-solid fa-rotate ${loadingState.visible && !loadingState.isSuccess ? 'animate-spin' : ''}`}></i>
             </button>
             <button onClick={() => setDrawerOpen(true)} className="p-2 text-white hover:opacity-80 active:scale-95 transition-all text-base" title="Open Menu">
