@@ -59,5 +59,5 @@ if os.path.isfile(fg_path):
     else:
         print('native splash: foreground has no visible artwork; retaining default')
 else:
-    print('native splash: source icon asset missing; retaining default')    print('native splash: source icon assets missing; retaining default')
+    print('native splash: source icon asset missing; retaining default')
 
