@@ -1,10 +1,9 @@
 import React from 'react';
-import brandIcon from '../assets/brand-icon.png?inline';
 
 export default function BrandingFooter({ onCallDeveloper }) {
   return (
     <footer className="mt-8 pt-3 pb-2 text-center select-none border-t border-sand/40 flex flex-col items-center justify-center">
-      <img src={brandIcon} alt="B-wise Library" className="w-9 h-9 rounded-xl mb-1.5 shadow-sm" />
+      <img src="/horizontal-logo.png" alt="B-wise Library" className="w-40 max-w-full h-auto max-h-12 object-contain mb-2" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
       <p className="text-[9px] font-black text-stone-500 tracking-widest mb-2 uppercase">DEVELOPED BY - BHARAT RASVE © 2026</p>
       <div className="flex items-center space-x-2.5">
         <button onClick={onCallDeveloper} className="w-7 h-7 rounded-full bg-forest text-alabaster flex items-center justify-center text-xs active:scale-95 shadow-xs" title="Call Developer">
