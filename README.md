@@ -35,7 +35,9 @@ Upload the white horizontal logo as:
 
 - `public/horizontal-logo.png`
 
-Use a transparent PNG with the white wordmark/app name, preferably around 1200 × 300 px. It is used on the custom in-app startup screen and the page footer. Keep the filename exactly `horizontal-logo.png`; no source-code edit is required after upload.
+Use a transparent PNG with the white wordmark/app name, preferably around 1200 × 300 px. It is used on the custom in-app startup screen. Keep the filename exactly `horizontal-logo.png`; no source-code edit is required after upload.
+
+The full-colour horizontal lockup is `public/horizontal-colored-logo.png` and is used for the footer on the light Mist app background.
 
 ### Favicon and generated brand icon
 
@@ -64,4 +66,6 @@ npm run build
 - Local-first book, reader, lending, wishlist and configuration data.
 - Full-data CSV backup and restore through the Android file/share sheet.
 - PDF exports, Android share sheet, hardware Back button and native external links.
+- Reader profiles can be populated from device contacts after Android contacts permission is granted. The app remains usable if permission is denied.
+- Local due-date notifications are scheduled for books marked as lent/holding with a promise-return date. The notification includes a WhatsApp action that opens a prefilled reminder for that reader and book; Android notification permission is required.
 - Fonts and icons bundled locally for offline UI rendering.
