@@ -1,0 +1,16 @@
+{
+  "appId": "com.bharatrasve.bwiselibrary",
+  "appName": "B-wise Library",
+  "webDir": "dist",
+  "server": { "androidScheme": "https" },
+  "plugins": {
+    "CapacitorHttp": { "enabled": true },
+    "SplashScreen": {
+      "launchShowDuration": 600,
+      "launchAutoHide": true,
+      "backgroundColor": "#1E3535",
+      "showSpinner": false
+    },
+    "StatusBar": { "style": "DARK", "backgroundColor": "#1E3535", "overlaysWebView": false }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "name": "bwise-library",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "B-wise Library - native Android app (Capacitor) for the Google Sheets based library lending manager",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "icons": "python3 scripts/generate-icons.py",
+    "cap:add": "cap add android",
+    "cap:sync": "cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/app": "^6.0.0",
+    "@capacitor/browser": "^6.0.0",
+    "@capacitor/core": "^6.1.2",
+    "@capacitor/filesystem": "^6.0.0",
+    "@capacitor/preferences": "^6.0.0",
+    "@capacitor/share": "^6.0.0",
+    "@capacitor/splash-screen": "^6.0.0",
+    "@capacitor/status-bar": "^6.0.0",
+    "@fontsource/mukta": "^5.0.0",
+    "@fontsource/noto-sans-devanagari": "^5.0.0",
+    "@fortawesome/fontawesome-free": "6.4.2",
+    "html2pdf.js": "^0.10.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.1.2",
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "3.4.17",
+    "vite": "^5.4.8"
+  }
+}
