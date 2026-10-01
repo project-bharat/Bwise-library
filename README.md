@@ -24,7 +24,7 @@ The exported CSV contains a versioned full-data payload so the app can restore b
 
 Source artwork is in `resources/icons/`:
 
-- `ic_launcher_foreground.png` — 1024 × 1024 transparent PNG with the white mark.
+- `ic_launcher_foreground.png` — 1024 × 1024 transparent PNG with the white mark. Replace this source with the centered foreground asset when updating launcher artwork.
 - `ic_launcher_background.png` — 1024 × 1024 background artwork.
 
 The icon-generation script trims transparent padding and centers the visible logo inside Android's adaptive-icon safe area. CI regenerates launcher icons for all Android densities.
