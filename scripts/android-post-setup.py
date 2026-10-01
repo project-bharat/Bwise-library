@@ -24,14 +24,20 @@ if 'android:screenOrientation' not in s:
     print('manifest: portrait lock added')
 else:
     print('manifest: portrait lock already present')
-shortcuts_filter = '''\n        <intent-filter>\n            <action android:name="android.intent.action.VIEW" />\n            <category android:name="android.intent.category.DEFAULT" />\n            <category android:name="android.intent.category.BROWSABLE" />\n            <data android:scheme="bwise" />\n        </intent-filter>'''
-activity_match = re.search(r'<activity\\b[\\s\\S]*?</activity>', s)
+shortcuts_filter = '''
+        <intent-filter>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="bwise" />
+        </intent-filter>'''
+activity_match = re.search(r'<activity\b[\s\S]*?</activity>', s)
 if activity_match and 'android.intent.action.MAIN' in activity_match.group(0):
     activity = activity_match.group(0)
     if 'android.app.shortcuts' not in activity:
-        activity = activity.replace('</activity>', '        <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />\\n    </activity>')
+        activity = activity.replace('</activity>', '        <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />\n    </activity>')
     if 'android:scheme="bwise"' not in activity:
-        activity = activity.replace('</activity>', shortcuts_filter + '\\n    </activity>')
+        activity = activity.replace('</activity>', shortcuts_filter + '\n    </activity>')
     s = s[:activity_match.start()] + activity + s[activity_match.end():]
     print('manifest: launcher shortcuts and bwise deep links configured')
 else:
