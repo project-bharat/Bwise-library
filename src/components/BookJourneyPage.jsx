@@ -22,15 +22,15 @@ export default function BookJourneyPage({ book, onBack, onEditDetails, onEditSta
     notes: `Acquired via ${book.initialStatus || 'Purchased'}`
   };
 
-  const subsequentMilestones = rawJourney.filter(m => m.newStatus !== book.initialStatus).map(m => ({
+  const subsequentMilestones = rawJourney.map(m => ({
     journeyId: m.journeyId,
     changeDate: m.changeDate,
-    statusLabel: m.newStatus,
+    statusLabel: m.newStatus || m.statusLabel || m.currentStatus || m.readingStatus || 'Status Updated',
     location: m.location || 'At Home',
     person: m.person,
     isInitial: false,
     notes: m.notes,
-    promiseReturnDate: book.promiseReturnDate
+    promiseReturnDate: m.promiseReturnDate || ''
   }));
 
   const timelineItems = [initialMilestone, ...subsequentMilestones];
