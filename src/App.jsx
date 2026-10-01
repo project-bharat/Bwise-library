@@ -1524,6 +1524,7 @@ export default function App() {
         <StatusUpdateModal
           book={statusModal.book}
           people={appData.people}
+          onAddReader={() => setPersonModal({ isNew: true, person: {} })}
           onClose={() => setStatusModal(null)}
           onSuccess={(payload) => {
             setStatusModal(null);

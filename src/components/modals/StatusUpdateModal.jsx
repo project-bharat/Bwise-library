@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { formatDisplayDate } from '../../utils';
 
 // DIALOG 2: EDIT STATUS & CUSTODY ONLY (Metadata Locked Read-Only)
-export default function StatusUpdateModal({ book, people, onClose, onSuccess }) {
+export default function StatusUpdateModal({ book, people, onAddReader, onClose, onSuccess }) {
   const isLentInitially = String(book.location || '') === 'To Person' || Boolean(book.person && book.person.trim() !== '');
   const [location, setLocation] = useState(isLentInitially ? 'To Person' : (book.location || 'At Home'));
   const [person, setPerson] = useState(book.person || '');
@@ -150,7 +150,7 @@ export default function StatusUpdateModal({ book, people, onClose, onSuccess }) 
               </select>
             </div>
             <div>
-              <label className="text-[8px] font-black uppercase text-stone-500">Borrower Person</label>
+              <div className="flex items-center justify-between gap-1"><label className="text-[8px] font-black uppercase text-stone-500">Borrower Person</label><button type="button" onClick={onAddReader} className="text-[8px] font-black text-forest bg-sand/40 rounded px-1.5 py-0.5 whitespace-nowrap"><i className="fa-solid fa-plus mr-1"></i>Add Reader</button></div>
               <select
                 value={person || book.person || ''}
                 onChange={e => {
