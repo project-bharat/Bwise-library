@@ -21,7 +21,7 @@ import { installGasShim } from './native/gasShim';
 import { initNative } from './native/init';
 
 window.html2pdf = html2pdf;
-installGasShim();      // google.script.run -> Apps Script Web App (Google Sheet)
+installGasShim();      // legacy UI API shape -> local-first on-device database
 initNative();          // status bar, external links, splash
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App />);
