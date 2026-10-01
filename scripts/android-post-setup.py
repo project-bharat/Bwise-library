@@ -17,7 +17,7 @@ s = open(manifest, encoding='utf-8').read()
 for permission in ('android.permission.READ_CONTACTS', 'android.permission.POST_NOTIFICATIONS'):
     declaration = f'<uses-permission android:name="{permission}" />'
     if declaration not in s:
-        s = s.replace('<application', f'    {declaration}\\n    <application', 1)
+        s = s.replace('<application', f'    {declaration}\n    <application', 1)
         print('manifest: added', permission)
 if 'android:screenOrientation' not in s:
     s = s.replace('<activity', '<activity android:screenOrientation="portrait"', 1)
