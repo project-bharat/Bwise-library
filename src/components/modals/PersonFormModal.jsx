@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { getDeviceContacts } from '../../native/contacts';
 
 export default function PersonFormModal({ isNew, initial, onClose, onSuccess }) {
   const [name, setName] = useState(initial.name || '');
@@ -6,6 +7,38 @@ export default function PersonFormModal({ isNew, initial, onClose, onSuccess }) 
   const [address, setAddress] = useState(initial.address || '');
   const [email, setEmail] = useState(initial.email || '');
   const [saving, setSaving] = useState(false);
+  const [contacts, setContacts] = useState([]);
+  const [contactSearch, setContactSearch] = useState('');
+  const [showContacts, setShowContacts] = useState(false);
+  const [loadingContacts, setLoadingContacts] = useState(false);
+  const [contactError, setContactError] = useState('');
+
+  const handleChooseContact = async () => {
+    setLoadingContacts(true);
+    setContactError('');
+    try {
+      const deviceContacts = await getDeviceContacts();
+      setContacts(deviceContacts);
+      setShowContacts(true);
+      if (!deviceContacts.length) setContactError('No contacts with names were found on this device.');
+    } catch (error) {
+      setContactError(error?.message || 'Unable to read device contacts.');
+    } finally {
+      setLoadingContacts(false);
+    }
+  };
+
+  const chooseContact = (contact) => {
+    setName(contact.name || '');
+    setPhone(contact.phone || '');
+    setEmail(contact.email || '');
+    setAddress(contact.address || '');
+    setShowContacts(false);
+  };
+
+  const filteredContacts = contacts.filter(contact =>
+    `${contact.name} ${contact.phone} ${contact.email}`.toLowerCase().includes(contactSearch.toLowerCase().trim())
+  );
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -27,6 +60,28 @@ export default function PersonFormModal({ isNew, initial, onClose, onSuccess }) 
           <button onClick={onClose}><i className="fa-solid fa-xmark"></i></button>
         </div>
         <form onSubmit={handleSubmit} className="space-y-3 text-xs">
+          <button type="button" onClick={handleChooseContact} disabled={loadingContacts} className="w-full py-2 rounded-lg border border-ochre/40 bg-ochre/5 text-forest font-bold flex items-center justify-center gap-2">
+            <i className="fa-solid fa-address-book"></i>{loadingContacts ? 'Loading device contacts…' : 'Choose from device contacts'}
+          </button>
+          {contactError && <p role="status" className="text-[10px] text-rose-700">{contactError}</p>}
+          {showContacts && (
+            <div className="rounded-lg border border-sand/60 p-2 space-y-2">
+              <div className="flex items-center justify-between">
+                <p className="font-black text-forest">Device contacts ({filteredContacts.length})</p>
+                <button type="button" onClick={() => setShowContacts(false)} className="px-2 py-1 text-stone-500">Close</button>
+              </div>
+              <input type="search" value={contactSearch} onChange={e => setContactSearch(e.target.value)} placeholder="Search name or phone" className="w-full bg-alabaster border rounded p-2" />
+              <div className="max-h-40 overflow-y-auto divide-y divide-sand/30">
+                {filteredContacts.slice(0, 100).map((contact, index) => (
+                  <button type="button" key={`${contact.name}-${contact.phone}-${index}`} onClick={() => chooseContact(contact)} className="w-full text-left py-2 px-1 hover:bg-alabaster">
+                    <span className="block font-bold text-forest">{contact.name}</span>
+                    <span className="block text-[10px] text-stone-500">{contact.phone || contact.email || 'No phone number'}</span>
+                  </button>
+                ))}
+                {!filteredContacts.length && <p className="py-3 text-center text-stone-500">No matching contacts.</p>}
+              </div>
+            </div>
+          )}
           <div><label className="text-[9px] font-black uppercase text-stone-500">Name *</label><input type="text" required value={name} onChange={e => setName(e.target.value)} className="w-full bg-alabaster border rounded p-2" /></div>
           <div><label className="text-[9px] font-black uppercase text-stone-500">Phone</label><input type="tel" value={phone} onChange={e => setPhone(e.target.value)} className="w-full bg-alabaster border rounded p-2" /></div>
           <div><label className="text-[9px] font-black uppercase text-stone-500">Address</label><input type="text" value={address} onChange={e => setAddress(e.target.value)} className="w-full bg-alabaster border rounded p-2" /></div>
