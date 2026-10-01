@@ -3,6 +3,8 @@ import html2pdf from 'html2pdf.js';
 import { App as CapApp } from '@capacitor/app';
 import brandIcon from './assets/brand-icon.png?inline';
 import { isNative } from './native/storage';
+import { requestInitialDevicePermissions } from './native/contacts';
+import { scheduleDueDateNotifications } from './native/dueNotifications';
 import { saveAndShareBlob, isShareCancel } from './native/files';
 import { formatDisplayDate, getStatusBadgeStyle, displayStatus, EMPTY_INITIAL_DATA } from './utils';
 
@@ -136,9 +138,16 @@ export default function App() {
   };
 
   useEffect(() => {
+    // Request Android runtime permissions on first launch. The app remains usable if either is denied.
+    requestInitialDevicePermissions().catch(error => console.warn('[permissions] startup request failed', error));
     // Local-first startup: load the phone database without requiring a Google account or server.
     fetchData(false);
   }, []);
+
+  useEffect(() => {
+    // Keep due-date reminders aligned with the local library after startup and every data update.
+    scheduleDueDateNotifications(appData).catch(error => console.warn('[notifications] scheduling failed', error));
+  }, [appData.books, appData.people]);
 
   const handleResetFilters = () => {
     setFilterStatus('ALL');
