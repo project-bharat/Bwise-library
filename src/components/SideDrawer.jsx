@@ -58,11 +58,11 @@ export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddP
             </div>
           </div>
         </div>
-        <div className="p-3.5 border-t border-sand/40 bg-stone-50 text-center select-none flex flex-col items-center justify-center">
+        <div className="p-3.5 border-t border-white/10 text-center select-none flex flex-col items-center justify-center bg-gradient-to-r from-[#033636] via-[#047372] to-[#052626]">
           <img src="/horizontal-logo.png" alt="B-wise Library" className="w-36 max-w-full h-auto max-h-10 object-contain mb-2" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-          <p className="text-[8px] font-black text-stone-500 tracking-widest mb-1.5 uppercase">DEVELOPED BY - BHARAT RASVE © 2026</p>
+          <p className="text-[8px] font-black text-white/75 tracking-widest mb-1.5 uppercase">DEVELOPED BY - BHARAT RASVE © 2026</p>
           <div className="flex items-center space-x-2">
-            <button onClick={onCallDeveloper} className="w-6 h-6 rounded-full bg-forest text-alabaster hover:bg-ochre flex items-center justify-center text-[10px] active:scale-95 transition-colors shadow-xs" title="Call Developer">
+            <button onClick={onCallDeveloper} className="w-6 h-6 rounded-full bg-white text-forest hover:bg-ochre flex items-center justify-center text-[10px] active:scale-95 transition-colors shadow-xs" title="Call Developer">
               <i className="fa-solid fa-phone"></i>
             </button>
             <button onClick={() => window.open('https://wa.me/917218838122', '_blank')} className="w-6 h-6 rounded-full bg-forest text-alabaster hover:bg-ochre flex items-center justify-center text-[11px] active:scale-95 transition-colors shadow-xs" title="WhatsApp Developer">
