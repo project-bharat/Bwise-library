@@ -18,7 +18,7 @@ export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddP
               <img src={brandIcon} alt="" className="w-10 h-10 rounded-xl shadow-md border border-white/20" />
               <div>
                 <p className="text-[10px] font-extrabold uppercase tracking-widest text-sand">{t('legacy.Library Manager')}</p>
-                <h2 className="text-lg font-black tracking-tight mt-0.5">{t('legacy.B-wise Library')</h2>
+                <h2 className="text-lg font-black tracking-tight mt-0.5">{t('legacy.B-wise Library')}</h2>
               </div>
             </div>
             <button onClick={onClose} className="text-sand/80 hover:text-white p-1 rounded transition-colors" title={`${t('legacy.Close')} Menu (Esc)`}>
