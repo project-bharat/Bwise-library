@@ -264,6 +264,9 @@
     "Save Status": "Save Status",
     "WhatsApp Reminder (All Holding Books)": "WhatsApp Reminder (All Holding Books)",
     "Edit Book Details (Title, Author, Amount, Category)": "Edit Book Details (Title, Author, Amount, Category)",
-    "Update Status, Custody & Lending": "Update Status, Custody & Lending"
+    "Update Status, Custody & Lending": "Update Status, Custody & Lending",
+    "No contacts with names were found on this device.": "No contacts with names were found on this device.",
+    "Unable to read device contacts.": "Unable to read device contacts.",
+    "Error saving wishlist item:": "Error saving wishlist item:"
   }
 }
