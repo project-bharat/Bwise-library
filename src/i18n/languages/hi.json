@@ -372,6 +372,11 @@
     "Event / Lent Date": "घटना / उधार तारीख",
     "Promise Return": "वापसी का वादा",
     "Manage & Add {{type}}": "{{type}} प्रबंधित करें और जोड़ें",
-    "Remove {{item}} from {{type}} options?": "{{type}} विकल्पों से {{item}} हटाएँ?"
+    "Remove {{item}} from {{type}} options?": "{{type}} विकल्पों से {{item}} हटाएँ?",
+    "Notifications and reminders": "सूचनाएँ और रिमाइंडर",
+    "Close notifications": "सूचनाएँ बंद करें",
+    "Held by": "के पास",
+    "Due today": "आज देय",
+    "You have {{count}} items to get.": "प्राप्त करने के लिए {{count}} वस्तुएँ हैं।"
   }
 }
