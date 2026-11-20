@@ -264,6 +264,9 @@
     "Save Status": "स्थिती जतन करा",
     "WhatsApp Reminder (All Holding Books)": "WhatsApp स्मरणपत्र (सर्व प्रलंबित पुस्तके)",
     "Edit Book Details (Title, Author, Amount, Category)": "पुस्तक तपशील संपादित करा (नाव, लेखक, रक्कम, वर्ग)",
-    "Update Status, Custody & Lending": "स्थिती, ताबा व देणे अद्यतनित करा"
+    "Update Status, Custody & Lending": "स्थिती, ताबा व देणे अद्यतनित करा",
+    "No contacts with names were found on this device.": "या फोनमध्ये नाव असलेले संपर्क आढळले नाहीत.",
+    "Unable to read device contacts.": "फोन संपर्क वाचता आले नाहीत.",
+    "Error saving wishlist item:": "इच्छासूची जतन करताना त्रुटी:"
   }
 }
