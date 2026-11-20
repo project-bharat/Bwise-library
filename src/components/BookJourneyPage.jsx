@@ -7,7 +7,7 @@ import { displayStatus, formatDisplayDate, getStatusBadgeStyle } from '../utils'
 export default function BookJourneyPage({ book, onBack, onEditDetails, onEditStatus, onNavigateToPerson, onExportPdf, onCallDeveloper, onCopyTitle, onOpenTag }) {
   const { t } = useTranslation();
   const cSt = String(book.currentStatus || 'UNREAD').toUpperCase();
-  const loc = String(book.location || '{t('legacy.At Home')}');
+  const loc = String(book.location || 'At Home');
   const isAvailable = (cSt === 'UNREAD' || cSt === 'DONE') && (loc.toUpperCase() === 'AT HOME' || loc.toUpperCase() === 'AT OFFICE') && loc !== 'To Person';
 
   const rawJourney = (book.journey && book.journey.length > 0) ? [...book.journey] : [];
