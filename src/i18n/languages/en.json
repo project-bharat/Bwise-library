@@ -285,6 +285,10 @@
     "GitHub": "GitHub",
     "Copy": "Copy",
     "Load More ({{count}}) • {{remaining}} remaining": "Load More ({{count}}) • {{remaining}} remaining",
-    "check URL / token": "check URL / token"
+    "check URL / token": "check URL / token",
+    "Connection failed: ": "Connection failed: ",
+    "Remove": "Remove",
+    "from": "from",
+    "options?": "options?"
   }
 }
