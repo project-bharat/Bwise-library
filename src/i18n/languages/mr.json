@@ -211,7 +211,7 @@
     "Edit Wishlist Item": "इच्छासूची संपादित करा",
     "Add Wishlist": "इच्छासूची जोडा",
     "Update Wishlist": "इच्छासूची अद्यतनित करा",
-    "Saving...": "जतन करत आहे...",
+    "Saving...": "जतन होत आहे...",
     "Share Table as PDF": "तक्ता PDF म्हणून शेअर करा",
     "Call Reader": "वाचकाला कॉल करा",
     "Call Developer": "विकासकाला कॉल करा",
@@ -370,6 +370,8 @@
     "Person Status:": "वाचकाकडील स्थिती:",
     "Returned (Return to Shelf)": "परत (शेल्फवर ठेवा)",
     "Event / Lent Date": "घटना / दिल्याची तारीख",
-    "Promise Return": "परत देण्याचे वचन"
+    "Promise Return": "परत देण्याचे वचन",
+    "Manage & Add {{type}}": "{{type}} व्यवस्थापित करा व जोडा",
+    "Remove {{item}} from {{type}} options?": "{{type}} पर्यायांमधून {{item}} काढायचे?"
   }
 }
