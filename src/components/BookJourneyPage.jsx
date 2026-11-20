@@ -108,7 +108,7 @@ export default function BookJourneyPage({ book, onBack, onEditDetails, onEditSta
               <h1 className="text-base font-black leading-tight truncate">{book.title}</h1>
             </div>
             <p className="text-[11px] text-sand/90 font-medium">
-              By <button
+              {t('legacy.By') <button
                    onClick={(e) => onOpenTag && onOpenTag('author', book.author, e)}
                    className="underline hover:text-white font-bold"
                    title={`View all books by ${book.author}`}
