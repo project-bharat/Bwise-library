@@ -48,7 +48,7 @@ export default function WishlistFormModal({ isNew, initial, config, onClose, onS
         .withSuccessHandler((res) => onSuccess(res))
         .withFailureHandler((err) => {
           setIsSubmitting(false);
-          alert('Error saving wishlist item: ' + err.message);
+          alert(t('legacy.Error saving wishlist item:') + ' ' + err.message);
         })
         .saveWishlistBook(payload);
     } else {
