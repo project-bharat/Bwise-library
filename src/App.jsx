@@ -32,6 +32,8 @@ export default function App() {
   const [selectedBook, setSelectedBook] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [displayLanguage, setDisplayLanguage] = useState(() => localStorage.getItem('bwise-display-language') || 'en');
+  const handleLanguageChange = (language) => { setDisplayLanguage(language); localStorage.setItem('bwise-display-language', language); };
 
   // Filters for Books Table
   const [filterStatus, setFilterStatus] = useState('ALL');
@@ -619,6 +621,8 @@ export default function App() {
       {/* SIDE DRAWER (Right-Sliding Menu) */}
       <SideDrawer
         isOpen={drawerOpen}
+        displayLanguage={displayLanguage}
+        onLanguageChange={handleLanguageChange}
         onClose={() => setDrawerOpen(false)}
         onOpenPersonManage={() => { setDrawerOpen(false); setActiveTab('persons'); }}
         onAddPerson={() => { setDrawerOpen(false); setPersonModal({ isNew: true, person: {} }); }}
