@@ -1,11 +1,13 @@
 import React from 'react';
+import { useTranslation } from '../i18n/useTranslation';
 import BrandingFooter from './BrandingFooter';
 import { displayStatus, formatDisplayDate, getStatusBadgeStyle } from '../utils';
 
 // STREAMLINED BOOK PROFILE & "BOOK JOURNEY" TIMELINE
 export default function BookJourneyPage({ book, onBack, onEditDetails, onEditStatus, onNavigateToPerson, onExportPdf, onCallDeveloper, onCopyTitle, onOpenTag }) {
+  const { t } = useTranslation();
   const cSt = String(book.currentStatus || 'UNREAD').toUpperCase();
-  const loc = String(book.location || 'At Home');
+  const loc = String(book.location || '{t('legacy.At Home')}');
   const isAvailable = (cSt === 'UNREAD' || cSt === 'DONE') && (loc.toUpperCase() === 'AT HOME' || loc.toUpperCase() === 'AT OFFICE') && loc !== 'To Person';
 
   const rawJourney = (book.journey && book.journey.length > 0) ? [...book.journey] : [];
@@ -19,7 +21,7 @@ export default function BookJourneyPage({ book, onBack, onEditDetails, onEditSta
     location: initialAcqLoc,
     person: '',
     isInitial: true,
-    notes: `Acquired via ${book.initialStatus || 'Purchased'}`
+    notes: `${t('legacy.Acquired via')} ${book.initialStatus || t('legacy.Purchased')}`
   };
 
   const subsequentMilestones = rawJourney.map(m => ({
@@ -41,37 +43,37 @@ export default function BookJourneyPage({ book, onBack, onEditDetails, onEditSta
     const d2 = new Date(prevDate);
     if (isNaN(d1.getTime()) || isNaN(d2.getTime())) return '';
     const diff = Math.floor(Math.abs(d1.getTime() - d2.getTime()) / (1000 * 3600 * 24));
-    return diff > 0 ? `(+${diff} days later)` : '';
+    return diff > 0 ? `(+${diff} ${t('legacy.days later')})` : '';
   };
 
   return (
     <div id="book-journey-report" className="space-y-2.5 pb-4">
       <div className="no-print py-0.5 px-1 flex items-center justify-between">
         <button onClick={onBack} className="text-xs font-black uppercase tracking-wider text-forest flex items-center space-x-1.5 active:opacity-70 transition-opacity">
-          <i className="fa-solid fa-arrow-left text-sm"></i><span>Back to Collections</span>
+          <i className="fa-solid fa-arrow-left text-sm"></i><span>{t('legacy.Back to Collections')}</span>
         </button>
 
         <div className="flex items-center space-x-1.5">
           <button
             onClick={onEditDetails}
             className="px-2 py-1 bg-sand/30 hover:bg-sand/50 text-forest text-[10px] font-bold rounded-lg flex items-center space-x-1 active:scale-95 transition-all"
-            title="Edit Book Details (Title, Author, Amount, Category)"
+            title={t('legacy.Edit Book Details (Title, Author, Amount, Category)')}
           >
             <i className="fa-solid fa-pencil text-[9px]"></i>
-            <span>Edit Details</span>
+            <span>{t('legacy.Edit Details')}</span>
           </button>
           <button
             onClick={onEditStatus}
             className="px-2 py-1 bg-forest text-alabaster text-[10px] font-bold rounded-lg flex items-center space-x-1 shadow-sm active:scale-95 transition-all"
-            title="Update Status, Custody & Lending"
+            title={t('legacy.Update Status, Custody & Lending')}
           >
             <i className="fa-solid fa-arrows-rotate text-[9px]"></i>
-            <span>Update Status</span>
+            <span>{t('legacy.Update Status')}</span>
           </button>
           <button
             onClick={onExportPdf}
             className="w-7 h-7 rounded-full bg-forest text-alabaster flex items-center justify-center text-xs active:scale-90 shadow-sm"
-            title="Export Journey PDF"
+            title={t('legacy.Export Journey PDF')}
           >
             <i className="fa-solid fa-share-nodes text-[11px]"></i>
           </button>
