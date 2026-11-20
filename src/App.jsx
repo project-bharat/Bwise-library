@@ -24,7 +24,7 @@ import WishlistFormModal from './components/modals/WishlistFormModal';
 import SyncSettingsModal from './components/modals/SyncSettingsModal';
 
 export default function App() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [appData, setAppData] = useState(EMPTY_INITIAL_DATA);
   const [bootSplash, setBootSplash] = useState(true);
   const handleLanguageChange = (lang) => { persistLanguage(lang); };
@@ -406,7 +406,7 @@ This is a gentle reminder regarding the books borrowed from my library:
     const footer = document.createElement('div');
     footer.style.cssText = 'margin-top:30px;padding:22px 10px 30px;border-top:1px solid #E5E7EB;text-align:center;box-sizing:border-box;width:100%;';
     footer.innerHTML = `
-      <img src="/horizontal-colored-logo.png" alt={t('legacy.B-wise Library')} style="display:block;width:150px;max-width:80%;height:auto;max-height:48px;object-fit:contain;margin:0 auto 10px;" />
+      <img src="/horizontal-colored-logo.png" alt="B-wise Library" style="display:block;width:150px;max-width:80%;height:auto;max-height:48px;object-fit:contain;margin:0 auto 10px;" />
       <p style="font-size:9px;font-weight:800;color:#6B7280;letter-spacing:.3px;margin:0 0 12px;">B-wise Library Developed by - Bharat Rasve © 2026</p>
       <div style="display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;">
         <a href="tel:+917218838122" aria-label="${t('legacy.Call')}" title="${t('legacy.Call')}" style="width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#1E3535;color:#fff;text-decoration:none;"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M6.6 2.8c-.6-.6-1.5-.6-2.1 0L3 4.3c-.8.8-.9 2-.4 3.1 2.7 5.8 7.2 10.3 13 13 1.1.5 2.3.4 3.1-.4l1.5-1.5c.6-.6.6-1.5 0-2.1l-3-3c-.5-.5-1.3-.6-1.9-.2l-1.6 1c-2.3-1.1-4.1-2.9-5.2-5.2l1-1.6c.4-.6.3-1.4-.2-1.9z"/></svg></a>
@@ -626,7 +626,7 @@ This is a gentle reminder regarding the books borrowed from my library:
       {/* SIDE DRAWER (Right-Sliding Menu) */}
       <SideDrawer
         isOpen={drawerOpen}
-        displayLanguage={displayLanguage}
+        displayLanguage={language}
         onLanguageChange={handleLanguageChange}
         onClose={() => setDrawerOpen(false)}
         onOpenPersonManage={() => { setDrawerOpen(false); setActiveTab('persons'); }}
