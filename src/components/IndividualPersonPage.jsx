@@ -127,11 +127,11 @@ export default function IndividualPersonPage({ person, allBooks, onBack, onOpenB
           <table className="w-full text-left text-[11px] table-fixed">
             <thead className="bg-moss text-white uppercase font-bold text-[9px] tracking-wider">
               <tr>
-                <th className="px-2 py-2 w-[19%]"{t('legacy.Date')}</th>
-                <th className="px-2 py-2 w-[41%]"{t('legacy.Book Title')}</th>
-                <th className="px-1 py-2 text-center w-[14%]"{t('legacy.Status')}</th>
-                <th className="px-1.5 py-2 w-[15%]"{t('legacy.Promise Date')}</th>
-                <th className="px-2 py-2 text-right no-print w-[11%]"{t('legacy.Action')}</th>
+                <th className="px-2 py-2 w-[19%]">{t('legacy.Date')}</th>
+                <th className="px-2 py-2 w-[41%]">{t('legacy.Book Title')}</th>
+                <th className="px-1 py-2 text-center w-[14%]">{t('legacy.Status')}</th>
+                <th className="px-1.5 py-2 w-[15%]">{t('legacy.Promise Date')}</th>
+                <th className="px-2 py-2 text-right no-print w-[11%]">{t('legacy.Action')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-sand/30 font-medium text-charcoal">
