@@ -96,7 +96,7 @@ export default function SummaryTableCard({ id, title, badge, rows, onRowClick, o
             onClick={() => setVisibleCount(prev => prev + 6)}
             className="text-[10px] font-bold text-forest hover:text-ochre bg-white/70 hover:bg-white border border-sand/60 py-1 px-3.5 rounded-full active:scale-95 transition-all shadow-xs"
           >
-            {t('legacy.Load More')} (+6) • {rows.length - visibleCount} remaining
+            {t('legacy.Load More ({{count}}) • {{remaining}} remaining', { count: 6, remaining: rows.length - visibleCount })}
           </button>
         </div>
       )}
