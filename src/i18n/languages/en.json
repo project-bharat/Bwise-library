@@ -267,6 +267,24 @@
     "Update Status, Custody & Lending": "Update Status, Custody & Lending",
     "No contacts with names were found on this device.": "No contacts with names were found on this device.",
     "Unable to read device contacts.": "Unable to read device contacts.",
-    "Error saving wishlist item:": "Error saving wishlist item:"
+    "Error saving wishlist item:": "Error saving wishlist item:",
+    "Both fields are required.": "Both fields are required.",
+    "URL must be the Apps Script Web App link ending with /exec": "URL must be the Apps Script Web App link ending with /exec",
+    "Google Sheet Sync Settings": "Google Sheet Sync Settings",
+    "Web App URL (…/exec) *": "Web App URL (…/exec) *",
+    "API Token *": "API Token *",
+    "Save & Connect": "Save & Connect",
+    "Connecting...": "Connecting...",
+    "Support the developer with a UPI payment.": "Support the developer with a UPI payment.",
+    "Copied": "Copied",
+    "Copy UPI ID": "Copy UPI ID",
+    "Pay with UPI app": "Pay with UPI app",
+    "Support the developer": "Support the developer",
+    "WhatsApp Developer": "WhatsApp Developer",
+    "LinkedIn": "LinkedIn",
+    "GitHub": "GitHub",
+    "Copy": "Copy",
+    "Load More ({{count}}) • {{remaining}} remaining": "Load More ({{count}}) • {{remaining}} remaining",
+    "check URL / token": "check URL / token"
   }
 }
