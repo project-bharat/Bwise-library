@@ -358,6 +358,18 @@
     "Reader deleted": "Reader deleted",
     "Delete failed:": "Delete failed:",
     "Delete reader ": "Delete reader ",
-    "Books statement": "Books statement"
+    "Books statement": "Books statement",
+    "Send WhatsApp Reminder": "Send WhatsApp Reminder",
+    "Book Journey": "Book Journey",
+    "Close (Esc)": "Close (Esc)",
+    "Name *": "Name *",
+    "Not In Possession": "Not In Possession",
+    "In Possession (Add)": "In Possession (Add)",
+    "Notes / Bookstore Target": "Notes / Bookstore Target",
+    "e.g. Check Pune Book Fair": "e.g. Check Pune Book Fair",
+    "Person Status:": "Person Status:",
+    "Returned (Return to Shelf)": "Returned (Return to Shelf)",
+    "Event / Lent Date": "Event / Lent Date",
+    "Promise Return": "Promise Return"
   }
 }
