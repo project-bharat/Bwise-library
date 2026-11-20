@@ -285,6 +285,10 @@
     "GitHub": "GitHub",
     "Copy": "कॉपी करा",
     "Load More ({{count}}) • {{remaining}} remaining": "आणखी लोड करा ({{count}}) • {{remaining}} बाकी",
-    "check URL / token": "URL / token तपासा"
+    "check URL / token": "URL / token तपासा",
+    "Connection failed: ": "कनेक्शन अयशस्वी: ",
+    "Remove": "काढा",
+    "from": "मधून",
+    "options?": "पर्याय?"
   }
 }
