@@ -33,7 +33,7 @@ export default function SupportDeveloper({ compact = false }) {
         title="Support the developer"
       >
         <i className="fa-solid fa-mug-hot"></i>
-        <span>Buy me a coffee</span>
+        <span>Support me</span>
       </button>
 
       {open && (
