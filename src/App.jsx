@@ -597,7 +597,7 @@ This is a gentle reminder regarding the books borrowed from my library:
         <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center px-8" style={{ background: 'linear-gradient(145deg, #123D3B 0%, #047372 52%, #0A5550 100%)' }}>
           <img src="/horizontal-logo.png" alt={t('legacy.B-wise Library')} className="w-full max-w-[300px] max-h-[120px] object-contain" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
           <p className="mt-5 text-white/85 text-xs font-semibold tracking-[0.22em] uppercase">Your library. Always with you.</p>
-          <div className="absolute bottom-10 text-white/65 text-[10px] tracking-widest uppercase">{t('legacy.B-wise Library')</div>
+          <div className="absolute bottom-10 text-white/65 text-[10px] tracking-widest uppercase">{t('legacy.B-wise Library')}</div>
         </div>
       )}
 
@@ -1383,7 +1383,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                         <th className="px-2.5 py-2 w-[44%]">{t('legacy.Title & Details')}</th>
                         <th className="px-1.5 py-2 w-[19%]">{t('legacy.Initial Status')}</th>
                         <th className="px-1.5 py-2 w-[19%]">{t('legacy.Cur. Status')}</th>
-                        <th className="px-2 py-2 w-[18%]">{t('legacy.Location')</th>
+                        <th className="px-2 py-2 w-[18%]">{t('legacy.Location')}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-sand/30 font-medium text-charcoal">
@@ -1502,7 +1502,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                   style={activeTab === 'home' ? activeIconGradient : { color: '#D4C1A3' }}
                 ></i>
                 <span className={`text-[9px] mt-0.5 tracking-wide ${activeTab === 'home' ? 'text-white font-black' : 'text-sand/80 font-medium'}`}>
-                  {t('legacy.Home')
+                  {t('legacy.Home')}
                 </span>
               </button>
 
@@ -1517,7 +1517,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                   style={activeTab === 'books' ? activeIconGradient : { color: '#D4C1A3' }}
                 ></i>
                 <span className={`text-[9px] mt-0.5 tracking-wide ${activeTab === 'books' ? 'text-white font-black' : 'text-sand/80 font-medium'}`}>
-                  {t('legacy.Books')
+                  {t('legacy.Books')}
                 </span>
               </button>
 
@@ -1544,7 +1544,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                   style={(activeTab === 'persons' || activeTab === 'personDetail') ? activeIconGradient : { color: '#D4C1A3' }}
                 ></i>
                 <span className={`text-[9px] mt-0.5 tracking-wide ${(activeTab === 'persons' || activeTab === 'personDetail') ? 'text-white font-black' : 'text-sand/80 font-medium'}`}>
-                  {t('legacy.Persons')
+                  {t('legacy.Persons')}
                 </span>
               </button>
 
@@ -1559,7 +1559,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                   style={activeTab === 'wishlist' ? activeIconGradient : { color: '#D4C1A3' }}
                 ></i>
                 <span className={`text-[9px] mt-0.5 tracking-wide ${activeTab === 'wishlist' ? 'text-white font-black' : 'text-sand/80 font-medium'}`}>
-                  {t('legacy.Wishlist')
+                  {t('legacy.Wishlist')}
                 </span>
               </button>
             </>
@@ -1658,7 +1658,7 @@ This is a gentle reminder regarding the books borrowed from my library:
               <h3 className="text-sm font-black uppercase tracking-wide">{t('legacy.Restore Database')}</h3>
             </div>
             <p className="text-xs text-charcoal font-medium">
-              {t('legacy.Restoring') <b>{restoreConfirmFile.name}</b> will replace this phone’s books, reader records, configuration, and wishlist data.
+              {t('legacy.Restoring')} <b>{restoreConfirmFile.name}</b> will replace this phone’s books, reader records, configuration, and wishlist data.
             </p>
             <p className="text-[11px] text-stone-500 italic">
               {t('legacy.Are you sure you want to proceed with this restore operation?')}
@@ -1668,13 +1668,13 @@ This is a gentle reminder regarding the books borrowed from my library:
                 onClick={() => { setRestoreConfirmFile(null); if (backupFileInputRef.current) backupFileInputRef.current.value = ''; }}
                 className="px-3 py-1.5 bg-stone-100 text-stone-700 text-xs font-bold rounded-lg hover:bg-stone-200 active:scale-95"
               >
-                {t('legacy.Cancel')
+                {t('legacy.Cancel')}
               </button>
               <button
                 onClick={executeRestore}
                 className="px-4 py-1.5 bg-rose-700 text-white text-xs font-black rounded-lg hover:bg-rose-800 active:scale-95 shadow-sm"
               >
-                {t('legacy.Yes, Restore')
+                {t('legacy.Yes, Restore')}
               </button>
             </div>
           </div>
