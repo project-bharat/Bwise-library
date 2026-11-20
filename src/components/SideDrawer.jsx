@@ -1,8 +1,10 @@
 import React from 'react';
 import brandIcon from '../assets/brand-icon.png?inline';
 import SupportDeveloper from './SupportDeveloper';
+import { useTranslation } from '../i18n/useTranslation';
 
 export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddPerson, onAddCategory, onAddLocation, onAddStatus, onBackupWithGoogle, onExportBackup, onRestoreClick, onSyncSettings, onCallDeveloper, displayLanguage = 'en', onLanguageChange }) {
+  const { t } = useTranslation();
   return (
     <div className={`fixed inset-0 z-50 transition-all duration-300 ${isOpen ? 'visible opacity-100' : 'invisible opacity-0'}`}>
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
@@ -15,43 +17,43 @@ export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddP
             <div className="flex items-center space-x-2.5">
               <img src={brandIcon} alt="" className="w-10 h-10 rounded-xl shadow-md border border-white/20" />
               <div>
-                <p className="text-[10px] font-extrabold uppercase tracking-widest text-sand">Library manager</p>
+                <p className="text-[10px] font-extrabold uppercase tracking-widest text-sand">{t('legacy.Library Manager')}</p>
                 <h2 className="text-lg font-black tracking-tight mt-0.5">B-wise Library</h2>
               </div>
             </div>
-            <button onClick={onClose} className="text-sand/80 hover:text-white p-1 rounded transition-colors" title="Close Menu (Esc)">
+            <button onClick={onClose} className="text-sand/80 hover:text-white p-1 rounded transition-colors" title={`${t('legacy.Close')} Menu (Esc)`}>
               <i className="fa-solid fa-xmark text-lg"></i>
             </button>
           </div>
-          <div className="p-4 space-y-4 text-xs font-bold text-charcoal">            <div className="rounded-xl border border-stone-200 bg-stone-50 p-3">              <label className="block text-[9px] font-black uppercase tracking-widest text-stone-400 mb-2">App display language</label>              <select value={displayLanguage} onChange={e => onLanguageChange?.(e.target.value)} className="w-full rounded-lg border border-stone-200 bg-white px-2.5 py-2 text-xs font-bold text-charcoal">                <option value="en">English (Default)</option><option value="mr">मराठी</option><option value="hi">हिन्दी</option>              </select>            </div>
+          <div className="p-4 space-y-4 text-xs font-bold text-charcoal">            <div className="rounded-xl border border-stone-200 bg-stone-50 p-3">              <label className="block text-[9px] font-black uppercase tracking-widest text-stone-400 mb-2">{t('legacy.App display language')}</label>              <select value={displayLanguage} onChange={e => onLanguageChange?.(e.target.value)} className="w-full rounded-lg border border-stone-200 bg-white px-2.5 py-2 text-xs font-bold text-charcoal">                <option value="en">{t('legacy.English (Default)')}</option><option value="mr">मराठी</option><option value="hi">हिन्दी</option>              </select>            </div>
             <div>
-              <p className="text-[9px] font-black uppercase tracking-widest text-stone-400 mb-1 px-1">Reader Directory</p>
+              <p className="text-[9px] font-black uppercase tracking-widest text-stone-400 mb-1 px-1">{t('legacy.Reader Directory')}</p>
               <button onClick={onOpenPersonManage} className="w-full text-left p-2 rounded-lg hover:bg-stone-100 flex items-center space-x-2">
-                <i className="fa-solid fa-users text-forest w-5"></i> <span>Manage &amp; Add Readers</span>
+                <i className="fa-solid fa-users text-forest w-5"></i> <span>{t('legacy.Manage & Add Readers')}</span>
               </button>
             </div>
             <div>
-              <p className="text-[9px] font-black uppercase tracking-widest text-stone-400 mb-1 px-1">Configuration</p>
+              <p className="text-[9px] font-black uppercase tracking-widest text-stone-400 mb-1 px-1">{t('legacy.Configuration')}</p>
               <button onClick={onAddCategory} className="w-full text-left p-2 rounded-lg hover:bg-stone-100 flex items-center space-x-2">
-                <i className="fa-solid fa-tags text-ochre w-5"></i> <span>Manage &amp; Add Genre</span>
+                <i className="fa-solid fa-tags text-ochre w-5"></i> <span>{t('legacy.Manage & Add Genre')}</span>
               </button>
               <button onClick={onAddLocation} className="w-full text-left p-2 rounded-lg hover:bg-stone-100 flex items-center space-x-2">
-                <i className="fa-solid fa-location-dot text-ochre w-5"></i> <span>Add Location</span>
+                <i className="fa-solid fa-location-dot text-ochre w-5"></i> <span>{t('legacy.Add Location')}</span>
               </button>
               <button onClick={onAddStatus} className="w-full text-left p-2 rounded-lg hover:bg-stone-100 flex items-center space-x-2">
-                <i className="fa-solid fa-list-check text-ochre w-5"></i> <span>Add Status</span>
+                <i className="fa-solid fa-list-check text-ochre w-5"></i> <span>{t('legacy.Add Status')}</span>
               </button>
             </div>
             <div>
               <p className="text-[9px] font-black uppercase tracking-widest text-stone-400 mb-1 px-1">Local & Cloud Backup</p>
               <button onClick={onBackupWithGoogle} className="w-full text-left p-2 rounded-lg hover:bg-stone-100 text-forest flex items-center space-x-2">
-                <i className="fa-brands fa-google-drive w-5"></i> <span>Backup with Google</span>
+                <i className="fa-brands fa-google-drive w-5"></i> <span>{t('legacy.Backup with Google')}</span>
               </button>
               <button onClick={onExportBackup} className="w-full text-left p-2 rounded-lg hover:bg-stone-100 text-forest flex items-center space-x-2">
-                <i className="fa-solid fa-file-csv w-5"></i> <span>Export Full Data (CSV)</span>
+                <i className="fa-solid fa-file-csv w-5"></i> <span>{t('legacy.Export Full Data (CSV)')}</span>
               </button>
               <button onClick={onRestoreClick} className="w-full text-left p-2 rounded-lg hover:bg-stone-100 text-rose-700 flex items-center space-x-2">
-                <i className="fa-solid fa-cloud-arrow-up w-5"></i> <span>Restore Full Backup (CSV)</span>
+                <i className="fa-solid fa-cloud-arrow-up w-5"></i> <span>{t('legacy.Restore Full Backup (CSV)')}</span>
               </button>
             </div>
           </div>
