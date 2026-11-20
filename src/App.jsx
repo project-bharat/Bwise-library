@@ -25,7 +25,15 @@ export default function App() {
   const [appData, setAppData] = useState(EMPTY_INITIAL_DATA);
   const [bootSplash, setBootSplash] = useState(true);
   const [displayLanguage, setDisplayLanguage] = useState(() => localStorage.getItem('bwise-display-language') || 'en');
-  useEffect(() => {\n    const translateDom = () => {\n      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);\n      let node; while ((node = walker.nextNode())) { const original = node.nodeValue.trim(); if (original) { const translated = translateUiText(original, displayLanguage); if (translated !== original) node.nodeValue = node.nodeValue.replace(original, translated); } }\n      document.querySelectorAll('[title],[aria-label]').forEach(el => { ['title','aria-label'].forEach(attr => { const v=el.getAttribute(attr); if(v) el.setAttribute(attr,translateUiText(v,displayLanguage)); }); });\n    };\n    translateDom(); const observer = new MutationObserver(translateDom); observer.observe(document.body,{childList:true,subtree:true,characterData:true}); return () => observer.disconnect();\n  }, [displayLanguage]);\n  const handleLanguageChange = (lang) => { setDisplayLanguage(lang); localStorage.setItem('bwise-display-language',lang); };
+  useEffect(() => {
+    const translateDom = () => {
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      let node; while ((node = walker.nextNode())) { const original = node.nodeValue.trim(); if (original) { const translated = translateUiText(original, displayLanguage); if (translated !== original) node.nodeValue = node.nodeValue.replace(original, translated); } }
+      document.querySelectorAll('[title],[aria-label]').forEach(el => { ['title','aria-label'].forEach(attr => { const v=el.getAttribute(attr); if(v) el.setAttribute(attr,translateUiText(v,displayLanguage)); }); });
+    };
+    translateDom(); const observer = new MutationObserver(translateDom); observer.observe(document.body,{childList:true,subtree:true,characterData:true}); return () => observer.disconnect();
+  }, [displayLanguage]);
+  const handleLanguageChange = (lang) => { setDisplayLanguage(lang); localStorage.setItem('bwise-display-language',lang); };
   const [splashMinElapsed, setSplashMinElapsed] = useState(false);
   const [alertsOpen, setAlertsOpen] = useState(false);
   const [loadingState, setLoadingState] = useState({ text: 'Loading data...', visible: true, isSuccess: false });
@@ -323,9 +331,12 @@ export default function App() {
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     const returnDue = `${String(d.getDate()).padStart(2, '0')}-${months[d.getMonth()]}-${d.getFullYear()}`;
 
-    let msg = `Hi ${personObj.name},\nThis is a gentle reminder regarding the books borrowed from my library:\n`;
+    let msg = `Hi ${personObj.name},
+This is a gentle reminder regarding the books borrowed from my library:
+`;
     holdingBooks.forEach((b, idx) => {
-      msg += `${idx + 1}. "${b.title}" (Due: ${formatDisplayDate(b.promiseReturnDate) || returnDue})\n`;
+      msg += `${idx + 1}. "${b.title}" (Due: ${formatDisplayDate(b.promiseReturnDate) || returnDue})
+`;
     });
     msg += `Please return them by ${returnDue}. Thank you!`;
 
