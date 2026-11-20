@@ -9,6 +9,7 @@ import { scheduleDueDateNotifications } from './native/dueNotifications';
 import { saveAndShareBlob, isShareCancel } from './native/files';
 import { formatDisplayDate, getStatusBadgeStyle, displayStatus, EMPTY_INITIAL_DATA, translateUiText } from './utils';
 import { getLanguage, setLanguage as persistLanguage } from './i18n';
+import { useTranslation } from './i18n/useTranslation';
 
 import BrandingFooter from './components/BrandingFooter';
 import SideDrawer from './components/SideDrawer';
@@ -23,6 +24,7 @@ import WishlistFormModal from './components/modals/WishlistFormModal';
 import SyncSettingsModal from './components/modals/SyncSettingsModal';
 
 export default function App() {
+  const { t } = useTranslation();
   const [appData, setAppData] = useState(EMPTY_INITIAL_DATA);
   const [bootSplash, setBootSplash] = useState(true);
   const [displayLanguage, setDisplayLanguage] = useState(() => getLanguage());
@@ -684,7 +686,7 @@ This is a gentle reminder regarding the books borrowed from my library:
               <i className="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-charcoal/50 text-xs pointer-events-none z-10 group-hover:text-charcoal/70 transition-colors"></i>
               <input
                 type="text"
-                placeholder="Search title, author, reader, genre, location..."
+                placeholder={t('legacy.Search title, author, reader, genre, location...')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-[#F7F5EE]/90 hover:bg-white focus:bg-white text-charcoal placeholder-stone-500/80 border-0 py-2 pl-9 pr-8 text-xs rounded-full focus:outline-none transition-all duration-200 shadow-sm focus:shadow-md relative z-0"
@@ -785,7 +787,7 @@ This is a gentle reminder regarding the books borrowed from my library:
         {alertsOpen && (
           <div className="fixed top-[58px] right-2 z-[60] w-[min(340px,calc(100vw-16px))] rounded-xl border border-sand/60 bg-white text-charcoal shadow-2xl overflow-hidden">
             <div className="flex items-center justify-between px-3 py-2 bg-forest text-white">
-              <h3 className="text-xs font-black uppercase tracking-wide">Notifications</h3>
+              <h3 className="text-xs font-black uppercase tracking-wide">{t('legacy.Notifications')}</h3>
               <button onClick={() => setAlertsOpen(false)} aria-label="Close notifications"><i className="fa-solid fa-xmark"></i></button>
             </div>
             {dueTodayBooks.length > 0 && <div className="p-3 border-b border-sand/40 space-y-2">
@@ -799,15 +801,15 @@ This is a gentle reminder regarding the books borrowed from my library:
                   <button className="min-w-0 flex-1 text-left" onClick={() => { setSelectedBook(book); setActiveTab('bookDetail'); setAlertsOpen(false); }}>
                     <span className="block text-[11px] font-bold truncate">{book.title}</span><span className="block text-[10px] text-stone-500 truncate">Held by {book.person}</span>
                   </button>
-                  <button onClick={() => { window.open(waUrl, '_blank'); setAlertsOpen(false); }} className="shrink-0 rounded-full bg-emerald-600 text-white px-2.5 py-1.5 text-[10px] font-bold"><i className="fa-brands fa-whatsapp mr-1"></i>Remind</button>
+                  <button onClick={() => { window.open(waUrl, '_blank'); setAlertsOpen(false); }} className="shrink-0 rounded-full bg-emerald-600 text-white px-2.5 py-1.5 text-[10px] font-bold"><i className="fa-brands fa-whatsapp mr-1"></i>{t('legacy.Remind')}</button>
                 </div>;
               })}
             </div>}
             <button onClick={() => { setActiveTab('wishlist'); setAlertsOpen(false); }} className="w-full p-3 text-left flex items-center justify-between hover:bg-sand/20">
-              <span><span className="block text-[11px] font-bold">Wishlist</span><span className="block text-[10px] text-stone-500">You have {wishlistAlertCount} item{wishlistAlertCount === 1 ? '' : 's'} to get.</span></span>
+              <span><span className="block text-[11px] font-bold">{t('legacy.Wishlist')}</span><span className="block text-[10px] text-stone-500">You have {wishlistAlertCount} item{wishlistAlertCount === 1 ? '' : 's'} to get.</span></span>
               <i className="fa-solid fa-chevron-right text-stone-400"></i>
             </button>
-            {dueTodayBooks.length === 0 && wishlistAlertCount === 0 && <p className="p-4 text-center text-xs text-stone-500">You’re all caught up.</p>}
+            {dueTodayBooks.length === 0 && wishlistAlertCount === 0 && <p className="p-4 text-center text-xs text-stone-500">{t('legacy.You’re all caught up.')}</p>}
           </div>
         )}
 
@@ -842,7 +844,7 @@ This is a gentle reminder regarding the books borrowed from my library:
               <p className="text-base font-black text-purple-300 mt-0.5">{currentKpis.wishlisted || 0}</p>
             </div>
             <div className="px-1">
-              <p className="text-[9px] uppercase font-bold tracking-widest text-white/80">Worth</p>
+              <p className="text-[9px] uppercase font-bold tracking-widest text-white/80">{t('legacy.Worth')}</p>
               <p className="text-sm font-black text-sand mt-0.5 truncate">₹{(currentKpis.totalWorth || 0).toLocaleString('en-IN')}</p>
             </div>
           </div>
@@ -855,39 +857,39 @@ This is a gentle reminder regarding the books borrowed from my library:
             <div className="bg-white p-2.5 rounded-xl border border-sand/50 shadow-sm space-y-2 mb-4">
               <div className="grid grid-cols-3 gap-1.5 text-[10px] font-bold">
                 <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="bg-alabaster border border-sand/60 rounded p-1.5 text-charcoal outline-none">
-                  <option value="ALL">Status: All</option>
+                  <option value="ALL">{t('legacy.Status: All')}</option>
                   {((appData.config && appData.config.currentStatuses) || []).map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
                 <select value={filterCategory} onChange={e => setFilterCategory(e.target.value)} className="bg-alabaster border border-sand/60 rounded p-1.5 text-charcoal outline-none">
-                  <option value="ALL">Category: All</option>
+                  <option value="ALL">{t('legacy.Category: All')}</option>
                   {((appData.config && appData.config.categories) || []).map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
                 <select value={filterLanguage} onChange={e => setFilterLanguage(e.target.value)} className="bg-alabaster border border-sand/60 rounded p-1.5 text-charcoal outline-none">
-                  <option value="ALL">Language: All</option>
+                  <option value="ALL">{t('legacy.Language: All')}</option>
                   {(filterOptions.languages || []).map(l => <option key={l} value={l}>{l}</option>)}
                 </select>
               </div>
               <div className="grid grid-cols-4 gap-1.5 text-[10px] font-bold items-center">
                 <select value={filterAuthor} onChange={e => setFilterAuthor(e.target.value)} className="bg-alabaster border border-sand/60 rounded p-1.5 text-charcoal outline-none">
-                  <option value="ALL">Author: All</option>
+                  <option value="ALL">{t('legacy.Author: All')}</option>
                   {(filterOptions.authors || []).map(a => <option key={a} value={a}>{a}</option>)}
                 </select>
                 <select value={filterPerson} onChange={e => setFilterPerson(e.target.value)} className="bg-alabaster border border-sand/60 rounded p-1.5 text-charcoal outline-none">
-                  <option value="ALL">Person: All</option>
+                  <option value="ALL">{t('legacy.Person: All')}</option>
                   {(appData.people || []).map(p => <option key={p.name} value={p.name}>{p.name}</option>)}
                 </select>
                 <select value={filterLocation} onChange={e => setFilterLocation(e.target.value)} className="bg-alabaster border border-sand/60 rounded p-1.5 text-charcoal outline-none">
-                  <option value="ALL">Location: All</option>
+                  <option value="ALL">{t('legacy.Location: All')}</option>
                   {((appData.config && appData.config.locations) || []).map(l => <option key={l} value={l}>{l}</option>)}
                 </select>
                 <div className="flex justify-end">
                   <button
                     onClick={handleResetFilters}
                     className="w-full bg-sand/30 text-forest rounded py-1 px-2 uppercase text-[9px] font-extrabold flex items-center justify-center space-x-1 hover:bg-sand/50 active:scale-95 transition-all shadow-xs"
-                    title="Reset all filters"
+                    title={t('legacy.Reset all filters')}
                   >
                     <i className="fa-solid fa-arrow-rotate-left text-[8px]"></i>
-                    <span>Reset</span>
+                    <span>{t('legacy.Reset')}</span>
                   </button>
                 </div>
               </div>
@@ -899,8 +901,8 @@ This is a gentle reminder regarding the books borrowed from my library:
             <div id="home-summaries" className="space-y-4">
               <SummaryTableCard
                 id="st-1"
-                title="Status-Wise Summary"
-                badge="Status"
+                title={t('legacy.Status-Wise Summary')}
+                badge={t('legacy.Status')}
                 rows={filteredBooks.filter(b => b.currentStatus !== 'WISHLISTED')}
                 onRowClick={b => { setSelectedBook(b); setActiveTab('bookDetail'); }}
                 onShare={() => handleExportPdf('st-1', 'Status_Summary.pdf', 'STATUS-WISE BOOKS SUMMARY')}
@@ -910,8 +912,8 @@ This is a gentle reminder regarding the books borrowed from my library:
 
               <SummaryTableCard
                 id="st-2"
-                title="Active Lent / Borrowed"
-                badge="Person"
+                title={t('legacy.Active Lent / Borrowed')}
+                badge={t('legacy.Person')}
                 rows={filteredBooks.filter(b => b.person && (b.currentStatus === 'LENT' || (b.location || '').toUpperCase() === 'TO PERSON'))}
                 onRowClick={b => { setSelectedBook(b); setActiveTab('bookDetail'); }}
                 onShare={() => handleExportPdf('st-2', 'Lent_Summary.pdf', 'ACTIVE LENT SUMMARY')}
@@ -921,8 +923,8 @@ This is a gentle reminder regarding the books borrowed from my library:
 
               <SummaryTableCard
                 id="st-3"
-                title="Location Distribution"
-                badge="Location"
+                title={t('legacy.Location Distribution')}
+                badge={t('legacy.Location')}
                 rows={filteredBooks.filter(b => b.location)}
                 onRowClick={b => { setSelectedBook(b); setActiveTab('bookDetail'); }}
                 onShare={() => handleExportPdf('st-3', 'Location_Summary.pdf', 'LOCATION DISTRIBUTION SUMMARY')}
@@ -938,7 +940,7 @@ This is a gentle reminder regarding the books borrowed from my library:
             <div className="space-y-4">
               <div id="books-table-export" className="bg-white rounded-xl border border-sand/50 shadow-sm overflow-hidden mb-4">
                 <div className="flex justify-between items-center px-3 py-2 bg-stone-100 border-b border-sand/40">
-                  <span className="text-[10px] font-black uppercase tracking-wider text-forest">Books Collections</span>
+                  <span className="text-[10px] font-black uppercase tracking-wider text-forest">{t('legacy.Books Collections')}</span>
                   <div className="flex items-center space-x-3 text-stone-500">
                     <span className="text-[9px] font-bold">{filteredBooks.length} books</span>
                     <button onClick={() => handleExportPdf('books-table-export', 'Books_Collections.pdf', 'BOOKS COLLECTIONS DIRECTORY')} className="hover:text-forest" title="Export Table as PDF">
@@ -950,29 +952,29 @@ This is a gentle reminder regarding the books borrowed from my library:
                   <table className="w-full text-left text-[11px] table-fixed">
                     <thead className="bg-moss text-white uppercase font-bold text-[9px] tracking-wider">
                       <tr>
-                        <th className="px-2.5 py-2 w-[44%]">Title & Author</th>
-                        <th className="px-1.5 py-2 w-[19%]">Initial Status</th>
-                        <th className="px-1.5 py-2 w-[19%]">Cur. status</th>
+                        <th className="px-2.5 py-2 w-[44%]">{t('legacy.Title & Author')}</th>
+                        <th className="px-1.5 py-2 w-[19%]">{t('legacy.Initial Status')}</th>
+                        <th className="px-1.5 py-2 w-[19%]">{t('legacy.Cur. status')}</th>
                         <th className="px-2 py-2 w-[18%]">Location</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-sand/30 font-medium text-charcoal">
                       {filteredBooks.length === 0 ? (
-                        <tr><td colSpan="4" className="text-center py-8 text-stone-400 text-xs">No matching records</td></tr>
+                        <tr><td colSpan="4" className="text-center py-8 text-stone-400 text-xs">{t('legacy.No matching records')}</td></tr>
                       ) : (
                         filteredBooks.map((b) => (
                           <tr
                             key={b.id}
                             className="hover:bg-sand/15 transition-colors cursor-pointer active:bg-sand/25"
                             onClick={() => { setSelectedBook(b); setActiveTab('bookDetail'); }}
-                            title="Click to view Book Journey"
+                            title={t('legacy.Click to view Book Journey')}
                           >
                             <td className="px-2.5 py-2">
                               <div className="flex items-center space-x-1 truncate">
                                 <button
                                   onClick={(e) => handleCopyTitle(b.title, e)}
                                   className="text-stone-400 hover:text-forest active:scale-90 p-0.5 flex-none"
-                                  title="Copy Title"
+                                  title={t('legacy.Copy Title')}
                                 >
                                   <i className="fa-regular fa-copy text-[9px]"></i>
                                 </button>
@@ -984,7 +986,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                                   className="hover:underline hover:text-forest truncate text-left"
                                   title={`Filter author: ${b.author}`}
                                 >
-                                  {b.author || 'Unknown'}
+                                  {b.author || t('legacy.Unknown')}
                                 </button>
                                 <span>•</span>
                                 <button
@@ -992,15 +994,15 @@ This is a gentle reminder regarding the books borrowed from my library:
                                   className="text-forest font-bold hover:underline hover:text-ochre"
                                   title={`Filter category: ${b.category}`}
                                 >
-                                  {b.category || 'General'}
+                                  {b.category || t('legacy.General')}
                                 </button>
                               </p>
                             </td>
-                            <td className="px-1.5 py-2 text-[10px]" onClick={(e) => { e.stopPropagation(); setBookModal({ isNew: false, book: b }); }} title="Edit Book Details">
+                            <td className="px-1.5 py-2 text-[10px]" onClick={(e) => { e.stopPropagation(); setBookModal({ isNew: false, book: b }); }} title={t('legacy.Edit Book Details')}>
                               <p className="font-semibold text-stone-700 truncate hover:text-ochre">{b.initialStatus || '-'}</p>
                               <p className="text-[8.5px] text-stone-500 font-medium">{formatDisplayDate(b.bookInDate)}</p>
                             </td>
-                            <td className="px-1.5 py-2" onClick={(e) => { e.stopPropagation(); setStatusModal({ book: b }); }} title="Edit Status / Lending">
+                            <td className="px-1.5 py-2" onClick={(e) => { e.stopPropagation(); setStatusModal({ book: b }); }} title={t('legacy.Edit Status / Lending')}>
                               <span className={`text-[8.5px] uppercase tracking-wide leading-tight hover:underline ${getStatusBadgeStyle(b.currentStatus)}`}>
                                 {displayStatus(b.currentStatus)}
                               </span>
@@ -1120,17 +1122,17 @@ This is a gentle reminder regarding the books borrowed from my library:
                     <div id="wishlist-table-export" className="bg-white rounded-xl border border-sand/50 shadow-sm overflow-hidden">
                       <div className="flex justify-between items-center px-3 py-2.5 bg-stone-100 border-b border-sand/40">
                         <div>
-                          <h2 className="text-xs font-black uppercase tracking-wider text-forest">My Books Wishlist</h2>
+                          <h2 className="text-xs font-black uppercase tracking-wider text-forest">{t('legacy.My Books Wishlist')}</h2>
                         </div>
                         <div className="flex items-center space-x-2 text-stone-500">
                           <button
                             onClick={() => setWishlistModal({ isNew: true, item: {} })}
                             className="no-print px-2.5 py-1 bg-forest text-white text-[10px] font-black rounded-lg flex items-center space-x-1 active:scale-95 shadow-xs"
-                            title="Add Book to Wishlist"
+                            title={t('legacy.Add Book to Wishlist')}
                           >
-                            <i className="fa-solid fa-plus text-[9px]"></i><span>Add Wishlist</span>
+                            <i className="fa-solid fa-plus text-[9px]"></i><span>{t('legacy.Add Wishlist')}</span>
                           </button>
-                          <button onClick={() => handleExportPdf('wishlist-table-export', 'My_Books_Wishlist.pdf', 'MY BOOKS WISHLIST')} className="hover:text-forest p-1" title="Export Wishlist PDF">
+                          <button onClick={() => handleExportPdf('wishlist-table-export', 'My_Books_Wishlist.pdf', 'MY BOOKS WISHLIST')} className="hover:text-forest p-1" title={t('legacy.Export Wishlist PDF')}>
                             <i className="fa-solid fa-share-nodes text-xs"></i>
                           </button>
                         </div>
@@ -1140,14 +1142,14 @@ This is a gentle reminder regarding the books borrowed from my library:
                         <table className="w-full text-left text-[11px] table-fixed">
                           <thead className="bg-moss text-white uppercase font-bold text-[9px] tracking-wider">
                             <tr>
-                              <th className="px-3 py-2 w-[52%]">Book Title & Author</th>
-                              <th className="px-2 py-2 w-[30%]">Genre & Lang</th>
-                              <th className="px-2 py-2 text-right w-[18%]">Available</th>
+                              <th className="px-3 py-2 w-[52%]">{t('legacy.Book Title & Author')}</th>
+                              <th className="px-2 py-2 w-[30%]">{t('legacy.Genre & Lang')}</th>
+                              <th className="px-2 py-2 text-right w-[18%]">{t('legacy.Available')}</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-sand/30 font-medium text-charcoal">
                             {filteredWishlist.length === 0 ? (
-                              <tr><td colSpan="3" className="text-center py-8 text-stone-400 text-xs">No books in this view.</td></tr>
+                              <tr><td colSpan="3" className="text-center py-8 text-stone-400 text-xs">{t('legacy.No books in this view.')}</td></tr>
                             ) : (
                               filteredWishlist.map((w) => {
                                 const isAvailable = !String(w.status).toUpperCase().includes('NOT IN POSSESSION');
@@ -1199,7 +1201,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                                     </td>
                                     <td className="px-2 py-2 text-right">
                                       <span className={`text-[9.5px] font-black uppercase tracking-wider ${isAvailable ? 'text-emerald-700' : 'text-purple-700'}`}>
-                                        {isAvailable ? 'Yes' : 'No'}
+                                        {isAvailable ? t('legacy.Yes') : t('legacy.No')}
                                       </span>
                                     </td>
                                   </tr>
@@ -1239,13 +1241,13 @@ This is a gentle reminder regarding the books borrowed from my library:
 
               <div id="persons-table-export" className="bg-white rounded-xl border border-sand/50 shadow-sm overflow-hidden mb-4">
                 <div className="flex justify-between items-center px-3 py-2.5 bg-stone-100 border-b border-sand/40">
-                  <h2 className="text-xs font-black uppercase tracking-wider text-forest">Readers summary</h2>
+                  <h2 className="text-xs font-black uppercase tracking-wider text-forest">{t('legacy.Readers summary')}</h2>
                   <div className="flex items-center space-x-2">
-                    <button onClick={() => handleExportPdf('persons-table-export', 'Readers_Summary.pdf', 'READERS SUMMARY REPORT')} className="text-stone-500 hover:text-forest p-1.5 rounded active:scale-90" title="Export Summary PDF">
+                    <button onClick={() => handleExportPdf('persons-table-export', 'Readers_Summary.pdf', 'READERS SUMMARY REPORT')} className="text-stone-500 hover:text-forest p-1.5 rounded active:scale-90" title={t('legacy.Export Summary PDF')}>
                       <i className="fa-solid fa-share-nodes text-xs"></i>
                     </button>
                     <button onClick={() => setPersonModal({ isNew: true, person: {} })} className="no-print px-2.5 py-1 bg-forest text-white text-[10px] font-bold rounded-lg flex items-center space-x-1 active:scale-95 shadow-xs">
-                      <i className="fa-solid fa-user-plus text-[9px]"></i><span>Add Reader</span>
+                      <i className="fa-solid fa-user-plus text-[9px]"></i><span>{t('legacy.Add Reader')}</span>
                     </button>
                   </div>
                 </div>
