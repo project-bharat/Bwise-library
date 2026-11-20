@@ -58,3 +58,137 @@ export const EMPTY_INITIAL_DATA = {
   books: [],
   wishlist: []
 };
+
+
+// UI translations used by the app's DOM localization layer.
+export const UI_TRANSLATIONS = {
+  "Manage & Add Readers": [
+    "वाचक व्यवस्थापन",
+    "पाठक प्रबंधन"
+  ],
+  "Reader Directory": [
+    "वाचक सूची",
+    "पाठक सूची"
+  ],
+  "Configuration": [
+    "सेटिंग्ज",
+    "सेटिंग्स"
+  ],
+  "Manage & Add Genre": [
+    "प्रकार व्यवस्थापन",
+    "श्रेणी प्रबंधन"
+  ],
+  "Add Location": [
+    "ठिकाण जोडा",
+    "स्थान जोड़ें"
+  ],
+  "Add Status": [
+    "स्थिती जोडा",
+    "स्थिति जोड़ें"
+  ],
+  "Local & Cloud Backup": [
+    "स्थानिक व क्लाउड बॅकअप",
+    "स्थानीय व क्लाउड बैकअप"
+  ],
+  "Backup with Google": [
+    "Google वर बॅकअप",
+    "Google पर बैकअप"
+  ],
+  "Export Full Data (CSV)": [
+    "संपूर्ण डेटा निर्यात (CSV)",
+    "पूरा डेटा निर्यात (CSV)"
+  ],
+  "Restore Full Backup (CSV)": [
+    "पूर्ण बॅकअप पुनर्संचयित (CSV)",
+    "पूर्ण बैकअप पुनर्स्थापित (CSV)"
+  ],
+  "App display language": [
+    "अ‍ॅपची भाषा",
+    "ऐप की भाषा"
+  ],
+  "English (Default)": [
+    "इंग्रजी (डीफॉल्ट)",
+    "अंग्रेज़ी (डिफ़ॉल्ट)"
+  ],
+  "Support me": [
+    "मला समर्थन द्या",
+    "मेरा समर्थन करें"
+  ],
+  "Library Manager": [
+    "ग्रंथालय व्यवस्थापक",
+    "पुस्तकालय प्रबंधक"
+  ],
+  "B-wise Library": [
+    "B-wise Library",
+    "B-wise Library"
+  ],
+  "Home": [
+    "मुख्यपृष्ठ",
+    "होम"
+  ],
+  "Books": [
+    "पुस्तके",
+    "पुस्तकें"
+  ],
+  "Readers": [
+    "वाचक",
+    "पाठक"
+  ],
+  "Wishlist": [
+    "इच्छासूची",
+    "इच्छासूची"
+  ],
+  "Search": [
+    "शोधा",
+    "खोजें"
+  ],
+  "Add Book": [
+    "पुस्तक जोडा",
+    "पुस्तक जोड़ें"
+  ],
+  "Save": [
+    "जतन करा",
+    "सहेजें"
+  ],
+  "Cancel": [
+    "रद्द करा",
+    "रद्द करें"
+  ],
+  "Edit": [
+    "संपादन",
+    "संपादित करें"
+  ],
+  "Delete": [
+    "हटवा",
+    "हटाएं"
+  ],
+  "Close": [
+    "बंद करा",
+    "बंद करें"
+  ],
+  "Settings": [
+    "सेटिंग्ज",
+    "सेटिंग्स"
+  ],
+  "History": [
+    "इतिहास",
+    "इतिहास"
+  ],
+  "Contact": [
+    "संपर्क",
+    "संपर्क"
+  ],
+  "Export PDF": [
+    "PDF निर्यात",
+    "PDF निर्यात"
+  ],
+  "Loading data...": [
+    "डेटा लोड होत आहे...",
+    "डेटा लोड हो रहा है..."
+  ],
+  "No books found": [
+    "पुस्तके आढळली नाहीत",
+    "कोई पुस्तक नहीं मिला"
+  ]
+};
+export const translateUiText = (text, language) => { const entry = UI_TRANSLATIONS[text]; return entry ? (language === 'mr' ? entry[0] : language === 'hi' ? entry[1] : text) : text; };
