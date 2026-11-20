@@ -248,6 +248,19 @@
     "Update Status & Journey": "स्थिती व प्रवास अद्यतनित करा",
     "Reading Stage": "वाचन स्थिती",
     "Please select a borrower.": "कृपया पुस्तक घेणारी व्यक्ती निवडा.",
-    "Return book to library shelf: Click OK for 'At Home', or Cancel for 'At Office'": "पुस्तक परत ठेवताना OK दाबा म्हणजे 'घरी', Cancel दाबा म्हणजे 'कार्यालयात'"
+    "Return book to library shelf: Click OK for 'At Home', or Cancel for 'At Office'": "पुस्तक परत ठेवताना OK दाबा म्हणजे 'घरी', Cancel दाबा म्हणजे 'कार्यालयात'",
+    "Current Status": "सध्याची स्थिती",
+    "LENT (Out)": "दिलेली (बाहेर)",
+    "WISHLISTED (Want to Read)": "इच्छासूचीत (वाचायचे आहे)",
+    "COLLECTED (In Library)": "संग्रहात आहे",
+    "My Collection": "माझा संग्रह",
+    "At Home": "घरी",
+    "At Office": "कार्यालयात",
+    "To Person": "व्यक्तीकडे",
+    "Borrower Person": "पुस्तक घेणारी व्यक्ती",
+    "Add Reader": "वाचक जोडा",
+    "Promise Return Date": "परत देण्याची अपेक्षित तारीख",
+    "Event Date": "घटना तारीख",
+    "Save Status": "स्थिती जतन करा"
   }
 }
