@@ -28,7 +28,7 @@ def centered_foreground(source, canvas_size):
         return Image.new('RGBA', (canvas_size, canvas_size), (0, 0, 0, 0))
     mark = source.crop(bbox)
     # Re-center visible artwork and scale conservatively inside the adaptive-icon safe area.
-    target = int(canvas_size * 0.52)
+    target = int(canvas_size * 0.46)
     scale = min(target / mark.width, target / mark.height)
     mark = mark.resize((max(1, round(mark.width * scale)), max(1, round(mark.height * scale))), Image.LANCZOS)
     canvas = Image.new('RGBA', (canvas_size, canvas_size), (0, 0, 0, 0))
