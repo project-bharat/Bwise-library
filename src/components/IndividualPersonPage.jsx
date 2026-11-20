@@ -105,12 +105,12 @@ export default function IndividualPersonPage({ person, allBooks, onBack, onOpenB
 
         <div className="w-1/2 bg-white/10 p-1.5 rounded-lg border border-white/15 grid grid-cols-2 divide-x divide-white/20 text-center flex-none">
           <div className="px-1 flex flex-col justify-center">
-            <p className="text-[7.5px] uppercase font-black text-sand leading-none"{t('legacy.Holding')}</p>
+            <p className="text-[7.5px] uppercase font-black text-sand leading-none">{t('legacy.Holding')}</p>
             <p className="text-[11px] font-black text-amber-300 mt-1 leading-none">{holdingRecords.length} <span className="text-[8px] font-bold text-sand">(₹{holdingWorth})</span></p>
             <p className="text-[7.5px] text-stone-300 mt-1 leading-none truncate">{oldestDaysText}</p>
           </div>
           <div className="px-1 flex flex-col justify-center">
-            <p className="text-[7.5px] uppercase font-black text-sand leading-none"{t('legacy.History')}</p>
+            <p className="text-[7.5px] uppercase font-black text-sand leading-none">{t('legacy.History')}</p>
             <p className="text-[11px] font-black text-white mt-1 leading-none">{records.length} <span className="text-[8px] font-bold text-sand">{t('legacy.Books')}</span></p>
             <p className="text-[7.5px] text-sand/90 mt-1 leading-none truncate">₹{totalWorth}</p>
           </div>
