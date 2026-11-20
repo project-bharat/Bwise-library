@@ -1,8 +1,10 @@
 import React from 'react';
+import { useTranslation } from '../i18n/useTranslation';
 import BrandingFooter from './BrandingFooter';
 import { formatDisplayDate, calculateDaysSince, getStatusBadgeStyle } from '../utils';
 
 export default function IndividualPersonPage({ person, allBooks, onBack, onOpenBookJourney, onEditBook, onSendReminder, onDirectDial, onExportPdf, onCallDeveloper }) {
+  const { t } = useTranslation();
   const records = person.records || [];
   const holdingRecords = records.filter(r => String(r.personStatus || '').toUpperCase() === 'HOLDING');
   const holdingWorth = holdingRecords.reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
@@ -52,14 +54,14 @@ export default function IndividualPersonPage({ person, allBooks, onBack, onOpenB
       {/* TOP BAR: Borderless Navigation */}
       <div className="no-print py-0.5 px-1 flex items-center justify-between">
         <button onClick={onBack} className="text-xs font-black uppercase tracking-wider text-forest flex items-center space-x-1.5 active:opacity-70 transition-opacity">
-          <i className="fa-solid fa-arrow-left text-sm"></i><span>Back to Persons</span>
+          <i className="fa-solid fa-arrow-left text-sm"></i><span>{t('legacy.Back to Persons')}</span>
         </button>
 
         <div className="flex items-center space-x-2">
           <button
             onClick={() => onSendReminder(null, true)}
             className="w-7 h-7 rounded-full bg-[#25D366] text-white flex items-center justify-center text-xs active:scale-90 shadow-sm"
-            title="WhatsApp Reminder (All Holding Books)"
+            title={t('legacy.WhatsApp Reminder (All Holding Books)')}
           >
             <i className="fa-brands fa-whatsapp text-sm"></i>
           </button>
@@ -68,7 +70,7 @@ export default function IndividualPersonPage({ person, allBooks, onBack, onOpenB
             <button
               onClick={onDirectDial}
               className="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs active:scale-90 shadow-sm"
-              title="Call Reader"
+              title={t('legacy.Call Reader')}
             >
               <i className="fa-solid fa-phone text-[11px]"></i>
             </button>
@@ -77,7 +79,7 @@ export default function IndividualPersonPage({ person, allBooks, onBack, onOpenB
           <button
             onClick={onExportPdf}
             className="w-7 h-7 rounded-full bg-forest text-alabaster flex items-center justify-center text-xs active:scale-90 shadow-sm"
-            title="Export Statement PDF"
+            title={t('legacy.Export Statement PDF')}
           >
             <i className="fa-solid fa-share-nodes text-[11px]"></i>
           </button>
@@ -93,11 +95,11 @@ export default function IndividualPersonPage({ person, allBooks, onBack, onOpenB
           </div>
           <div className="flex items-center min-w-0 space-x-1.5">
             <i className="fa-solid fa-phone text-[9px] text-sand/90 w-3 text-center flex-none" aria-hidden="true"></i>
-            <p className="text-[10px] text-sand/90 font-medium truncate">{person.phone || 'No phone'}</p>
+            <p className="text-[10px] text-sand/90 font-medium truncate">{person.phone || t('legacy.No phone')}</p>
           </div>
           <div className="flex items-center min-w-0 space-x-1.5">
             <i className="fa-solid fa-location-dot text-[9px] text-sand/70 w-3 text-center flex-none" aria-hidden="true"></i>
-            <p className="text-[9px] text-sand/70 truncate">{person.address || 'No address'}</p>
+            <p className="text-[9px] text-sand/70 truncate">{person.address || t('legacy.No address')}</p>
           </div>
         </div>
 
@@ -118,8 +120,8 @@ export default function IndividualPersonPage({ person, allBooks, onBack, onOpenB
       {/* PERSON BOOK HISTORY TABLE */}
       <div className="bg-white rounded-xl border border-sand/50 shadow-sm overflow-hidden mb-3">
         <div className="px-3 py-2 bg-stone-100 border-b border-sand/40 flex justify-between items-center">
-          <h3 className="text-[10px] font-black uppercase tracking-wider text-forest">Person Book History</h3>
-          <span className="text-[9px] font-bold text-stone-500">Tap row to view journey</span>
+          <h3 className="text-[10px] font-black uppercase tracking-wider text-forest">{t('legacy.Person Book History')}</h3>
+          <span className="text-[9px] font-bold text-stone-500">{t('legacy.Tap row to view journey')}</span>
         </div>
         <div className="overflow-hidden">
           <table className="w-full text-left text-[11px] table-fixed">
@@ -134,7 +136,7 @@ export default function IndividualPersonPage({ person, allBooks, onBack, onOpenB
             </thead>
             <tbody className="divide-y divide-sand/30 font-medium text-charcoal">
               {records.length === 0 ? (
-                <tr><td colSpan="5" className="text-center py-8 text-stone-400">No records found for this reader</td></tr>
+                <tr><td colSpan="5" className="text-center py-8 text-stone-400">{t('legacy.No records found for this reader')}</td></tr>
               ) : (
                 records.map(r => {
                   const isHolding = String(r.personStatus || '').toUpperCase() === 'HOLDING';
