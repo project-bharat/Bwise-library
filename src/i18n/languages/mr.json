@@ -167,7 +167,7 @@
     "Add Reader Profile": "वाचक जोडा",
     "Edit Reader Profile": "वाचक संपादित करा",
     "Choose from device contacts": "फोन संपर्कांतून निवडा",
-    "Loading device contacts…": "संपर्क लोड होत आहेत…",
+    "Loading device contacts…": "फोन संपर्क लोड होत आहेत…",
     "Device contacts": "फोन संपर्क",
     "Search name or phone": "नाव किंवा फोन शोधा",
     "Add": "जोडा",
@@ -233,6 +233,21 @@
     "PDF Exported": "PDF निर्यात झाले",
     "Export failed:": "निर्यात अयशस्वी:",
     "Reset filters": "फिल्टर रीसेट करा",
-    "RESET FILTERS": "फिल्टर रीसेट करा"
+    "RESET FILTERS": "फिल्टर रीसेट करा",
+    "New Book Entry": "नवीन पुस्तक नोंद",
+    "Book title is required": "पुस्तकाचे नाव आवश्यक आहे",
+    "Initial Status": "प्रारंभिक स्थिती",
+    "Book In Date": "पुस्तक प्राप्त तारीख",
+    "Amount (₹)": "रक्कम (₹)",
+    "Notes": "नोंदी",
+    "Save Book": "पुस्तक जतन करा",
+    "Save Wishlist": "इच्छासूची जतन करा",
+    "Book title example": "उदा. Clean Code",
+    "Author name": "लेखकाचे नाव",
+    "Language": "भाषा",
+    "Update Status & Journey": "स्थिती व प्रवास अद्यतनित करा",
+    "Reading Stage": "वाचन स्थिती",
+    "Please select a borrower.": "कृपया पुस्तक घेणारी व्यक्ती निवडा.",
+    "Return book to library shelf: Click OK for 'At Home', or Cancel for 'At Office'": "पुस्तक परत ठेवताना OK दाबा म्हणजे 'घरी', Cancel दाबा म्हणजे 'कार्यालयात'"
   }
 }
