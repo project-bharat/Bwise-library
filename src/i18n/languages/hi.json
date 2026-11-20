@@ -172,7 +172,7 @@
     "Search name or phone": "नाम या फोन खोजें",
     "Add": "जोड़ें",
     "Existing options": "मौजूदा विकल्प",
-    "No options added yet.": "अभी तक कोई विकल्प नहीं जोड़ा गया।",
+    "No options added yet.": "अभी कोई विकल्प नहीं जोड़ा गया।",
     "Add new value *": "नया मान जोड़ें *",
     "Manage & Add Location": "स्थान प्रबंधन",
     "Manage & Add Status": "स्थिति प्रबंधन",
@@ -211,7 +211,7 @@
     "Edit Wishlist Item": "इच्छासूची आइटम संपादित करें",
     "Add Wishlist": "इच्छासूची जोड़ें",
     "Update Wishlist": "इच्छासूची अपडेट करें",
-    "Saving...": "सहेजा जा रहा है...",
+    "Saving...": "सहेज रहे हैं...",
     "Share Table as PDF": "तालिका PDF के रूप में साझा करें",
     "Call Reader": "पाठक को कॉल करें",
     "Call Developer": "डेवलपर को कॉल करें",
@@ -370,6 +370,8 @@
     "Person Status:": "पाठक की स्थिति:",
     "Returned (Return to Shelf)": "लौटाई (शेल्फ़ पर रखें)",
     "Event / Lent Date": "घटना / उधार तारीख",
-    "Promise Return": "वापसी का वादा"
+    "Promise Return": "वापसी का वादा",
+    "Manage & Add {{type}}": "{{type}} प्रबंधित करें और जोड़ें",
+    "Remove {{item}} from {{type}} options?": "{{type}} विकल्पों से {{item}} हटाएँ?"
   }
 }
