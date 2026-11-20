@@ -248,6 +248,19 @@
     "Update Status & Journey": "Update Status & Journey",
     "Reading Stage": "Reading Stage",
     "Please select a borrower.": "Please select a borrower.",
-    "Return book to library shelf: Click OK for 'At Home', or Cancel for 'At Office'": "Return book to library shelf: Click OK for 'At Home', or Cancel for 'At Office'"
+    "Return book to library shelf: Click OK for 'At Home', or Cancel for 'At Office'": "Return book to library shelf: Click OK for 'At Home', or Cancel for 'At Office'",
+    "Current Status": "Current Status",
+    "LENT (Out)": "LENT (Out)",
+    "WISHLISTED (Want to Read)": "WISHLISTED (Want to Read)",
+    "COLLECTED (In Library)": "COLLECTED (In Library)",
+    "My Collection": "My Collection",
+    "At Home": "At Home",
+    "At Office": "At Office",
+    "To Person": "To Person",
+    "Borrower Person": "Borrower Person",
+    "Add Reader": "Add Reader",
+    "Promise Return Date": "Promise Return Date",
+    "Event Date": "Event Date",
+    "Save Status": "Save Status"
   }
 }
