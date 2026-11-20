@@ -372,6 +372,11 @@
     "Event / Lent Date": "घटना / दिल्याची तारीख",
     "Promise Return": "परत देण्याचे वचन",
     "Manage & Add {{type}}": "{{type}} व्यवस्थापित करा व जोडा",
-    "Remove {{item}} from {{type}} options?": "{{type}} पर्यायांमधून {{item}} काढायचे?"
+    "Remove {{item}} from {{type}} options?": "{{type}} पर्यायांमधून {{item}} काढायचे?",
+    "Notifications and reminders": "सूचना आणि स्मरणपत्रे",
+    "Close notifications": "सूचना बंद करा",
+    "Held by": "यांच्याकडे",
+    "Due today": "आज परत देय",
+    "You have {{count}} items to get.": "मिळवायच्या {{count}} वस्तू आहेत."
   }
 }
