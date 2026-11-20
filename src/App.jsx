@@ -353,23 +353,40 @@ export default function App() {
         <p style="font-size: 10px; color: #6B7280; margin: 3px 0 0 0;">Statement Date: ${formatDisplayDate(new Date())}</p>
       </div>
     `;
+    // Give the report body extra breathing room so the final rows/text never sit
+    // against the PDF page edge or get clipped by the rasterized canvas.
+    clone.style.paddingBottom = '28px';
+    clone.style.boxSizing = 'border-box';
+    clone.querySelectorAll('tr, .bg-white, table').forEach(node => {
+      node.style.breakInside = 'avoid';
+      node.style.pageBreakInside = 'avoid';
+    });
+
     const footer = document.createElement('div');
+    footer.style.cssText = 'margin-top:28px;padding:18px 10px 24px;border-top:1px solid #E5E7EB;text-align:center;box-sizing:border-box;width:100%;';
     footer.innerHTML = `
-      <div style="border-top: 1px solid #E5E7EB; margin-top: 20px; padding-top: 8px; text-align: center; font-size: 9px; font-weight: bold; color: #6B7280;">
-        <img src="${brandIcon}" style="width:22px;height:22px;border-radius:5px;vertical-align:middle;margin-right:6px;" />
-        <span style="vertical-align:middle;">B-wise Library • Developed by - Bharat Rasve © 2026</span>
+      <img src="/horizontal-colored-logo.png" alt="B-wise Library" style="display:block;width:150px;max-width:80%;height:auto;max-height:48px;object-fit:contain;margin:0 auto 10px;" />
+      <p style="font-size:9px;font-weight:800;color:#6B7280;letter-spacing:.3px;margin:0 0 10px;">B-wise Library Developed by - Bharat Rasve © 2026</p>
+      <div style="display:flex;justify-content:center;align-items:center;gap:9px;flex-wrap:wrap;">
+        <a href="tel:+917218838122" style="display:inline-block;padding:5px 9px;border-radius:14px;background:#1E3535;color:#fff;text-decoration:none;font-size:9px;font-weight:700;">☎ Call</a>
+        <a href="https://wa.me/917218838122" style="display:inline-block;padding:5px 9px;border-radius:14px;background:#25D366;color:#fff;text-decoration:none;font-size:9px;font-weight:700;">WhatsApp</a>
+        <a href="https://www.linkedin.com/in/bharatrasve" style="display:inline-block;padding:5px 9px;border-radius:14px;background:#0A66C2;color:#fff;text-decoration:none;font-size:9px;font-weight:700;">LinkedIn</a>
+        <a href="https://github.com/bharombhar" style="display:inline-block;padding:5px 9px;border-radius:14px;background:#171717;color:#fff;text-decoration:none;font-size:9px;font-weight:700;">GitHub</a>
       </div>
     `;
 
+    container.style.padding = '20px 20px 44px';
+    container.style.boxSizing = 'border-box';
     container.appendChild(header);
     container.appendChild(clone);
     container.appendChild(footer);
 
     const opt = {
-      margin: [0.4, 0.4, 0.5, 0.4],
+      margin: [0.35, 0.4, 0.75, 0.4],
       filename: fileName || 'Library_Report.pdf',
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true, allowTaint: true, letterRendering: true },
+      pagebreak: { mode: ['css', 'legacy'], avoid: ['tr', 'footer'] },
       jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
     };
 
@@ -1176,7 +1193,7 @@ export default function App() {
                       <tr>
                         <th className="px-3 py-2 w-[55%]">Reader Name</th>
                         <th className="px-2 py-2 text-center w-[25%]">Books</th>
-                        <th className="px-2 py-2 text-right no-print w-[20%]">View</th>
+                        <th className="px-2 py-2 text-right no-print w-[20%]">Action</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-sand/30 font-medium text-charcoal">
@@ -1218,27 +1235,27 @@ export default function App() {
                               <td className="px-2 py-2.5 text-right no-print">
                                 <div className="flex items-center justify-end space-x-1.5">
                                   {p.phone && (
-                                    <button onClick={() => handleDirectDial(p.phone)} className="w-7 h-7 rounded bg-emerald-50 text-emerald-800 border border-emerald-300 flex items-center justify-center text-xs active:scale-90 shadow-xs" title="Call">
+                                    <button onClick={() => handleDirectDial(p.phone)} className="w-7 h-7 flex items-center justify-center text-emerald-700 text-xs active:scale-90" title="Call">
                                       <i className="fa-solid fa-phone"></i>
                                     </button>
                                   )}
                                   <button
                                     onClick={() => setPersonModal({ isNew: false, person: p })}
-                                    className="w-7 h-7 bg-sand/50 text-forest rounded flex items-center justify-center text-xs active:scale-90 shadow-xs"
+                                    className="w-7 h-7 flex items-center justify-center text-forest text-xs active:scale-90"
                                     title="Edit reader profile"
                                   >
                                     <i className="fa-solid fa-pen"></i>
                                   </button>
                                   <button
                                     onClick={() => { if (window.confirm(`Delete reader ${p.name}? Their book history will remain, but the reader assignment will be cleared.`)) google.script.run.withSuccessHandler(payload => { if (payload) setAppData(payload); triggerStatus('Reader deleted', true); }).withFailureHandler(err => triggerStatus('Delete failed: ' + (err?.message || ''), false)).deletePerson(p.name); }}
-                                    className="w-7 h-7 bg-rose-50 text-rose-700 border border-rose-200 rounded flex items-center justify-center text-xs active:scale-90 shadow-xs"
+                                    className="w-7 h-7 flex items-center justify-center text-rose-700 text-xs active:scale-90"
                                     title="Delete reader"
                                   >
                                     <i className="fa-solid fa-trash"></i>
                                   </button>
                                   <button
                                     onClick={() => { setSelectedPerson(p); setActiveTab('personDetail'); }}
-                                    className="w-7 h-7 bg-forest text-alabaster rounded flex items-center justify-center text-xs active:scale-90 shadow-xs"
+                                    className="w-7 h-7 flex items-center justify-center text-forest text-xs active:scale-90"
                                     title="View Reader Ledger"
                                   >
                                     <i className="fa-solid fa-eye"></i>
