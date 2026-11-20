@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from '../../i18n/useTranslation';
 
-// Dedicated Bookstore Wishlist Modal: Displays Initial & Current Status ONLY when user chooses In Possession
+// Dedicated Bookstore Wishlist Modal: Displays Initial & {t('legacy.Current Status')} ONLY when user chooses In Possession
 export default function WishlistFormModal({ isNew, initial, config, onClose, onSuccess }) {
   const { t } = useTranslation();
   const [title, setTitle] = useState(initial.title || '');
@@ -93,19 +93,19 @@ export default function WishlistFormModal({ isNew, initial, config, onClose, onS
           </div>
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="text-[9px] font-black uppercase text-stone-500">Amount (₹)</label>
+              <label className="text-[9px] font-black uppercase text-stone-500">{t('legacy.Amount (₹)')}</label>
               <input type="number" placeholder="250" value={amount} onChange={e => setAmount(e.target.value)} className="w-full bg-alabaster border border-sand/60 rounded px-2.5 py-1.5 text-xs font-bold" />
             </div>
             <div>
               <label className="text-[9px] font-black uppercase text-stone-500">Acquisition {t('legacy.Status')}</label>
               <select value={status} onChange={e => setStatus(e.target.value)} className="w-full bg-alabaster border border-sand/60 rounded px-2 py-1.5 text-xs font-bold text-forest">
-                <option value="not in possession">Not In Possession</option>
-                <option value="in possession">In Possession (Add)</option>
+                <option value="not in possession">{t('legacy.Not In Possession')}</option>
+                <option value="in possession">{t('legacy.In Possession (Add)')}</option>
               </select>
             </div>
           </div>
 
-          {/* Show Initial Status and Current Status ONLY when user chooses In Possession */}
+          {/* Show {t('legacy.Initial Status')} and Current Status ONLY when user chooses In Possession */}
           {status === 'in possession' && (
             <div className="p-2.5 bg-emerald-50 rounded border border-emerald-300 animate-fade-in">
               <div className="grid grid-cols-2 gap-2">
@@ -139,8 +139,8 @@ export default function WishlistFormModal({ isNew, initial, config, onClose, onS
           )}
 
           <div>
-            <label className="text-[9px] font-black uppercase text-stone-500">Notes / Bookstore Target</label>
-            <input type="text" placeholder="e.g. Check Pune Book Fair" value={notes} onChange={e => setNotes(e.target.value)} className="w-full bg-alabaster border border-sand/60 rounded px-2.5 py-1.5 text-xs" />
+            <label className="text-[9px] font-black uppercase text-stone-500">{t('legacy.Notes / Bookstore Target')}</label>
+            <input type="text" placeholder={t('legacy.e.g. Check Pune Book Fair')} value={notes} onChange={e => setNotes(e.target.value)} className="w-full bg-alabaster border border-sand/60 rounded px-2.5 py-1.5 text-xs" />
           </div>
 
           <div className="pt-2 flex items-center space-x-2">
