@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { formatDisplayDate } from '../../utils';
+import { useTranslation } from '../../i18n/useTranslation';
 
 // DIALOG 2: EDIT STATUS & CUSTODY ONLY (Metadata Locked Read-Only)
 export default function StatusUpdateModal({ book, people, onAddReader, onClose, onSuccess }) {
+  const { t } = useTranslation();
   const isLentInitially = String(book.location || '') === 'To Person' || Boolean(book.person && book.person.trim() !== '');
   const [location, setLocation] = useState(isLentInitially ? 'To Person' : (book.location || 'At Home'));
   const [person, setPerson] = useState(book.person || '');
@@ -10,7 +12,7 @@ export default function StatusUpdateModal({ book, people, onAddReader, onClose, 
 
   const computeCustody = () => {
     if (location === 'To Person') {
-      return book.currentStatus === 'GIFTED OUT' ? 'GIFTED OUT' : 'LENT';
+      return book.currentStatus === '{t('legacy.GIFTED OUT')}' ? 'GIFTED OUT' : 'LENT';
     }
     return ['LOST', 'DAMAGED', 'COLLECTED'].includes(book.currentStatus) ? book.currentStatus : 'COLLECTED';
   };
@@ -54,7 +56,7 @@ export default function StatusUpdateModal({ book, people, onAddReader, onClose, 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (location === 'To Person' && !person && personStatus === 'Holding') {
-      return alert('Please select a borrower.');
+      return alert('{t('legacy.Please select a borrower.')}');
     }
 
     setIsSubmitting(true);
@@ -84,22 +86,22 @@ export default function StatusUpdateModal({ book, people, onAddReader, onClose, 
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2.5">
       <div className="bg-white w-full max-w-sm rounded-xl p-3.5 shadow-2xl border border-sand/40 overflow-hidden">
         <div className="flex justify-between items-center border-b border-sand/40 pb-1.5 mb-2">
-          <h2 className="text-xs font-black uppercase text-forest tracking-wide">Update Status & Journey</h2>
-          <button onClick={onClose} className="text-stone-400 hover:text-stone-700 p-1" title="Close (Esc)"><i className="fa-solid fa-xmark text-sm"></i></button>
+          <h2 className="text-xs font-black uppercase text-forest tracking-wide">{t('legacy.Update Status & Journey')}</h2>
+          <button onClick={onClose} className="text-stone-400 hover:text-stone-700 p-1" title={`${t('legacy.Close')} (Esc)`}><i className="fa-solid fa-xmark text-sm"></i></button>
         </div>
 
         {/* Read-Only Book Identity Card (Title, Author, In-Date, Price Not Editable Here) */}
         <div className="bg-forest text-white p-2.5 rounded-lg mb-2.5">
           <p className="text-[10px] text-sand/80 font-bold uppercase tracking-wider">{book.category} • {book.language}</p>
           <h3 className="font-extrabold text-xs text-white truncate leading-tight mt-0.5">{book.title}</h3>
-          <p className="text-[9.5px] text-sand/90 mt-0.5">By {book.author || 'Unknown'} • ₹{book.amount || 0} • In: {formatDisplayDate(book.bookInDate)}</p>
+          <p className="text-[9.5px] text-sand/90 mt-0.5">{t('legacy.By')} {book.author || t('legacy.Unknown')} • ₹{book.amount || 0} • In: {formatDisplayDate(book.bookInDate)}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-2 text-xs">
           {/* READING STAGE & CURRENT CUSTODY */}
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="text-[8px] font-black uppercase text-stone-500">Reading Stage</label>
+              <label className="text-[8px] font-black uppercase text-stone-500">{t('legacy.Reading Stage')}</label>
               <select
                 value={readingStatus}
                 onChange={e => setReadingStatus(e.target.value)}
@@ -112,7 +114,7 @@ export default function StatusUpdateModal({ book, people, onAddReader, onClose, 
               </select>
             </div>
             <div>
-              <label className="text-[8px] font-black uppercase text-stone-500">Current Status</label>
+              <label className="text-[8px] font-black uppercase text-stone-500">{t('legacy.Current Status')}</label>
               <select
                 value={currentStatus}
                 onChange={e => setCurrentStatus(e.target.value)}
@@ -120,15 +122,15 @@ export default function StatusUpdateModal({ book, people, onAddReader, onClose, 
               >
                 {isToPerson ? (
                   <>
-                    <option value="LENT">LENT (Out)</option>
+                    <option value="LENT">{t('legacy.LENT (Out)')}</option>
                     <option value="GIFTED OUT">GIFTED OUT</option>
                   </>
                 ) : (
                   <>
-                    <option value="My Collection">My Collection</option>
-                    <option value="COLLECTED">COLLECTED (In Library)</option>
-                    <option value="LOST">LOST</option>
-                    <option value="DAMAGED">DAMAGED</option>
+                    <option value="{t('legacy.My Collection')}">My Collection</option>
+                    <option value="COLLECTED">{t('legacy.COLLECTED (In Library)')}</option>
+                    <option value="LOST">{t('legacy.LOST')}</option>
+                    <option value="DAMAGED">{t('legacy.DAMAGED')}</option>
                   </>
                 )}
               </select>
@@ -138,19 +140,19 @@ export default function StatusUpdateModal({ book, people, onAddReader, onClose, 
           {/* LOCATION & BORROWER */}
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="text-[8px] font-black uppercase text-stone-500">Location</label>
+              <label className="text-[8px] font-black uppercase text-stone-500">{t('legacy.Location')}</label>
               <select
                 value={location}
                 onChange={e => handleLocationChange(e.target.value)}
                 className="w-full bg-alabaster border border-sand/60 rounded px-2 py-1 font-bold text-xs text-forest"
               >
-                <option value="At Home">At Home</option>
-                <option value="At Office">At Office</option>
-                <option value="To Person">To Person</option>
+                <option value="At Home">{t('legacy.At Home')}</option>
+                <option value="At Office">{t('legacy.At Office')}</option>
+                <option value="To Person">{t('legacy.To Person')}</option>
               </select>
             </div>
             <div>
-              <div className="flex items-center justify-between gap-1"><label className="text-[8px] font-black uppercase text-stone-500">Borrower Person</label><button type="button" onClick={onAddReader} className="text-[8px] font-black text-forest bg-sand/40 rounded px-1.5 py-0.5 whitespace-nowrap"><i className="fa-solid fa-plus mr-1"></i>Add Reader</button></div>
+              <div className="flex items-center justify-between gap-1"><label className="text-[8px] font-black uppercase text-stone-500">{t('legacy.Borrower')} Person</label><button type="button" onClick={onAddReader} className="text-[8px] font-black text-forest bg-sand/40 rounded px-1.5 py-0.5 whitespace-nowrap"><i className="fa-solid fa-plus mr-1"></i>Add Reader</button></div>
               <select
                 value={person || book.person || ''}
                 onChange={e => {
@@ -201,7 +203,7 @@ export default function StatusUpdateModal({ book, people, onAddReader, onClose, 
           )}
 
           <div className="pt-2 flex items-center space-x-2">
-            <button type="button" onClick={onClose} className="w-1/3 py-2 bg-stone-100 text-stone-700 font-bold rounded text-xs uppercase active:scale-95">Cancel</button>
+            <button type="button" onClick={onClose} className="w-1/3 py-2 bg-stone-100 text-stone-700 font-bold rounded text-xs uppercase active:scale-95">{t('legacy.Cancel')}</button>
             <button type="submit" disabled={isSubmitting} className="w-2/3 py-2 bg-forest text-alabaster font-black rounded text-xs uppercase tracking-wider active:scale-95 shadow">
               {isSubmitting ? 'Saving...' : 'Update Status'}
             </button>
