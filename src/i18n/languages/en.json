@@ -1,0 +1,81 @@
+{
+  "common": {
+    "appName": "B-wise Library",
+    "home": "Home",
+    "books": "Books",
+    "readers": "Readers",
+    "persons": "Persons",
+    "wishlist": "Wishlist",
+    "settings": "Settings",
+    "search": "Search",
+    "add": "Add",
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "edit": "Edit",
+    "delete": "Delete",
+    "reset": "Reset",
+    "all": "All",
+    "loading": "Loading…",
+    "noRecords": "No records found",
+    "back": "Back",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "unknown": "Unknown"
+  },
+  "books": {
+    "title": "Books",
+    "bookTitle": "Book Title",
+    "author": "Author",
+    "reader": "Reader",
+    "category": "Category",
+    "genre": "Genre",
+    "location": "Location",
+    "status": "Status",
+    "details": "Book Details",
+    "searchPlaceholder": "Search title, author, reader, genre, location…",
+    "loadMore": "Load More",
+    "available": "Available",
+    "unread": "Unread",
+    "reading": "Reading",
+    "finished": "Finished",
+    "lent": "Lent",
+    "lost": "Lost",
+    "damaged": "Damaged",
+    "wishlist": "Wishlisted"
+  },
+  "persons": {
+    "title": "Readers",
+    "name": "Name",
+    "phone": "Phone",
+    "address": "Address",
+    "email": "Email",
+    "history": "Book History",
+    "holding": "Holding",
+    "returned": "Returned",
+    "gifted": "Gifted"
+  },
+  "wishlist": {
+    "title": "Wishlist",
+    "add": "Add to Wishlist",
+    "edit": "Edit Wishlist Item",
+    "priority": "Priority"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "App display language",
+    "languageEnglish": "English",
+    "languageMarathi": "Marathi",
+    "languageHindi": "Hindi"
+  },
+  "messages": {
+    "loadingData": "Loading data…",
+    "dataReady": "Local data ready",
+    "loadFailed": "Failed to load local data",
+    "saved": "Saved successfully",
+    "saveFailed": "Save failed",
+    "pdfExported": "PDF exported",
+    "exportFailed": "Export failed"
+  }
+}
