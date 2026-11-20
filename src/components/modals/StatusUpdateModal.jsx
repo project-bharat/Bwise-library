@@ -12,7 +12,7 @@ export default function StatusUpdateModal({ book, people, onAddReader, onClose, 
 
   const computeCustody = () => {
     if (location === 'To Person') {
-      return book.currentStatus === '{t('legacy.GIFTED OUT')}' ? 'GIFTED OUT' : 'LENT';
+      return book.currentStatus === 'GIFTED OUT' ? 'GIFTED OUT' : 'LENT';
     }
     return ['LOST', 'DAMAGED', 'COLLECTED'].includes(book.currentStatus) ? book.currentStatus : 'COLLECTED';
   };
@@ -56,7 +56,7 @@ export default function StatusUpdateModal({ book, people, onAddReader, onClose, 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (location === 'To Person' && !person && personStatus === 'Holding') {
-      return alert('{t('legacy.Please select a borrower.')}');
+      return alert('Please select a borrower.');
     }
 
     setIsSubmitting(true);
@@ -107,10 +107,10 @@ export default function StatusUpdateModal({ book, people, onAddReader, onClose, 
                 onChange={e => setReadingStatus(e.target.value)}
                 className="w-full bg-alabaster border border-sand/60 rounded px-2 py-1 font-bold text-xs text-forest"
               >
-                <option value="WISHLISTED">WISHLISTED (Want to Read)</option>
-                <option value="UNREAD">UNREAD</option>
-                <option value="READING">READING</option>
-                <option value="FINISHED">FINISHED</option>
+                <option value="WISHLISTED">{t('legacy.WISHLISTED (Want to Read)')}</option>
+                <option value="UNREAD">{t('legacy.UNREAD')}</option>
+                <option value="READING">{t('legacy.READING')}</option>
+                <option value="FINISHED">{t('legacy.FINISHED')}</option>
               </select>
             </div>
             <div>
@@ -123,11 +123,11 @@ export default function StatusUpdateModal({ book, people, onAddReader, onClose, 
                 {isToPerson ? (
                   <>
                     <option value="LENT">{t('legacy.LENT (Out)')}</option>
-                    <option value="GIFTED OUT">GIFTED OUT</option>
+                    <option value="GIFTED OUT">{t('legacy.GIFTED OUT')}</option>
                   </>
                 ) : (
                   <>
-                    <option value="{t('legacy.My Collection')}">My Collection</option>
+                    <option value="My Collection">{t('legacy.My Collection')}</option>
                     <option value="COLLECTED">{t('legacy.COLLECTED (In Library)')}</option>
                     <option value="LOST">{t('legacy.LOST')}</option>
                     <option value="DAMAGED">{t('legacy.DAMAGED')}</option>
@@ -152,7 +152,7 @@ export default function StatusUpdateModal({ book, people, onAddReader, onClose, 
               </select>
             </div>
             <div>
-              <div className="flex items-center justify-between gap-1"><label className="text-[8px] font-black uppercase text-stone-500">{t('legacy.Borrower')} Person</label><button type="button" onClick={onAddReader} className="text-[8px] font-black text-forest bg-sand/40 rounded px-1.5 py-0.5 whitespace-nowrap"><i className="fa-solid fa-plus mr-1"></i>Add Reader</button></div>
+              <div className="flex items-center justify-between gap-1"><label className="text-[8px] font-black uppercase text-stone-500">{t('legacy.Borrower Person')}</label><button type="button" onClick={onAddReader} className="text-[8px] font-black text-forest bg-sand/40 rounded px-1.5 py-0.5 whitespace-nowrap"><i className="fa-solid fa-plus mr-1"></i>{t('legacy.Add Reader')}</button></div>
               <select
                 value={person || book.person || ''}
                 onChange={e => {
