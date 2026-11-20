@@ -370,6 +370,8 @@
     "Person Status:": "Person Status:",
     "Returned (Return to Shelf)": "Returned (Return to Shelf)",
     "Event / Lent Date": "Event / Lent Date",
-    "Promise Return": "Promise Return"
+    "Promise Return": "Promise Return",
+    "Manage & Add {{type}}": "Manage & Add {{type}}",
+    "Remove {{item}} from {{type}} options?": "Remove {{item}} from {{type}} options?"
   }
 }
