@@ -7,7 +7,7 @@ import { hideNativeSplash } from './native/init';
 import { requestInitialDevicePermissions } from './native/contacts';
 import { scheduleDueDateNotifications } from './native/dueNotifications';
 import { saveAndShareBlob, isShareCancel } from './native/files';
-import { formatDisplayDate, getStatusBadgeStyle, displayStatus, EMPTY_INITIAL_DATA } from './utils';
+import { formatDisplayDate, getStatusBadgeStyle, displayStatus, EMPTY_INITIAL_DATA, translateUiText } from './utils';
 
 import BrandingFooter from './components/BrandingFooter';
 import SideDrawer from './components/SideDrawer';
@@ -24,6 +24,8 @@ import SyncSettingsModal from './components/modals/SyncSettingsModal';
 export default function App() {
   const [appData, setAppData] = useState(EMPTY_INITIAL_DATA);
   const [bootSplash, setBootSplash] = useState(true);
+  const [displayLanguage, setDisplayLanguage] = useState(() => localStorage.getItem('bwise-display-language') || 'en');
+  useEffect(() => {\n    const translateDom = () => {\n      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);\n      let node; while ((node = walker.nextNode())) { const original = node.nodeValue.trim(); if (original) { const translated = translateUiText(original, displayLanguage); if (translated !== original) node.nodeValue = node.nodeValue.replace(original, translated); } }\n      document.querySelectorAll('[title],[aria-label]').forEach(el => { ['title','aria-label'].forEach(attr => { const v=el.getAttribute(attr); if(v) el.setAttribute(attr,translateUiText(v,displayLanguage)); }); });\n    };\n    translateDom(); const observer = new MutationObserver(translateDom); observer.observe(document.body,{childList:true,subtree:true,characterData:true}); return () => observer.disconnect();\n  }, [displayLanguage]);\n  const handleLanguageChange = (lang) => { setDisplayLanguage(lang); localStorage.setItem('bwise-display-language',lang); };
   const [splashMinElapsed, setSplashMinElapsed] = useState(false);
   const [alertsOpen, setAlertsOpen] = useState(false);
   const [loadingState, setLoadingState] = useState({ text: 'Loading data...', visible: true, isSuccess: false });
@@ -378,11 +380,11 @@ export default function App() {
     const personBanner = clone.querySelector('#individual-person-report .bg-forest.text-white');
     if (personBanner) {
       personBanner.style.display = 'block';
-      personBanner.style.padding = '14px 14px';
+      personBanner.style.padding = '0';
       personBanner.style.marginBottom = '14px';
       const halves = personBanner.children;
-      if (halves[0]) { halves[0].style.width = '100%'; halves[0].style.padding = '0 0 12px'; halves[0].style.gap = '8px'; }
-      if (halves[1]) { halves[1].style.width = '100%'; halves[1].style.maxWidth = '100%'; }
+      if (halves[0]) { halves[0].style.width = '65%'; halves[0].style.padding = '0'; halves[0].style.gap = '5px'; halves[0].style.color = '#1E3535'; halves[0].style.background = 'transparent'; }
+      if (halves[1]) { halves[1].style.width = '35%'; halves[1].style.maxWidth = '35%'; halves[1].style.padding = '0'; halves[1].style.background = 'transparent'; halves[1].style.color = '#1E3535'; halves[1].style.border = '0'; halves[1].style.boxShadow = 'none'; }
     }
     clone.querySelectorAll('table th, table td').forEach(cell => {
       cell.style.paddingTop = '8px';
