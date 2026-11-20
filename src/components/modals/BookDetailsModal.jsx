@@ -57,7 +57,7 @@ export default function BookDetailsModal({ isNew, initial, config, onClose, onSu
           <h2 className="text-xs font-black uppercase text-forest tracking-wide">
             {isNew ? t('legacy.New Book Entry') : t('legacy.Edit Book Details')}
           </h2>
-          <button onClick={onClose} className="text-stone-400 hover:text-stone-700 p-1" title="Close (Esc)"><i className="fa-solid fa-xmark text-sm"></i></button>
+          <button onClick={onClose} className="text-stone-400 hover:text-stone-700 p-1" title={t('legacy.Close (Esc)')}><i className="fa-solid fa-xmark text-sm"></i></button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-2 text-xs">
@@ -68,7 +68,7 @@ export default function BookDetailsModal({ isNew, initial, config, onClose, onSu
 
           <div className="grid grid-cols-2 gap-2">
             <div><label className="text-[8px] font-black uppercase text-stone-500">{t('legacy.Author')}</label><input type="text" value={author} onChange={e => setAuthor(e.target.value)} className="w-full bg-alabaster border border-sand/60 rounded px-2 py-1 text-xs" /></div>
-            <div><label className="text-[8px] font-black uppercase text-stone-500">Amount (₹)</label><input type="number" value={amount} onChange={e => setAmount(e.target.value)} className="w-full bg-alabaster border border-sand/60 rounded px-2 py-1 text-xs" /></div>
+            <div><label className="text-[8px] font-black uppercase text-stone-500">{t('legacy.Amount (₹)')}</label><input type="number" value={amount} onChange={e => setAmount(e.target.value)} className="w-full bg-alabaster border border-sand/60 rounded px-2 py-1 text-xs" /></div>
           </div>
 
           <div className="grid grid-cols-2 gap-2">
@@ -102,13 +102,13 @@ export default function BookDetailsModal({ isNew, initial, config, onClose, onSu
           </div>
 
           <div>
-            <label className="text-[8px] font-black uppercase text-stone-500">Book In Date</label>
+            <label className="text-[8px] font-black uppercase text-stone-500">{t('legacy.Book In Date')}</label>
             <input type="date" value={bookInDate} onChange={e => setBookInDate(e.target.value)} className="w-full bg-alabaster border border-sand/60 rounded px-2 py-1 text-xs" />
           </div>
 
           <div>
             <label className="text-[8px] font-black uppercase text-stone-500">{t('legacy.Notes')}</label>
-            <input type="text" placeholder="Notes" value={notes} onChange={e => setNotes(e.target.value)} className="w-full bg-alabaster border border-sand/60 rounded px-2.5 py-1 text-xs" />
+            <input type="text" placeholder={t('legacy.Notes')} value={notes} onChange={e => setNotes(e.target.value)} className="w-full bg-alabaster border border-sand/60 rounded px-2.5 py-1 text-xs" />
           </div>
 
           <div className="pt-2 flex items-center space-x-2">
