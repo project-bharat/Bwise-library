@@ -430,7 +430,7 @@ This is a gentle reminder regarding the books borrowed from my library:
       <img src="/horizontal-colored-logo.png" alt="B-wise Library" style="display:block;width:150px;max-width:80%;height:auto;max-height:48px;object-fit:contain;margin:0 auto 10px;" />
       <p style="font-size:9px;font-weight:800;color:#6B7280;letter-spacing:.3px;margin:0 0 12px;">B-wise Library Developed by - Bharat Rasve © 2026</p>
       <div style="display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;">
-        <a href="tel:+917218838122" aria-label="Call" title="Call" style="width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#1E3535;color:#fff;text-decoration:none;"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M6.6 2.8c-.6-.6-1.5-.6-2.1 0L3 4.3c-.8.8-.9 2-.4 3.1 2.7 5.8 7.2 10.3 13 13 1.1.5 2.3.4 3.1-.4l1.5-1.5c.6-.6.6-1.5 0-2.1l-3-3c-.5-.5-1.3-.6-1.9-.2l-1.6 1c-2.3-1.1-4.1-2.9-5.2-5.2l1-1.6c.4-.6.3-1.4-.2-1.9z"/></svg></a>
+        <a href="tel:+917218838122" aria-label="Call" title={t('legacy.Call')} style="width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#1E3535;color:#fff;text-decoration:none;"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M6.6 2.8c-.6-.6-1.5-.6-2.1 0L3 4.3c-.8.8-.9 2-.4 3.1 2.7 5.8 7.2 10.3 13 13 1.1.5 2.3.4 3.1-.4l1.5-1.5c.6-.6.6-1.5 0-2.1l-3-3c-.5-.5-1.3-.6-1.9-.2l-1.6 1c-2.3-1.1-4.1-2.9-5.2-5.2l1-1.6c.4-.6.3-1.4-.2-1.9z"/></svg></a>
         <a href="https://wa.me/917218838122" aria-label="WhatsApp" title="WhatsApp" style="width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#25D366;color:#fff;text-decoration:none;"><svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true"><path d="M20.5 3.5A11.5 11.5 0 0 0 2.3 17.2L1 23l5.9-1.2A11.5 11.5 0 0 0 20.5 3.5ZM12 20a8 8 0 0 1-4.1-1.1l-.3-.2-3.5.7.8-3.4-.2-.3A8.5 8.5 0 1 1 12 20Zm4.6-6.3c-.3-.2-1.5-.7-1.8-.8s-.4-.1-.6.2-.7.8-.8 1-.3.2-.5.1a7.1 7.1 0 0 1-2.1-1.3 8 8 0 0 1-1.5-1.8c-.2-.3 0-.4.1-.6l.4-.5c.1-.2.2-.3.3-.5s0-.3 0-.5-.6-1.4-.8-1.9-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.4-.3.3-1 1-1 2.4s1 2.7 1.1 2.9a10.8 10.8 0 0 0 4.2 4.1c.5.2 1 .4 1.4.5.6.2 1.1.2 1.5.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2-.1-.1-.2-.2-.5-.3z"/></svg></a>
         <a href="https://www.linkedin.com/in/bharatrasve" aria-label="LinkedIn" title="LinkedIn" style="width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#0A66C2;color:#fff;text-decoration:none;font-family:Arial,sans-serif;font-size:13px;font-weight:800;line-height:1;">in</a>
         <a href="https://github.com/bharombhar" aria-label="GitHub" title="GitHub" style="width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#171717;color:#fff;text-decoration:none;"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 .9a11.1 11.1 0 0 0-3.5 21.6c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.4-4-1.4-.5-1.1-1.1-1.4-1.1-1.4-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.9.1-.7.4-1.1.7-1.4-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.6.1-3.3 0 0 1-.3 3.4 1.2a11.8 11.8 0 0 1 6.2 0c2.4-1.6 3.4-1.2 3.4-1.2.6 1.7.2 3 .1 3.3.8.9 1.2 1.9 1.2 3.2 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1 .8 2v3c0 .3.2.7.8.6A11.1 11.1 0 0 0 12 .9z"/></svg></a>
@@ -661,7 +661,7 @@ This is a gentle reminder regarding the books borrowed from my library:
         onSyncSettings={() => { setDrawerOpen(false); setSyncModal(true); }}
         onCallDeveloper={() => handleDirectDial('917218838122')}
       />
-      <input type="file" accept="*/*,.csv,text/csv,application/csv,application/vnd.ms-excel,text/plain,application/octet-stream" ref={backupFileInputRef} onChange={handleImportBackupFile} aria-label="Select library backup CSV" style={{ position: "fixed", left: "-10000px", top: 0, width: "1px", height: "1px", opacity: 0 }} />
+      <input type="file" accept="*/*,.csv,text/csv,application/csv,application/vnd.ms-excel,text/plain,application/octet-stream" ref={backupFileInputRef} onChange={handleImportBackupFile} aria-label={t('legacy.Select library backup CSV')} style={{ position: "fixed", left: "-10000px", top: 0, width: "1px", height: "1px", opacity: 0 }} />
 
       <div className="flex-1 flex flex-col pt-[60px] pb-28">
 
@@ -771,14 +771,14 @@ This is a gentle reminder regarding the books borrowed from my library:
             )}
           </div>
           <div className="flex items-center space-x-1 flex-none">
-            <button onClick={() => setDrawerOpen(true)} className="relative p-2 text-white hover:opacity-80 active:scale-95 transition-all text-sm" title="Local library and backup status: saved on this phone">
+            <button onClick={() => setDrawerOpen(true)} className="relative p-2 text-white hover:opacity-80 active:scale-95 transition-all text-sm" title={t('legacy.Local library and backup status: saved on this phone')}>
               <i className="fa-solid fa-cloud-arrow-up"></i>
             </button>
             <button onClick={() => setAlertsOpen(value => !value)} className="relative p-2 text-white hover:opacity-80 active:scale-95 transition-all text-sm" title="Notifications and reminders" aria-label="Notifications">
               <i className="fa-regular fa-bell"></i>
               {(dueTodayBooks.length + wishlistAlertCount > 0) && <span className="absolute right-0 top-0 min-w-[15px] h-[15px] px-1 rounded-full bg-rose-500 text-white text-[9px] font-black flex items-center justify-center">{Math.min(99, dueTodayBooks.length + wishlistAlertCount)}</span>}
             </button>
-            <button onClick={() => setDrawerOpen(true)} className="p-2 text-white hover:opacity-80 active:scale-95 transition-all text-base" title="Open Menu">
+            <button onClick={() => setDrawerOpen(true)} className="p-2 text-white hover:opacity-80 active:scale-95 transition-all text-base" title={t('legacy.Open Menu')}>
               <i className="fa-solid fa-bars"></i>
             </button>
           </div>
@@ -943,7 +943,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                   <span className="text-[10px] font-black uppercase tracking-wider text-forest">{t('legacy.Books Collections')}</span>
                   <div className="flex items-center space-x-3 text-stone-500">
                     <span className="text-[9px] font-bold">{filteredBooks.length} books</span>
-                    <button onClick={() => handleExportPdf('books-table-export', 'Books_Collections.pdf', 'BOOKS COLLECTIONS DIRECTORY')} className="hover:text-forest" title="Export Table as PDF">
+                    <button onClick={() => handleExportPdf('books-table-export', 'Books_Collections.pdf', 'BOOKS COLLECTIONS DIRECTORY')} className="hover:text-forest" title={t('legacy.Export Table as PDF')}>
                       <i className="fa-solid fa-share-nodes text-xs"></i>
                     </button>
                   </div>
@@ -1255,9 +1255,9 @@ This is a gentle reminder regarding the books borrowed from my library:
                   <table className="w-full text-left text-[11px] table-fixed">
                     <thead className="bg-moss text-white uppercase font-bold text-[9px] tracking-wider">
                       <tr>
-                        <th className="px-3 py-2 w-[55%]">Reader Name</th>
-                        <th className="px-2 py-2 text-center w-[25%]">Books</th>
-                        <th className="px-2 py-2 text-right no-print w-[20%]">Action</th>
+                        <th className="px-3 py-2 w-[55%]">{t('legacy.Reader Name')}</th>
+                        <th className="px-2 py-2 text-center w-[25%]">{t('legacy.Books')}</th>
+                        <th className="px-2 py-2 text-right no-print w-[20%]">{t('legacy.Action')}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-sand/30 font-medium text-charcoal">
@@ -1275,7 +1275,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                           return (
                             <tr>
                               <td colSpan="3" className="text-center py-8 text-stone-400 text-xs">
-                                No reader records found for this status filter.
+                                {t('legacy.No reader records found for this status filter.')}
                               </td>
                             </tr>
                           );
@@ -1289,7 +1289,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                             <tr key={p.name} className="hover:bg-sand/10 transition-colors">
                               <td className="px-3 py-2.5 cursor-pointer" onClick={() => { setSelectedPerson(p); setActiveTab('personDetail'); }}>
                                 <p className="font-extrabold text-xs text-charcoal truncate">{p.name}</p>
-                                <p className="text-[9px] text-stone-500 truncate">{p.phone || 'No mobile'} • {p.address || 'No address'}</p>
+                                <p className="text-[9px] text-stone-500 truncate">{p.phone || t('legacy.No mobile')} • {p.address || t('legacy.No address')}</p>
                               </td>
                               <td className="px-2 py-2.5 text-center">
                                 <span className={`text-[9px] font-black px-2 py-0.5 rounded-full ${holdingCount > 0 ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'bg-stone-100 text-stone-700'}`}>
@@ -1306,21 +1306,21 @@ This is a gentle reminder regarding the books borrowed from my library:
                                   <button
                                     onClick={() => setPersonModal({ isNew: false, person: p })}
                                     className="w-7 h-7 flex items-center justify-center text-forest text-xs active:scale-90"
-                                    title="Edit reader profile"
+                                    title={t('legacy.Edit reader profile')}
                                   >
                                     <i className="fa-solid fa-pen"></i>
                                   </button>
                                   <button
                                     onClick={() => { if (window.confirm(`Delete reader ${p.name}? Their book history will remain, but the reader assignment will be cleared.`)) google.script.run.withSuccessHandler(payload => { if (payload) setAppData(payload); triggerStatus('Reader deleted', true); }).withFailureHandler(err => triggerStatus('Delete failed: ' + (err?.message || ''), false)).deletePerson(p.name); }}
                                     className="w-7 h-7 flex items-center justify-center text-rose-700 text-xs active:scale-90"
-                                    title="Delete reader"
+                                    title={t('legacy.Delete reader')}
                                   >
                                     <i className="fa-solid fa-trash"></i>
                                   </button>
                                   <button
                                     onClick={() => { setSelectedPerson(p); setActiveTab('personDetail'); }}
                                     className="w-7 h-7 flex items-center justify-center text-forest text-xs active:scale-90"
-                                    title="View Reader Ledger"
+                                    title={t('legacy.View Reader Ledger')}
                                   >
                                     <i className="fa-solid fa-eye"></i>
                                   </button>
@@ -1369,10 +1369,10 @@ This is a gentle reminder regarding the books borrowed from my library:
                   className="text-xs font-black uppercase tracking-wider text-forest flex items-center space-x-1.5 active:opacity-70 transition-opacity"
                 >
                   <i className="fa-solid fa-arrow-left text-sm"></i>
-                  <span>Back to Collections</span>
+                  <span>{t('legacy.Back to Collections')}</span>
                 </button>
                 <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded-full bg-forest text-alabaster border border-white/20">
-                  {selectedTag.type === 'author' ? 'Author' : 'Category'}: {selectedTag.value}
+                  {selectedTag.type === 'author' ? t('legacy.Author') : t('legacy.Category')}: {selectedTag.value}
                 </span>
               </div>
 
@@ -1383,7 +1383,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                       {selectedTag.value}
                     </h2>
                     <p className="text-[9px] text-stone-500">
-                      {selectedTag.type === 'author' ? 'Books written by this author' : 'Books categorized under this genre'}
+                      {selectedTag.type === 'author' ? t('legacy.Books written by this author') : t('legacy.Books categorized under this genre')}
                     </p>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -1401,9 +1401,9 @@ This is a gentle reminder regarding the books borrowed from my library:
                   <table className="w-full text-left text-[11px] table-fixed">
                     <thead className="bg-moss text-white uppercase font-bold text-[9px] tracking-wider">
                       <tr>
-                        <th className="px-2.5 py-2 w-[44%]">Title & Details</th>
+                        <th className="px-2.5 py-2 w-[44%]">{t('legacy.Title & Details')}</th>
                         <th className="px-1.5 py-2 w-[19%]">Initial Status</th>
-                        <th className="px-1.5 py-2 w-[19%]">Cur. Status</th>
+                        <th className="px-1.5 py-2 w-[19%]">{t('legacy.Cur. Status')}</th>
                         <th className="px-2 py-2 w-[18%]">Location</th>
                       </tr>
                     </thead>
@@ -1548,7 +1548,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                   onClick={() => setBookModal({ isNew: true, book: {} })}
                   className="w-[62px] h-[62px] rounded-full text-white shadow-xl border-[4px] border-[#F4F1EA] flex items-center justify-center active:scale-90 transition-transform"
                   style={{ background: 'linear-gradient(135deg, #047372 0%, #38D0C9 100%)' }}
-                  title="New Entry"
+                  title={t('legacy.New Entry')}
                 >
                   <i className="fa-solid fa-plus text-2xl font-black drop-shadow-sm"></i>
                 </button>
@@ -1676,13 +1676,13 @@ This is a gentle reminder regarding the books borrowed from my library:
           <div className="bg-white w-full max-w-sm rounded-xl p-5 shadow-2xl border border-sand/40 space-y-3">
             <div className="flex items-center space-x-2.5 text-rose-700">
               <i className="fa-solid fa-triangle-exclamation text-xl"></i>
-              <h3 className="text-sm font-black uppercase tracking-wide">Restore Database</h3>
+              <h3 className="text-sm font-black uppercase tracking-wide">{t('legacy.Restore Database')}</h3>
             </div>
             <p className="text-xs text-charcoal font-medium">
               Restoring <b>{restoreConfirmFile.name}</b> will replace this phone’s books, reader records, configuration, and wishlist data.
             </p>
             <p className="text-[11px] text-stone-500 italic">
-              Are you sure you want to proceed with this restore operation?
+              {t('legacy.Are you sure you want to proceed with this restore operation?')}
             </p>
             <div className="flex items-center justify-end space-x-2 pt-2">
               <button
