@@ -157,8 +157,8 @@
     "Date": "तारीख",
     "Promise Date": "वापसी की तारीख",
     "Action": "कार्य",
-    "No matching contacts.": "कोई मिलते संपर्क नहीं।",
-    "No phone number": "फोन नंबर नहीं",
+    "No matching contacts.": "कोई मेल खाते संपर्क नहीं।",
+    "No phone number": "फ़ोन नंबर नहीं",
     "Name": "नाम",
     "Phone": "फ़ोन",
     "Address": "पता",
@@ -264,6 +264,9 @@
     "Save Status": "स्थिति सहेजें",
     "WhatsApp Reminder (All Holding Books)": "WhatsApp रिमाइंडर (सभी लंबित पुस्तकें)",
     "Edit Book Details (Title, Author, Amount, Category)": "पुस्तक विवरण संपादित करें (नाम, लेखक, राशि, श्रेणी)",
-    "Update Status, Custody & Lending": "स्थिति, कब्जा और उधार अपडेट करें"
+    "Update Status, Custody & Lending": "स्थिति, कब्जा और उधार अपडेट करें",
+    "No contacts with names were found on this device.": "इस फ़ोन में नाम वाले संपर्क नहीं मिले।",
+    "Unable to read device contacts.": "फ़ोन संपर्क पढ़ नहीं सके।",
+    "Error saving wishlist item:": "इच्छासूची सहेजने में त्रुटि:"
   }
 }
