@@ -70,7 +70,7 @@ export default function PersonFormModal({ isNew, initial, onClose, onSuccess }) 
             <div className="rounded-lg border border-sand/60 p-2 space-y-2">
               <div className="flex items-center justify-between">
                 <p className="font-black text-forest">Device contacts ({filteredContacts.length})</p>
-                <button type="button" onClick={() => setShowContacts(false)} className="px-2 py-1 text-stone-500">Close</button>
+                <button type="button" onClick={() => setShowContacts(false)} className="px-2 py-1 text-stone-500">{t('legacy.Close')}</button>
               </div>
               <input type="search" value={contactSearch} onChange={e => setContactSearch(e.target.value)} placeholder={t('legacy.Search name or phone')} className="w-full bg-alabaster border rounded p-2" />
               <div className="max-h-40 overflow-y-auto divide-y divide-sand/30">
@@ -80,11 +80,11 @@ export default function PersonFormModal({ isNew, initial, onClose, onSuccess }) 
                     <span className="block text-[10px] text-stone-500">{contact.phone || contact.email || t('legacy.No phone number')}</span>
                   </button>
                 ))}
-                {!filteredContacts.length && <p className="py-3 text-center text-stone-500">No matching contacts.</p>}
+                {!filteredContacts.length && <p className="py-3 text-center text-stone-500">{t('legacy.No matching contacts.')}</p>}
               </div>
             </div>
           )}
-          <div><label className="text-[9px] font-black uppercase text-stone-500">Name *</label><input type="text" required value={name} onChange={e => setName(e.target.value)} className="w-full bg-alabaster border rounded p-2" /></div>
+          <div><label className="text-[9px] font-black uppercase text-stone-500">{t('legacy.Name *')}</label><input type="text" required value={name} onChange={e => setName(e.target.value)} className="w-full bg-alabaster border rounded p-2" /></div>
           <div><label className="text-[9px] font-black uppercase text-stone-500">{t('legacy.Phone')}</label><input type="tel" value={phone} onChange={e => setPhone(e.target.value)} className="w-full bg-alabaster border rounded p-2" /></div>
           <div><label className="text-[9px] font-black uppercase text-stone-500">{t('legacy.Address')}</label><input type="text" value={address} onChange={e => setAddress(e.target.value)} className="w-full bg-alabaster border rounded p-2" /></div>
           <button type="submit" disabled={saving} className="w-full py-2.5 bg-forest text-alabaster font-black rounded text-xs uppercase tracking-wider active:scale-95">
