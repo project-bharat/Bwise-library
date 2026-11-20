@@ -372,6 +372,11 @@
     "Event / Lent Date": "Event / Lent Date",
     "Promise Return": "Promise Return",
     "Manage & Add {{type}}": "Manage & Add {{type}}",
-    "Remove {{item}} from {{type}} options?": "Remove {{item}} from {{type}} options?"
+    "Remove {{item}} from {{type}} options?": "Remove {{item}} from {{type}} options?",
+    "Notifications and reminders": "Notifications and reminders",
+    "Close notifications": "Close notifications",
+    "Held by": "Held by",
+    "Due today": "Due today",
+    "You have {{count}} items to get.": "You have {{count}} items to get."
   }
 }
