@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from '../../i18n/useTranslation';
 
 // Dedicated Bookstore Wishlist Modal: Displays Initial & Current Status ONLY when user chooses In Possession
 export default function WishlistFormModal({ isNew, initial, config, onClose, onSuccess }) {
+  const { t } = useTranslation();
   const [title, setTitle] = useState(initial.title || '');
   const [author, setAuthor] = useState(initial.author || '');
   const [category, setCategory] = useState(initial.category || (config.categories && config.categories[0]) || 'Literature');
@@ -26,7 +28,7 @@ export default function WishlistFormModal({ isNew, initial, config, onClose, onS
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!title.trim()) return alert('Book title is required');
+    if (!title.trim()) return alert(t('legacy.Book title is required'));
     setIsSubmitting(true);
     const payload = {
       id: isNew ? '' : initial.id,
@@ -62,28 +64,28 @@ export default function WishlistFormModal({ isNew, initial, config, onClose, onS
       <div className="bg-white w-full max-w-sm rounded-xl p-4 shadow-2xl border border-sand/40 max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center border-b pb-2 mb-3">
           <h2 className="text-xs font-black uppercase text-forest tracking-wide">
-            {isNew ? '+ Add Bookstore Wishlist' : 'Edit Wishlist Item'}
+            {isNew ? t('legacy.Add Bookstore Wishlist') : t('legacy.Edit Wishlist Item')}
           </h2>
           <button onClick={onClose} className="text-stone-400 hover:text-stone-700 p-1"><i className="fa-solid fa-xmark"></i></button>
         </div>
         <form onSubmit={handleSubmit} className="space-y-2.5 text-xs">
           <div>
-            <label className="text-[9px] font-black uppercase text-stone-500">Book Title *</label>
-            <input type="text" required autoFocus value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Clean Code" className="w-full bg-alabaster border border-sand/60 rounded px-2.5 py-1.5 font-bold text-xs" />
+            <label className="text-[9px] font-black uppercase text-stone-500">{t('legacy.Book Title')} *</label>
+            <input type="text" required autoFocus value={title} onChange={e => setTitle(e.target.value)} placeholder={t('legacy.Book title example')} className="w-full bg-alabaster border border-sand/60 rounded px-2.5 py-1.5 font-bold text-xs" />
           </div>
           <div>
-            <label className="text-[9px] font-black uppercase text-stone-500">Author</label>
-            <input type="text" value={author} onChange={e => setAuthor(e.target.value)} placeholder="Author name" className="w-full bg-alabaster border border-sand/60 rounded px-2.5 py-1.5 text-xs" />
+            <label className="text-[9px] font-black uppercase text-stone-500">{t('legacy.Author')}</label>
+            <input type="text" value={author} onChange={e => setAuthor(e.target.value)} placeholder={t('legacy.Author name')} className="w-full bg-alabaster border border-sand/60 rounded px-2.5 py-1.5 text-xs" />
           </div>
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="text-[9px] font-black uppercase text-stone-500">Category</label>
+              <label className="text-[9px] font-black uppercase text-stone-500">{t('legacy.Category')}</label>
               <select value={category} onChange={e => setCategory(e.target.value)} className="w-full bg-alabaster border border-sand/60 rounded px-2 py-1.5 text-xs">
                 {((config && config.categories) || []).map(c => <option key={c}>{c}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-[9px] font-black uppercase text-stone-500">Language</label>
+              <label className="text-[9px] font-black uppercase text-stone-500">{t('legacy.Language')}</label>
               <select value={language} onChange={e => setLanguage(e.target.value)} className="w-full bg-alabaster border border-sand/60 rounded px-2 py-1.5 text-xs">
                 <option>English</option><option>Marathi</option><option>Hindi</option><option>Sanskrit</option><option>Other</option>
               </select>
@@ -95,7 +97,7 @@ export default function WishlistFormModal({ isNew, initial, config, onClose, onS
               <input type="number" placeholder="250" value={amount} onChange={e => setAmount(e.target.value)} className="w-full bg-alabaster border border-sand/60 rounded px-2.5 py-1.5 text-xs font-bold" />
             </div>
             <div>
-              <label className="text-[9px] font-black uppercase text-stone-500">Acquisition Status</label>
+              <label className="text-[9px] font-black uppercase text-stone-500">Acquisition {t('legacy.Status')}</label>
               <select value={status} onChange={e => setStatus(e.target.value)} className="w-full bg-alabaster border border-sand/60 rounded px-2 py-1.5 text-xs font-bold text-forest">
                 <option value="not in possession">Not In Possession</option>
                 <option value="in possession">In Possession (Add)</option>
@@ -142,7 +144,7 @@ export default function WishlistFormModal({ isNew, initial, config, onClose, onS
           </div>
 
           <div className="pt-2 flex items-center space-x-2">
-            <button type="button" onClick={onClose} className="w-1/3 py-2 bg-stone-100 text-stone-700 font-bold rounded text-xs uppercase active:scale-95">Cancel</button>
+            <button type="button" onClick={onClose} className="w-1/3 py-2 bg-stone-100 text-stone-700 font-bold rounded text-xs uppercase active:scale-95">{t('legacy.Cancel')}</button>
             <button type="submit" disabled={isSubmitting} className="w-2/3 py-2 bg-forest text-alabaster font-black rounded text-xs uppercase tracking-wider active:scale-95 shadow">
               {isSubmitting ? 'Saving...' : (isNew ? 'Add Wishlist' : 'Update Wishlist')}
             </button>
