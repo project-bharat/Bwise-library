@@ -224,7 +224,7 @@
     "View all books by": "इनकी सभी पुस्तकें देखें",
     "By": "द्वारा",
     "Acquired via": "प्राप्ति माध्यम",
-    "Status Updated": "स्थिति अपडेट हुई",
+    "Status Updated": "स्थिति अपडेट",
     "days": "दिन",
     "days later": "दिन बाद",
     "Local data ready": "स्थानीय डेटा तैयार",
@@ -261,6 +261,9 @@
     "Add Reader": "पाठक जोड़ें",
     "Promise Return Date": "वापसी की अपेक्षित तारीख",
     "Event Date": "घटना की तारीख",
-    "Save Status": "स्थिति सहेजें"
+    "Save Status": "स्थिति सहेजें",
+    "WhatsApp Reminder (All Holding Books)": "WhatsApp रिमाइंडर (सभी लंबित पुस्तकें)",
+    "Edit Book Details (Title, Author, Amount, Category)": "पुस्तक विवरण संपादित करें (नाम, लेखक, राशि, श्रेणी)",
+    "Update Status, Custody & Lending": "स्थिति, कब्जा और उधार अपडेट करें"
   }
 }
