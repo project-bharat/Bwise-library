@@ -233,6 +233,21 @@
     "PDF Exported": "PDF Exported",
     "Export failed:": "Export failed:",
     "Reset filters": "Reset filters",
-    "RESET FILTERS": "RESET FILTERS"
+    "RESET FILTERS": "RESET FILTERS",
+    "New Book Entry": "New Book Entry",
+    "Book title is required": "Book title is required",
+    "Initial Status": "Initial Status",
+    "Book In Date": "Book In Date",
+    "Amount (₹)": "Amount (₹)",
+    "Notes": "Notes",
+    "Save Book": "Save Book",
+    "Save Wishlist": "Save Wishlist",
+    "Book title example": "Book title example",
+    "Author name": "Author name",
+    "Language": "Language",
+    "Update Status & Journey": "Update Status & Journey",
+    "Reading Stage": "Reading Stage",
+    "Please select a borrower.": "Please select a borrower.",
+    "Return book to library shelf: Click OK for 'At Home', or Cancel for 'At Office'": "Return book to library shelf: Click OK for 'At Home', or Cancel for 'At Office'"
   }
 }
