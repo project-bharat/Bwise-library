@@ -180,10 +180,10 @@ export default function StatusUpdateModal({ book, people, onAddReader, onClose, 
                 onChange={e => handlePersonStatusChange(e.target.value)}
                 className="bg-white border border-sand/60 rounded px-2 py-0.5 text-xs font-black text-forest"
               >
-                <option value="Holding">{t('legacy.Holding')</option>
+                <option value="Holding">{t('legacy.Holding')}</option>
                 <option value="Returned">{t('legacy.Returned (Return to Shelf)')}</option>
-                <option value="Gifted">{t('legacy.Gifted')</option>
-                <option value="Lost">{t('legacy.Lost')</option>
+                <option value="Gifted">{t('legacy.Gifted')}</option>
+                <option value="Lost">{t('legacy.Lost')}</option>
               </select>
             </div>
           )}
