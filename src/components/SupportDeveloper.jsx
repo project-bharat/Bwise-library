@@ -40,7 +40,7 @@ export default function SupportDeveloper({ compact = false }) {
         <div className="fixed inset-0 z-[100] bg-black/65 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setOpen(false)}>
           <div className="bg-white rounded-2xl w-full max-w-xs p-5 shadow-2xl text-center text-charcoal" onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-2">
-              <h3 className="font-black text-base text-forest">Buy me a coffee</h3>
+              <h3 className="font-black text-base text-forest">Support me</h3>
               <button onClick={() => setOpen(false)} className="p-2 text-stone-500" aria-label="Close">
                 <i className="fa-solid fa-xmark"></i>
               </button>
