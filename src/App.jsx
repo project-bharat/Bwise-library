@@ -716,7 +716,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                   ).slice(0, 2);
 
                   if (matchBooks.length === 0 && matchPersons.length === 0) {
-                    return <div className="p-2.5 text-center text-[10px] text-stone-400">No matching books or readers</div>;
+                    return <div className="p-2.5 text-center text-[10px] text-stone-400">{t('legacy.No matching books or readers')}</div>;
                   }
 
                   return (
@@ -774,7 +774,7 @@ This is a gentle reminder regarding the books borrowed from my library:
             <button onClick={() => setDrawerOpen(true)} className="relative p-2 text-white hover:opacity-80 active:scale-95 transition-all text-sm" title={t('legacy.Local library and backup status: saved on this phone')}>
               <i className="fa-solid fa-cloud-arrow-up"></i>
             </button>
-            <button onClick={() => setAlertsOpen(value => !value)} className="relative p-2 text-white hover:opacity-80 active:scale-95 transition-all text-sm" title="Notifications and reminders" aria-label="Notifications">
+            <button onClick={() => setAlertsOpen(value => !value)} className="relative p-2 text-white hover:opacity-80 active:scale-95 transition-all text-sm" title={t('legacy.Notifications and reminders')} aria-label={t('legacy.Notifications')}>
               <i className="fa-regular fa-bell"></i>
               {(dueTodayBooks.length + wishlistAlertCount > 0) && <span className="absolute right-0 top-0 min-w-[15px] h-[15px] px-1 rounded-full bg-rose-500 text-white text-[9px] font-black flex items-center justify-center">{Math.min(99, dueTodayBooks.length + wishlistAlertCount)}</span>}
             </button>
@@ -788,7 +788,7 @@ This is a gentle reminder regarding the books borrowed from my library:
           <div className="fixed top-[58px] right-2 z-[60] w-[min(340px,calc(100vw-16px))] rounded-xl border border-sand/60 bg-white text-charcoal shadow-2xl overflow-hidden">
             <div className="flex items-center justify-between px-3 py-2 bg-forest text-white">
               <h3 className="text-xs font-black uppercase tracking-wide">{t('legacy.Notifications')}</h3>
-              <button onClick={() => setAlertsOpen(false)} aria-label="Close notifications"><i className="fa-solid fa-xmark"></i></button>
+              <button onClick={() => setAlertsOpen(false)} aria-label={t('legacy.Close notifications')}><i className="fa-solid fa-xmark"></i></button>
             </div>
             {dueTodayBooks.length > 0 && <div className="p-3 border-b border-sand/40 space-y-2">
               <p className="text-[10px] font-black uppercase text-rose-700">Due today · {dueTodayBooks.length}</p>
@@ -799,7 +799,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                 const waUrl = phone ? `https://wa.me/${phone.length === 10 ? '91' : ''}${phone}?text=${encodeURIComponent(message)}` : `https://wa.me/?text=${encodeURIComponent(message)}`;
                 return <div key={book.id} className="flex items-center justify-between gap-2">
                   <button className="min-w-0 flex-1 text-left" onClick={() => { setSelectedBook(book); setActiveTab('bookDetail'); setAlertsOpen(false); }}>
-                    <span className="block text-[11px] font-bold truncate">{book.title}</span><span className="block text-[10px] text-stone-500 truncate">Held by {book.person}</span>
+                    <span className="block text-[11px] font-bold truncate">{book.title}</span><span className="block text-[10px] text-stone-500 truncate">{t('legacy.Held by')} {book.person}</span>
                   </button>
                   <button onClick={() => { window.open(waUrl, '_blank'); setAlertsOpen(false); }} className="shrink-0 rounded-full bg-emerald-600 text-white px-2.5 py-1.5 text-[10px] font-bold"><i className="fa-brands fa-whatsapp mr-1"></i>{t('legacy.Remind')}</button>
                 </div>;
@@ -955,7 +955,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                         <th className="px-2.5 py-2 w-[44%]">{t('legacy.Title & Author')}</th>
                         <th className="px-1.5 py-2 w-[19%]">{t('legacy.Initial Status')}</th>
                         <th className="px-1.5 py-2 w-[19%]">{t('legacy.Cur. status')}</th>
-                        <th className="px-2 py-2 w-[18%]">Location</th>
+                        <th className="px-2 py-2 w-[18%]">{t('legacy.Location')}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-sand/30 font-medium text-charcoal">
@@ -1173,7 +1173,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                                         <button
                                           onClick={(e) => handleCopyTitle(w.title, e)}
                                           className="text-stone-400 hover:text-forest active:scale-90 p-0.5 flex-none"
-                                          title="Copy Title"
+                                          title={t('legacy.Copy Title')}
                                         >
                                           <i className="fa-regular fa-copy text-[9px]"></i>
                                         </button>
@@ -1299,7 +1299,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                               <td className="px-2 py-2.5 text-right no-print">
                                 <div className="flex items-center justify-end space-x-1.5">
                                   {p.phone && (
-                                    <button onClick={() => handleDirectDial(p.phone)} className="w-7 h-7 flex items-center justify-center text-emerald-700 text-xs active:scale-90" title="Call">
+                                    <button onClick={() => handleDirectDial(p.phone)} className="w-7 h-7 flex items-center justify-center text-emerald-700 text-xs active:scale-90" title={t('legacy.Call')}>
                                       <i className="fa-solid fa-phone"></i>
                                     </button>
                                   )}
@@ -1402,7 +1402,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                     <thead className="bg-moss text-white uppercase font-bold text-[9px] tracking-wider">
                       <tr>
                         <th className="px-2.5 py-2 w-[44%]">{t('legacy.Title & Details')}</th>
-                        <th className="px-1.5 py-2 w-[19%]">Initial Status</th>
+                        <th className="px-1.5 py-2 w-[19%]">{t('legacy.Initial Status')}</th>
                         <th className="px-1.5 py-2 w-[19%]">{t('legacy.Cur. Status')}</th>
                         <th className="px-2 py-2 w-[18%]">Location</th>
                       </tr>
@@ -1420,7 +1420,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                             key={b.id}
                             className="hover:bg-sand/15 transition-colors cursor-pointer active:bg-sand/25"
                             onClick={() => { setSelectedBook(b); setActiveTab('bookDetail'); }}
-                            title="Click to view Book Journey"
+                            title={t('legacy.Click to view Book Journey')}
                           >
                             <td className="px-2.5 py-2">
                               <div className="flex items-center space-x-1 truncate">
