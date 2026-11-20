@@ -353,36 +353,70 @@ export default function App() {
         <p style="font-size: 10px; color: #6B7280; margin: 3px 0 0 0;">Statement Date: ${formatDisplayDate(new Date())}</p>
       </div>
     `;
-    // Give the report body extra breathing room so the final rows/text never sit
-    // against the PDF page edge or get clipped by the rasterized canvas.
-    clone.style.paddingBottom = '28px';
+    // PDF-specific layout: add generous spacing, prevent text clipping and
+    // allow headers/book titles to wrap instead of inheriting screen truncation.
+    clone.style.padding = '12px 4px 64px';
     clone.style.boxSizing = 'border-box';
+    clone.style.overflow = 'visible';
+    clone.querySelectorAll('*').forEach(node => {
+      node.style.boxSizing = 'border-box';
+      if (node.classList.contains('truncate')) {
+        node.style.whiteSpace = 'normal';
+        node.style.overflow = 'visible';
+        node.style.textOverflow = 'clip';
+      }
+      node.style.lineHeight = '1.35';
+    });
     clone.querySelectorAll('tr, .bg-white, table').forEach(node => {
       node.style.breakInside = 'avoid';
       node.style.pageBreakInside = 'avoid';
     });
+    // The reader profile is a tight two-column banner on-screen. In a PDF,
+    // stack its contact details above the stats so the name/phone/address fit.
+    const personBanner = clone.querySelector('#individual-person-report .bg-forest.text-white');
+    if (personBanner) {
+      personBanner.style.display = 'block';
+      personBanner.style.padding = '14px 14px';
+      personBanner.style.marginBottom = '14px';
+      const halves = personBanner.children;
+      if (halves[0]) { halves[0].style.width = '100%'; halves[0].style.padding = '0 0 12px'; halves[0].style.gap = '8px'; }
+      if (halves[1]) { halves[1].style.width = '100%'; halves[1].style.maxWidth = '100%'; }
+    }
+    clone.querySelectorAll('table th, table td').forEach(cell => {
+      cell.style.paddingTop = '8px';
+      cell.style.paddingBottom = '8px';
+      cell.style.verticalAlign = 'top';
+      cell.style.whiteSpace = 'normal';
+      cell.style.overflow = 'visible';
+    });
+    clone.querySelectorAll('table td p').forEach(p => {
+      p.style.whiteSpace = 'normal';
+      p.style.overflow = 'visible';
+      p.style.textOverflow = 'clip';
+      p.style.wordBreak = 'break-word';
+    });
 
     const footer = document.createElement('div');
-    footer.style.cssText = 'margin-top:28px;padding:18px 10px 24px;border-top:1px solid #E5E7EB;text-align:center;box-sizing:border-box;width:100%;';
+    footer.style.cssText = 'margin-top:30px;padding:22px 10px 30px;border-top:1px solid #E5E7EB;text-align:center;box-sizing:border-box;width:100%;';
     footer.innerHTML = `
       <img src="/horizontal-colored-logo.png" alt="B-wise Library" style="display:block;width:150px;max-width:80%;height:auto;max-height:48px;object-fit:contain;margin:0 auto 10px;" />
-      <p style="font-size:9px;font-weight:800;color:#6B7280;letter-spacing:.3px;margin:0 0 10px;">B-wise Library Developed by - Bharat Rasve © 2026</p>
-      <div style="display:flex;justify-content:center;align-items:center;gap:9px;flex-wrap:wrap;">
-        <a href="tel:+917218838122" style="display:inline-block;padding:5px 9px;border-radius:14px;background:#1E3535;color:#fff;text-decoration:none;font-size:9px;font-weight:700;">☎ Call</a>
-        <a href="https://wa.me/917218838122" style="display:inline-block;padding:5px 9px;border-radius:14px;background:#25D366;color:#fff;text-decoration:none;font-size:9px;font-weight:700;">WhatsApp</a>
-        <a href="https://www.linkedin.com/in/bharatrasve" style="display:inline-block;padding:5px 9px;border-radius:14px;background:#0A66C2;color:#fff;text-decoration:none;font-size:9px;font-weight:700;">LinkedIn</a>
-        <a href="https://github.com/bharombhar" style="display:inline-block;padding:5px 9px;border-radius:14px;background:#171717;color:#fff;text-decoration:none;font-size:9px;font-weight:700;">GitHub</a>
+      <p style="font-size:9px;font-weight:800;color:#6B7280;letter-spacing:.3px;margin:0 0 12px;">B-wise Library Developed by - Bharat Rasve © 2026</p>
+      <div style="display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;">
+        <a href="tel:+917218838122" aria-label="Call" title="Call" style="width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#1E3535;color:#fff;text-decoration:none;font-size:15px;line-height:1;">☎</a>
+        <a href="https://wa.me/917218838122" aria-label="WhatsApp" title="WhatsApp" style="width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#25D366;color:#fff;text-decoration:none;font-size:15px;line-height:1;">◉</a>
+        <a href="https://www.linkedin.com/in/bharatrasve" aria-label="LinkedIn" title="LinkedIn" style="width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#0A66C2;color:#fff;text-decoration:none;font-family:Arial,sans-serif;font-size:13px;font-weight:800;line-height:1;">in</a>
+        <a href="https://github.com/bharombhar" aria-label="GitHub" title="GitHub" style="width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#171717;color:#fff;text-decoration:none;font-size:15px;line-height:1;">●</a>
       </div>
     `;
 
-    container.style.padding = '20px 20px 44px';
+    container.style.padding = '24px 20px 64px';
     container.style.boxSizing = 'border-box';
     container.appendChild(header);
     container.appendChild(clone);
     container.appendChild(footer);
 
     const opt = {
-      margin: [0.35, 0.4, 0.75, 0.4],
+      margin: [0.4, 0.4, 0.95, 0.4],
       filename: fileName || 'Library_Report.pdf',
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true, allowTaint: true, letterRendering: true },
