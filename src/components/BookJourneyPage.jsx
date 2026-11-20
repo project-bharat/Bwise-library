@@ -101,7 +101,7 @@ export default function BookJourneyPage({ book, onBack, onEditDetails, onEditSta
               <button
                 onClick={(e) => onCopyTitle(book.title, e)}
                 className="text-sand/80 hover:text-white p-0.5 active:scale-90 flex-none"
-                title="Copy Title"
+                title={t('legacy.Copy Title')}
               >
                 <i className="fa-regular fa-copy text-xs"></i>
               </button>
@@ -138,7 +138,7 @@ export default function BookJourneyPage({ book, onBack, onEditDetails, onEditSta
             <button
               onClick={() => onNavigateToPerson(book.person)}
               className="underline hover:text-white text-[10px] text-sand cursor-pointer font-extrabold"
-              title="View Reader Complete Books History"
+              title={t('legacy.View Reader Complete Books History')}
             >
               @{book.person}
             </button>
@@ -150,7 +150,7 @@ export default function BookJourneyPage({ book, onBack, onEditDetails, onEditSta
         <div className="flex justify-between items-center mb-3 pb-1.5 border-b border-sand/30">
           <h2 className="text-xs font-black uppercase tracking-wider text-forest flex items-center space-x-1.5">
             <i className="fa-solid fa-timeline text-ochre"></i>
-            <span>Book Journey</span>
+            <span>{t('legacy.Book Journey')}</span>
           </h2>
         </div>
 
@@ -184,7 +184,7 @@ export default function BookJourneyPage({ book, onBack, onEditDetails, onEditSta
                       <button
                         onClick={() => onNavigateToPerson(item.person)}
                         className="text-forest hover:text-ochre font-extrabold underline cursor-pointer"
-                        title="Go to Reader Books History"
+                        title={t('legacy.Go to Reader Books History')}
                       >
                         <i className="fa-solid fa-user mr-1"></i>@{item.person}
                       </button>
