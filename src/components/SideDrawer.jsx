@@ -18,7 +18,7 @@ export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddP
               <img src={brandIcon} alt="" className="w-10 h-10 rounded-xl shadow-md border border-white/20" />
               <div>
                 <p className="text-[10px] font-extrabold uppercase tracking-widest text-sand">{t('legacy.Library Manager')}</p>
-                <h2 className="text-lg font-black tracking-tight mt-0.5">B-wise Library</h2>
+                <h2 className="text-lg font-black tracking-tight mt-0.5">{t('legacy.B-wise Library')</h2>
               </div>
             </div>
             <button onClick={onClose} className="text-sand/80 hover:text-white p-1 rounded transition-colors" title={`${t('legacy.Close')} Menu (Esc)`}>
@@ -59,7 +59,7 @@ export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddP
           </div>
         </div>
         <div className="p-3.5 border-t border-white/10 text-center select-none flex flex-col items-center justify-center bg-gradient-to-r from-[#033636] via-[#047372] to-[#052626]">
-          <div className="mb-2"><SupportDeveloper compact /></div>          <img src="/horizontal-logo.png" alt="B-wise Library" className="w-36 max-w-full h-auto max-h-10 object-contain mb-2" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+          <div className="mb-2"><SupportDeveloper compact /></div>          <img src="/horizontal-logo.png" alt={t('legacy.B-wise Library')} className="w-36 max-w-full h-auto max-h-10 object-contain mb-2" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
           <p className="text-[8px] font-black text-white/75 tracking-widest mb-1.5 uppercase">DEVELOPED BY - BHARAT RASVE © 2026</p>
           <div className="flex items-center space-x-2">
             <button onClick={onCallDeveloper} className="w-6 h-6 rounded-full bg-white text-forest hover:bg-ochre flex items-center justify-center text-[10px] active:scale-95 transition-colors shadow-xs" title={t('legacy.Call Developer')}>
@@ -68,10 +68,10 @@ export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddP
             <button onClick={() => window.open('https://wa.me/917218838122', '_blank')} className="w-6 h-6 rounded-full bg-forest text-alabaster hover:bg-ochre flex items-center justify-center text-[11px] active:scale-95 transition-colors shadow-xs" title={t('legacy.WhatsApp Developer')}>
               <i className="fa-brands fa-whatsapp"></i>
             </button>
-            <a href="https://www.linkedin.com/in/bharatrasve" target="_blank" rel="noreferrer" className="w-6 h-6 rounded-full bg-forest text-alabaster hover:bg-ochre flex items-center justify-center text-[10px] active:scale-95 transition-colors shadow-xs" title="LinkedIn">
+            <a href="https://www.linkedin.com/in/bharatrasve" target="_blank" rel="noreferrer" className="w-6 h-6 rounded-full bg-forest text-alabaster hover:bg-ochre flex items-center justify-center text-[10px] active:scale-95 transition-colors shadow-xs" title={t('legacy.LinkedIn')}>
               <i className="fa-brands fa-linkedin-in"></i>
             </a>
-            <a href="https://github.com/bharombhar" target="_blank" rel="noreferrer" className="w-6 h-6 rounded-full bg-forest text-alabaster hover:bg-ochre flex items-center justify-center text-[10px] active:scale-95 transition-colors shadow-xs" title="GitHub">
+            <a href="https://github.com/bharombhar" target="_blank" rel="noreferrer" className="w-6 h-6 rounded-full bg-forest text-alabaster hover:bg-ochre flex items-center justify-center text-[10px] active:scale-95 transition-colors shadow-xs" title={t('legacy.GitHub')}>
               <i className="fa-brands fa-github"></i>
             </a>
           </div>
