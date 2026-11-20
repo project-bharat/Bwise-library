@@ -174,14 +174,14 @@ export default function StatusUpdateModal({ book, people, onAddReader, onClose, 
           {/* PERSON STATUS: Allows marking a holding book as RETURNED */}
           {(isToPerson || person || book.person) && (
             <div className="p-1.5 bg-sand/20 rounded border border-sand/40 flex items-center justify-between">
-              <label className="text-[8px] font-black uppercase text-forest">Person Status:</label>
+              <label className="text-[8px] font-black uppercase text-forest">{t('legacy.Person Status:')}</label>
               <select
                 value={personStatus}
                 onChange={e => handlePersonStatusChange(e.target.value)}
                 className="bg-white border border-sand/60 rounded px-2 py-0.5 text-xs font-black text-forest"
               >
                 <option value="Holding">Holding</option>
-                <option value="Returned">Returned (Return to Shelf)</option>
+                <option value="Returned">{t('legacy.Returned (Return to Shelf)')}</option>
                 <option value="Gifted">Gifted</option>
                 <option value="Lost">Lost</option>
               </select>
@@ -192,11 +192,11 @@ export default function StatusUpdateModal({ book, people, onAddReader, onClose, 
           {isToPerson && (
             <div className="grid grid-cols-2 gap-2 p-1.5 bg-ochre/10 rounded border border-ochre/30">
               <div>
-                <label className="text-[8px] font-bold text-stone-600">Event / Lent Date</label>
+                <label className="text-[8px] font-bold text-stone-600">{t('legacy.Event / Lent Date')}</label>
                 <input type="date" value={eventDate} onChange={e => setEventDate(e.target.value)} className="w-full bg-white border border-sand/60 rounded p-1 text-[11px]" />
               </div>
               <div>
-                <label className="text-[8px] font-bold text-stone-600">Promise Return</label>
+                <label className="text-[8px] font-bold text-stone-600">{t('legacy.Promise Return')}</label>
                 <input type="date" value={promiseReturnDate} onChange={e => setPromiseReturnDate(e.target.value)} className="w-full bg-white border border-sand/60 rounded p-1 text-[11px]" />
               </div>
             </div>
