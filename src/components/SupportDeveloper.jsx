@@ -52,13 +52,13 @@ export default function SupportDeveloper({ compact = false }) {
             <p className="text-[10px] font-bold text-stone-500 mt-2">BHARAT BABASAHEB RASVE</p>
             <div className="mt-3 flex items-center justify-center gap-2 rounded-lg border border-stone-200 bg-stone-50 p-2">
               <span className="text-xs font-bold break-all">{UPI_ID}</span>
-              <button onClick={copyUpi} className="shrink-0 rounded-md bg-forest text-white px-2 py-1.5 text-xs font-bold" title={t('legacy.Copy UPI ID')}">
+              <button onClick={copyUpi} className="shrink-0 rounded-md bg-forest text-white px-2 py-1.5 text-xs font-bold" title={t('legacy.Copy UPI ID')}>
                 <i className={copied ? 'fa-solid fa-check' : 'fa-regular fa-copy'}></i>
                 <span className="ml-1">{copied ? t('legacy.Copied') : t('legacy.Copy')}</span>
               </button>
             </div>
             <a href="upi://pay?pa=bharatrasvebr2@ybl&pn=Bharat%20Rasve&cu=INR" className="mt-3 block rounded-lg bg-[#6739B7] text-white py-2.5 text-xs font-black">
-              <i className="fa-solid fa-indian-rupee-sign mr-1"></i> Pay with UPI app
+              <i className="fa-solid fa-indian-rupee-sign mr-1"></i> {t('legacy.Pay with UPI app')}
             </a>
           </div>
         </div>
