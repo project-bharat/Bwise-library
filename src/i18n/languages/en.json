@@ -261,6 +261,9 @@
     "Add Reader": "Add Reader",
     "Promise Return Date": "Promise Return Date",
     "Event Date": "Event Date",
-    "Save Status": "Save Status"
+    "Save Status": "Save Status",
+    "WhatsApp Reminder (All Holding Books)": "WhatsApp Reminder (All Holding Books)",
+    "Edit Book Details (Title, Author, Amount, Category)": "Edit Book Details (Title, Author, Amount, Category)",
+    "Update Status, Custody & Lending": "Update Status, Custody & Lending"
   }
 }
