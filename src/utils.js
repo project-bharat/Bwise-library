@@ -191,4 +191,4 @@ export const UI_TRANSLATIONS = {
     "कोई पुस्तक नहीं मिला"
   ]
 };
-export const translateUiText = (text, language) => { const entry = UI_TRANSLATIONS[text]; return entry ? (language === 'mr' ? entry[0] : language === 'hi' ? entry[1] : text) : text; };
+export const translateUiText = (text, language) => { const source = Object.entries(UI_TRANSLATIONS).find(([key, values]) => text === key || text === values[0] || text === values[1])?.[0] || text; const entry = UI_TRANSLATIONS[source]; return entry ? (language === 'mr' ? entry[0] : language === 'hi' ? entry[1] : source) : text; };
