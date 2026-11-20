@@ -8,6 +8,7 @@ import { requestInitialDevicePermissions } from './native/contacts';
 import { scheduleDueDateNotifications } from './native/dueNotifications';
 import { saveAndShareBlob, isShareCancel } from './native/files';
 import { formatDisplayDate, getStatusBadgeStyle, displayStatus, EMPTY_INITIAL_DATA, translateUiText } from './utils';
+import { getLanguage, setLanguage as persistLanguage } from './i18n';
 
 import BrandingFooter from './components/BrandingFooter';
 import SideDrawer from './components/SideDrawer';
@@ -24,7 +25,7 @@ import SyncSettingsModal from './components/modals/SyncSettingsModal';
 export default function App() {
   const [appData, setAppData] = useState(EMPTY_INITIAL_DATA);
   const [bootSplash, setBootSplash] = useState(true);
-  const [displayLanguage, setDisplayLanguage] = useState(() => localStorage.getItem('bwise-display-language') || 'en');
+  const [displayLanguage, setDisplayLanguage] = useState(() => getLanguage());
   useEffect(() => {
     const translateDom = () => {
       const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
@@ -45,7 +46,7 @@ export default function App() {
     };
     translateDom(); const observer = new MutationObserver(translateDom); observer.observe(document.body,{childList:true,subtree:true,characterData:true}); return () => observer.disconnect();
   }, [displayLanguage]);
-  const handleLanguageChange = (lang) => { setDisplayLanguage(lang); localStorage.setItem('bwise-display-language',lang); };
+  const handleLanguageChange = (lang) => { const selected = persistLanguage(lang); setDisplayLanguage(selected); };
   const [splashMinElapsed, setSplashMinElapsed] = useState(false);
   const [alertsOpen, setAlertsOpen] = useState(false);
   const [loadingState, setLoadingState] = useState({ text: 'Loading data...', visible: true, isSuccess: false });
