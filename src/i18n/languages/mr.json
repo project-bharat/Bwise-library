@@ -1,0 +1,81 @@
+{
+  "common": {
+    "appName": "B-wise Library",
+    "home": "मुख्यपृष्ठ",
+    "books": "पुस्तके",
+    "readers": "वाचक",
+    "persons": "व्यक्ती",
+    "wishlist": "इच्छासूची",
+    "settings": "सेटिंग्ज",
+    "search": "शोधा",
+    "add": "जोडा",
+    "save": "जतन करा",
+    "cancel": "रद्द करा",
+    "close": "बंद करा",
+    "edit": "संपादन",
+    "delete": "हटवा",
+    "reset": "रीसेट",
+    "all": "सर्व",
+    "loading": "लोड होत आहे…",
+    "noRecords": "कोणतीही नोंद आढळली नाही",
+    "back": "मागे",
+    "confirm": "निश्चित करा",
+    "yes": "होय",
+    "no": "नाही",
+    "unknown": "अज्ञात"
+  },
+  "books": {
+    "title": "पुस्तके",
+    "bookTitle": "पुस्तकाचे नाव",
+    "author": "लेखक",
+    "reader": "वाचक",
+    "category": "वर्ग",
+    "genre": "प्रकार",
+    "location": "ठिकाण",
+    "status": "स्थिती",
+    "details": "पुस्तक तपशील",
+    "searchPlaceholder": "नाव, लेखक, वाचक, प्रकार किंवा ठिकाण शोधा…",
+    "loadMore": "आणखी पुस्तके",
+    "available": "उपलब्ध",
+    "unread": "न वाचलेले",
+    "reading": "वाचत आहे",
+    "finished": "पूर्ण वाचले",
+    "lent": "दिलेली",
+    "lost": "हरवले",
+    "damaged": "खराब",
+    "wishlist": "इच्छासूचीत"
+  },
+  "persons": {
+    "title": "वाचक",
+    "name": "नाव",
+    "phone": "फोन",
+    "address": "पत्ता",
+    "email": "ईमेल",
+    "history": "पुस्तक इतिहास",
+    "holding": "जवळ आहे",
+    "returned": "परत केले",
+    "gifted": "भेट दिले"
+  },
+  "wishlist": {
+    "title": "इच्छासूची",
+    "add": "इच्छासूचीत जोडा",
+    "edit": "इच्छासूची संपादित करा",
+    "priority": "प्राधान्य"
+  },
+  "settings": {
+    "title": "सेटिंग्ज",
+    "language": "अ‍ॅपची भाषा",
+    "languageEnglish": "इंग्रजी",
+    "languageMarathi": "मराठी",
+    "languageHindi": "हिंदी"
+  },
+  "messages": {
+    "loadingData": "डेटा लोड होत आहे…",
+    "dataReady": "स्थानिक डेटा तयार",
+    "loadFailed": "स्थानिक डेटा लोड होऊ शकला नाही",
+    "saved": "यशस्वीरीत्या जतन केले",
+    "saveFailed": "जतन अयशस्वी",
+    "pdfExported": "PDF निर्यात झाले",
+    "exportFailed": "निर्यात अयशस्वी"
+  }
+}
