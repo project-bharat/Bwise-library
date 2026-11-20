@@ -7,8 +7,8 @@ import { hideNativeSplash } from './native/init';
 import { requestInitialDevicePermissions } from './native/contacts';
 import { scheduleDueDateNotifications } from './native/dueNotifications';
 import { saveAndShareBlob, isShareCancel } from './native/files';
-import { formatDisplayDate, getStatusBadgeStyle, displayStatus, EMPTY_INITIAL_DATA, translateUiText } from './utils';
-import { getLanguage, setLanguage as persistLanguage } from './i18n';
+import { formatDisplayDate, getStatusBadgeStyle, displayStatus, EMPTY_INITIAL_DATA } from './utils';
+import { setLanguage as persistLanguage } from './i18n';
 import { useTranslation } from './i18n/useTranslation';
 
 import BrandingFooter from './components/BrandingFooter';
@@ -27,28 +27,7 @@ export default function App() {
   const { t } = useTranslation();
   const [appData, setAppData] = useState(EMPTY_INITIAL_DATA);
   const [bootSplash, setBootSplash] = useState(true);
-  const [displayLanguage, setDisplayLanguage] = useState(() => getLanguage());
-  useEffect(() => {
-    const translateDom = () => {
-      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-      let node; while ((node = walker.nextNode())) { const original = node.nodeValue.trim(); if (original) { const translated = translateUiText(original, displayLanguage); if (translated !== original) node.nodeValue = node.nodeValue.replace(original, translated); } }
-      // Translate visible UI strings and common form/control attributes.
-      document.querySelectorAll('[title],[aria-label],[placeholder],[alt]').forEach(el => {
-        ['title','aria-label','placeholder','alt'].forEach(attr => {
-          const v = el.getAttribute(attr);
-          if (v) el.setAttribute(attr, translateUiText(v, displayLanguage));
-        });
-      });
-      document.querySelectorAll('option, input[type="button"], input[type="submit"]').forEach(el => {
-        const v = el.textContent || el.value || '';
-        const translated = translateUiText(v, displayLanguage);
-        if (el.tagName === 'OPTION') { if (translated !== v) el.textContent = translated; }
-        else if (translated !== v) el.value = translated;
-      });
-    };
-    translateDom(); const observer = new MutationObserver(translateDom); observer.observe(document.body,{childList:true,subtree:true,characterData:true}); return () => observer.disconnect();
-  }, [displayLanguage]);
-  const handleLanguageChange = (lang) => { const selected = persistLanguage(lang); setDisplayLanguage(selected); };
+  const handleLanguageChange = (lang) => { persistLanguage(lang); };
   const [splashMinElapsed, setSplashMinElapsed] = useState(false);
   const [alertsOpen, setAlertsOpen] = useState(false);
   const [loadingState, setLoadingState] = useState({ text: 'Loading data...', visible: true, isSuccess: false });
