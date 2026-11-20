@@ -81,7 +81,7 @@ export default function BookDetailsModal({ isNew, initial, config, onClose, onSu
             <div>
               <label className="text-[8px] font-black uppercase text-stone-500">{t('legacy.Language')}</label>
               <select value={language} onChange={e => setLanguage(e.target.value)} className="w-full bg-alabaster border border-sand/60 rounded px-2 py-1 text-xs">
-                <option>{t('legacy.Marathi')</option><option>{t('legacy.Hindi')</option><option>{t('legacy.English')</option><option>Sanskrit</option><option>Other</option>
+                <option>{t('legacy.Marathi')}</option><option>{t('legacy.Hindi')}</option><option>{t('legacy.English')}</option><option>Sanskrit</option><option>Other</option>
               </select>
             </div>
           </div>
