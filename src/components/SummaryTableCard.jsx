@@ -18,7 +18,7 @@ export default function SummaryTableCard({ id, title, badge, rows, onRowClick, o
         </div>
         <div className="flex items-center space-x-2">
           <span className="text-[8px] font-extrabold text-ochre uppercase tracking-wider">{badge}</span>
-          <button onClick={(e) => { e.stopPropagation(); onShare(); }} className="hover:text-forest text-stone-500 p-0.5" title="Share Table as PDF">
+          <button onClick={(e) => { e.stopPropagation(); onShare(); }} className="hover:text-forest text-stone-500 p-0.5" title={t('legacy.Share Table as PDF')}>
             <i className="fa-solid fa-share-nodes text-[11px]"></i>
           </button>
         </div>
