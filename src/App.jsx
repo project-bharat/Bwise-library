@@ -627,11 +627,11 @@ export default function App() {
         onAddStatus={() => { setDrawerOpen(false); setAdminConfigModal({ type: 'Current_Status' }); }}
         onBackupWithGoogle={() => handleExportFullBackup('Choose Google Drive in the share sheet to save your backup')}
         onExportBackup={() => handleExportFullBackup('Export full library data')}
-        onRestoreClick={() => backupFileInputRef.current.click()}
+        onRestoreClick={() => { if (backupFileInputRef.current) { backupFileInputRef.current.value = ''; backupFileInputRef.current.click(); } }}
         onSyncSettings={() => { setDrawerOpen(false); setSyncModal(true); }}
         onCallDeveloper={() => handleDirectDial('917218838122')}
       />
-      <input type="file" accept=".csv" ref={backupFileInputRef} onChange={handleImportBackupFile} className="hidden" />
+      <input type="file" accept="*/*,.csv,text/csv,application/csv,application/vnd.ms-excel,text/plain,application/octet-stream" ref={backupFileInputRef} onChange={handleImportBackupFile} aria-label="Select library backup CSV" style={{ position: "fixed", left: "-10000px", top: 0, width: "1px", height: "1px", opacity: 0 }} />
 
       <div className="flex-1 flex flex-col pt-[60px] pb-28">
 
