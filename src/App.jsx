@@ -427,13 +427,13 @@ This is a gentle reminder regarding the books borrowed from my library:
     const footer = document.createElement('div');
     footer.style.cssText = 'margin-top:30px;padding:22px 10px 30px;border-top:1px solid #E5E7EB;text-align:center;box-sizing:border-box;width:100%;';
     footer.innerHTML = `
-      <img src="/horizontal-colored-logo.png" alt="B-wise Library" style="display:block;width:150px;max-width:80%;height:auto;max-height:48px;object-fit:contain;margin:0 auto 10px;" />
+      <img src="/horizontal-colored-logo.png" alt={t('legacy.B-wise Library')} style="display:block;width:150px;max-width:80%;height:auto;max-height:48px;object-fit:contain;margin:0 auto 10px;" />
       <p style="font-size:9px;font-weight:800;color:#6B7280;letter-spacing:.3px;margin:0 0 12px;">B-wise Library Developed by - Bharat Rasve © 2026</p>
       <div style="display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;">
         <a href="tel:+917218838122" aria-label="${t('legacy.Call')}" title="${t('legacy.Call')}" style="width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#1E3535;color:#fff;text-decoration:none;"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M6.6 2.8c-.6-.6-1.5-.6-2.1 0L3 4.3c-.8.8-.9 2-.4 3.1 2.7 5.8 7.2 10.3 13 13 1.1.5 2.3.4 3.1-.4l1.5-1.5c.6-.6.6-1.5 0-2.1l-3-3c-.5-.5-1.3-.6-1.9-.2l-1.6 1c-2.3-1.1-4.1-2.9-5.2-5.2l1-1.6c.4-.6.3-1.4-.2-1.9z"/></svg></a>
         <a href="https://wa.me/917218838122" aria-label="WhatsApp" title="WhatsApp" style="width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#25D366;color:#fff;text-decoration:none;"><svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true"><path d="M20.5 3.5A11.5 11.5 0 0 0 2.3 17.2L1 23l5.9-1.2A11.5 11.5 0 0 0 20.5 3.5ZM12 20a8 8 0 0 1-4.1-1.1l-.3-.2-3.5.7.8-3.4-.2-.3A8.5 8.5 0 1 1 12 20Zm4.6-6.3c-.3-.2-1.5-.7-1.8-.8s-.4-.1-.6.2-.7.8-.8 1-.3.2-.5.1a7.1 7.1 0 0 1-2.1-1.3 8 8 0 0 1-1.5-1.8c-.2-.3 0-.4.1-.6l.4-.5c.1-.2.2-.3.3-.5s0-.3 0-.5-.6-1.4-.8-1.9-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.4-.3.3-1 1-1 2.4s1 2.7 1.1 2.9a10.8 10.8 0 0 0 4.2 4.1c.5.2 1 .4 1.4.5.6.2 1.1.2 1.5.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2-.1-.1-.2-.2-.5-.3z"/></svg></a>
-        <a href="https://www.linkedin.com/in/bharatrasve" aria-label="LinkedIn" title="LinkedIn" style="width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#0A66C2;color:#fff;text-decoration:none;font-family:Arial,sans-serif;font-size:13px;font-weight:800;line-height:1;">in</a>
-        <a href="https://github.com/bharombhar" aria-label="GitHub" title="GitHub" style="width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#171717;color:#fff;text-decoration:none;"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 .9a11.1 11.1 0 0 0-3.5 21.6c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.4-4-1.4-.5-1.1-1.1-1.4-1.1-1.4-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.9.1-.7.4-1.1.7-1.4-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.6.1-3.3 0 0 1-.3 3.4 1.2a11.8 11.8 0 0 1 6.2 0c2.4-1.6 3.4-1.2 3.4-1.2.6 1.7.2 3 .1 3.3.8.9 1.2 1.9 1.2 3.2 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1 .8 2v3c0 .3.2.7.8.6A11.1 11.1 0 0 0 12 .9z"/></svg></a>
+        <a href="https://www.linkedin.com/in/bharatrasve" aria-label={t('legacy.LinkedIn')} title={t('legacy.LinkedIn')} style="width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#0A66C2;color:#fff;text-decoration:none;font-family:Arial,sans-serif;font-size:13px;font-weight:800;line-height:1;">in</a>
+        <a href="https://github.com/bharombhar" aria-label={t('legacy.GitHub')} title={t('legacy.GitHub')} style="width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#171717;color:#fff;text-decoration:none;"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 .9a11.1 11.1 0 0 0-3.5 21.6c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.4-4-1.4-.5-1.1-1.1-1.4-1.1-1.4-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.9.1-.7.4-1.1.7-1.4-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.6.1-3.3 0 0 1-.3 3.4 1.2a11.8 11.8 0 0 1 6.2 0c2.4-1.6 3.4-1.2 3.4-1.2.6 1.7.2 3 .1 3.3.8.9 1.2 1.9 1.2 3.2 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1 .8 2v3c0 .3.2.7.8.6A11.1 11.1 0 0 0 12 .9z"/></svg></a>
       </div>
     `;
 
@@ -616,9 +616,9 @@ This is a gentle reminder regarding the books borrowed from my library:
     <div className="min-h-screen max-w-xl mx-auto flex flex-col justify-between relative shadow-2xl bg-alabaster m-0 p-0 border-0 overflow-x-hidden">
       {(bootSplash || !splashMinElapsed) && (
         <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center px-8" style={{ background: 'linear-gradient(145deg, #123D3B 0%, #047372 52%, #0A5550 100%)' }}>
-          <img src="/horizontal-logo.png" alt="B-wise Library" className="w-full max-w-[300px] max-h-[120px] object-contain" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+          <img src="/horizontal-logo.png" alt={t('legacy.B-wise Library')} className="w-full max-w-[300px] max-h-[120px] object-contain" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
           <p className="mt-5 text-white/85 text-xs font-semibold tracking-[0.22em] uppercase">Your library. Always with you.</p>
-          <div className="absolute bottom-10 text-white/65 text-[10px] tracking-widest uppercase">B-wise Library</div>
+          <div className="absolute bottom-10 text-white/65 text-[10px] tracking-widest uppercase">{t('legacy.B-wise Library')</div>
         </div>
       )}
 
@@ -1390,7 +1390,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                     <button
                       onClick={() => handleExportPdf('tag-books-table-export', `${selectedTag.value.replace(/\s+/g, '_')}_Books.pdf`, `${selectedTag.value.toUpperCase()} - BOOKS REPORT`)}
                       className="text-stone-500 hover:text-forest p-1 rounded active:scale-90"
-                      title="Export Table as PDF"
+                      title={t('legacy.Export Table as PDF')}
                     >
                       <i className="fa-solid fa-share-nodes text-xs"></i>
                     </button>
@@ -1404,7 +1404,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                         <th className="px-2.5 py-2 w-[44%]">{t('legacy.Title & Details')}</th>
                         <th className="px-1.5 py-2 w-[19%]">{t('legacy.Initial Status')}</th>
                         <th className="px-1.5 py-2 w-[19%]">{t('legacy.Cur. Status')}</th>
-                        <th className="px-2 py-2 w-[18%]">Location</th>
+                        <th className="px-2 py-2 w-[18%]">{t('legacy.Location')</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-sand/30 font-medium text-charcoal">
@@ -1427,7 +1427,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                                 <button
                                   onClick={(e) => handleCopyTitle(b.title, e)}
                                   className="text-stone-400 hover:text-forest active:scale-90 p-0.5 flex-none"
-                                  title="Copy Title"
+                                  title={t('legacy.Copy Title')}
                                 >
                                   <i className="fa-regular fa-copy text-[9px]"></i>
                                 </button>
@@ -1523,7 +1523,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                   style={activeTab === 'home' ? activeIconGradient : { color: '#D4C1A3' }}
                 ></i>
                 <span className={`text-[9px] mt-0.5 tracking-wide ${activeTab === 'home' ? 'text-white font-black' : 'text-sand/80 font-medium'}`}>
-                  Home
+                  {t('legacy.Home')
                 </span>
               </button>
 
@@ -1538,7 +1538,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                   style={activeTab === 'books' ? activeIconGradient : { color: '#D4C1A3' }}
                 ></i>
                 <span className={`text-[9px] mt-0.5 tracking-wide ${activeTab === 'books' ? 'text-white font-black' : 'text-sand/80 font-medium'}`}>
-                  Books
+                  {t('legacy.Books')
                 </span>
               </button>
 
@@ -1565,7 +1565,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                   style={(activeTab === 'persons' || activeTab === 'personDetail') ? activeIconGradient : { color: '#D4C1A3' }}
                 ></i>
                 <span className={`text-[9px] mt-0.5 tracking-wide ${(activeTab === 'persons' || activeTab === 'personDetail') ? 'text-white font-black' : 'text-sand/80 font-medium'}`}>
-                  Persons
+                  {t('legacy.Persons')
                 </span>
               </button>
 
@@ -1580,7 +1580,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                   style={activeTab === 'wishlist' ? activeIconGradient : { color: '#D4C1A3' }}
                 ></i>
                 <span className={`text-[9px] mt-0.5 tracking-wide ${activeTab === 'wishlist' ? 'text-white font-black' : 'text-sand/80 font-medium'}`}>
-                  Wishlist
+                  {t('legacy.Wishlist')
                 </span>
               </button>
             </>
@@ -1679,7 +1679,7 @@ This is a gentle reminder regarding the books borrowed from my library:
               <h3 className="text-sm font-black uppercase tracking-wide">{t('legacy.Restore Database')}</h3>
             </div>
             <p className="text-xs text-charcoal font-medium">
-              Restoring <b>{restoreConfirmFile.name}</b> will replace this phone’s books, reader records, configuration, and wishlist data.
+              {t('legacy.Restoring') <b>{restoreConfirmFile.name}</b> will replace this phone’s books, reader records, configuration, and wishlist data.
             </p>
             <p className="text-[11px] text-stone-500 italic">
               {t('legacy.Are you sure you want to proceed with this restore operation?')}
@@ -1689,13 +1689,13 @@ This is a gentle reminder regarding the books borrowed from my library:
                 onClick={() => { setRestoreConfirmFile(null); if (backupFileInputRef.current) backupFileInputRef.current.value = ''; }}
                 className="px-3 py-1.5 bg-stone-100 text-stone-700 text-xs font-bold rounded-lg hover:bg-stone-200 active:scale-95"
               >
-                Cancel
+                {t('legacy.Cancel')
               </button>
               <button
                 onClick={executeRestore}
                 className="px-4 py-1.5 bg-rose-700 text-white text-xs font-black rounded-lg hover:bg-rose-800 active:scale-95 shadow-sm"
               >
-                Yes, Restore
+                {t('legacy.Yes, Restore')
               </button>
             </div>
           </div>
