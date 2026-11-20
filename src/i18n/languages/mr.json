@@ -218,13 +218,13 @@
     "WhatsApp Reminder": "WhatsApp स्मरणपत्र",
     "Export Statement PDF": "स्टेटमेंट PDF निर्यात",
     "Export Journey PDF": "प्रवास PDF निर्यात",
-    "Filter category:": "प्रकार फिल्टर:",
+    "Filter category:": "वर्ग फिल्टर:",
     "Filter author:": "लेखक फिल्टर:",
     "View all books in": "यातील सर्व पुस्तके पहा",
     "View all books by": "यांची सर्व पुस्तके पहा",
     "By": "लेखक",
     "Acquired via": "मिळवण्याचा मार्ग",
-    "Status Updated": "स्थिती बदलली",
+    "Status Updated": "स्थिती अद्यतनित",
     "days": "दिवस",
     "days later": "दिवसांनंतर",
     "Local data ready": "स्थानिक डेटा तयार",
@@ -261,6 +261,9 @@
     "Add Reader": "वाचक जोडा",
     "Promise Return Date": "परत देण्याची अपेक्षित तारीख",
     "Event Date": "घटना तारीख",
-    "Save Status": "स्थिती जतन करा"
+    "Save Status": "स्थिती जतन करा",
+    "WhatsApp Reminder (All Holding Books)": "WhatsApp स्मरणपत्र (सर्व प्रलंबित पुस्तके)",
+    "Edit Book Details (Title, Author, Amount, Category)": "पुस्तक तपशील संपादित करा (नाव, लेखक, रक्कम, वर्ग)",
+    "Update Status, Custody & Lending": "स्थिती, ताबा व देणे अद्यतनित करा"
   }
 }
