@@ -86,10 +86,19 @@ export default function IndividualPersonPage({ person, allBooks, onBack, onOpenB
 
       {/* TOP SECTION: Unified 50/50 horizontal row */}
       <div className="bg-forest text-white p-2.5 rounded-xl shadow-sm flex items-center justify-between gap-2">
-        <div className="w-1/2 pr-1 flex flex-col justify-center">
-          <h1 className="text-sm font-black leading-tight truncate">{person.name}</h1>
-          <p className="text-[10px] text-sand/90 font-medium truncate mt-0.5">{person.phone || 'No phone'}</p>
-          <p className="text-[9px] text-sand/70 truncate">{person.address || 'No address'}</p>
+        <div className="w-1/2 pr-1 flex flex-col justify-center space-y-1">
+          <div className="flex items-center min-w-0 space-x-1.5">
+            <i className="fa-solid fa-user text-[10px] text-sand/90 w-3 text-center flex-none" aria-hidden="true"></i>
+            <h1 className="text-sm font-black leading-tight truncate">{person.name}</h1>
+          </div>
+          <div className="flex items-center min-w-0 space-x-1.5">
+            <i className="fa-solid fa-phone text-[9px] text-sand/90 w-3 text-center flex-none" aria-hidden="true"></i>
+            <p className="text-[10px] text-sand/90 font-medium truncate">{person.phone || 'No phone'}</p>
+          </div>
+          <div className="flex items-center min-w-0 space-x-1.5">
+            <i className="fa-solid fa-location-dot text-[9px] text-sand/70 w-3 text-center flex-none" aria-hidden="true"></i>
+            <p className="text-[9px] text-sand/70 truncate">{person.address || 'No address'}</p>
+          </div>
         </div>
 
         <div className="w-1/2 bg-white/10 p-1.5 rounded-lg border border-white/15 grid grid-cols-2 divide-x divide-white/20 text-center flex-none">
