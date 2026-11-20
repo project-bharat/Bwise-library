@@ -2,7 +2,7 @@ import React from 'react';
 import brandIcon from '../assets/brand-icon.png?inline';
 import SupportDeveloper from './SupportDeveloper';
 
-export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddPerson, onAddCategory, onAddLocation, onAddStatus, onBackupWithGoogle, onExportBackup, onRestoreClick, onSyncSettings, onCallDeveloper }) {
+export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddPerson, onAddCategory, onAddLocation, onAddStatus, onBackupWithGoogle, onExportBackup, onRestoreClick, onSyncSettings, onCallDeveloper, displayLanguage = 'en', onLanguageChange }) {
   return (
     <div className={`fixed inset-0 z-50 transition-all duration-300 ${isOpen ? 'visible opacity-100' : 'invisible opacity-0'}`}>
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
@@ -23,7 +23,7 @@ export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddP
               <i className="fa-solid fa-xmark text-lg"></i>
             </button>
           </div>
-          <div className="p-4 space-y-4 text-xs font-bold text-charcoal">
+          <div className="p-4 space-y-4 text-xs font-bold text-charcoal">\n            <div className="rounded-xl border border-stone-200 bg-stone-50 p-3">\n              <label className="block text-[9px] font-black uppercase tracking-widest text-stone-400 mb-2">App display language</label>\n              <select value={displayLanguage} onChange={e => onLanguageChange?.(e.target.value)} className="w-full rounded-lg border border-stone-200 bg-white px-2.5 py-2 text-xs font-bold text-charcoal">\n                <option value="en">English (Default)</option><option value="mr">मराठी</option><option value="hi">हिन्दी</option>\n              </select>\n            </div>
             <div>
               <p className="text-[9px] font-black uppercase tracking-widest text-stone-400 mb-1 px-1">Reader Directory</p>
               <button onClick={onOpenPersonManage} className="w-full text-left p-2 rounded-lg hover:bg-stone-100 flex items-center space-x-2">
@@ -57,7 +57,7 @@ export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddP
           </div>
         </div>
         <div className="p-3.5 border-t border-white/10 text-center select-none flex flex-col items-center justify-center bg-gradient-to-r from-[#033636] via-[#047372] to-[#052626]">
-          <img src="/horizontal-logo.png" alt="B-wise Library" className="w-36 max-w-full h-auto max-h-10 object-contain mb-2" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+          <div className="mb-2"><SupportDeveloper compact /></div>\n          <img src="/horizontal-logo.png" alt="B-wise Library" className="w-36 max-w-full h-auto max-h-10 object-contain mb-2" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
           <p className="text-[8px] font-black text-white/75 tracking-widest mb-1.5 uppercase">DEVELOPED BY - BHARAT RASVE © 2026</p>
           <div className="mb-2"><SupportDeveloper compact /></div>
           <div className="flex items-center space-x-2">
