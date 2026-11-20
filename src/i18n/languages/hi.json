@@ -1,0 +1,81 @@
+{
+  "common": {
+    "appName": "B-wise Library",
+    "home": "होम",
+    "books": "पुस्तकें",
+    "readers": "पाठक",
+    "persons": "व्यक्ति",
+    "wishlist": "इच्छासूची",
+    "settings": "सेटिंग्स",
+    "search": "खोजें",
+    "add": "जोड़ें",
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "close": "बंद करें",
+    "edit": "संपादित करें",
+    "delete": "हटाएं",
+    "reset": "रीसेट",
+    "all": "सभी",
+    "loading": "लोड हो रहा है…",
+    "noRecords": "कोई रिकॉर्ड नहीं मिला",
+    "back": "वापस",
+    "confirm": "पुष्टि करें",
+    "yes": "हाँ",
+    "no": "नहीं",
+    "unknown": "अज्ञात"
+  },
+  "books": {
+    "title": "पुस्तकें",
+    "bookTitle": "पुस्तक का नाम",
+    "author": "लेखक",
+    "reader": "पाठक",
+    "category": "श्रेणी",
+    "genre": "श्रेणी",
+    "location": "स्थान",
+    "status": "स्थिति",
+    "details": "पुस्तक विवरण",
+    "searchPlaceholder": "नाम, लेखक, पाठक, श्रेणी या स्थान खोजें…",
+    "loadMore": "और पुस्तकें देखें",
+    "available": "उपलब्ध",
+    "unread": "नहीं पढ़ा",
+    "reading": "पढ़ रहे हैं",
+    "finished": "पूरा पढ़ा",
+    "lent": "उधार दिया",
+    "lost": "खो गया",
+    "damaged": "क्षतिग्रस्त",
+    "wishlist": "इच्छासूची में"
+  },
+  "persons": {
+    "title": "पाठक",
+    "name": "नाम",
+    "phone": "फ़ोन",
+    "address": "पता",
+    "email": "ईमेल",
+    "history": "पुस्तक इतिहास",
+    "holding": "पास है",
+    "returned": "लौटाया",
+    "gifted": "उपहार दिया"
+  },
+  "wishlist": {
+    "title": "इच्छासूची",
+    "add": "इच्छासूची में जोड़ें",
+    "edit": "इच्छासूची संपादित करें",
+    "priority": "प्राथमिकता"
+  },
+  "settings": {
+    "title": "सेटिंग्स",
+    "language": "ऐप की भाषा",
+    "languageEnglish": "अंग्रेज़ी",
+    "languageMarathi": "मराठी",
+    "languageHindi": "हिंदी"
+  },
+  "messages": {
+    "loadingData": "डेटा लोड हो रहा है…",
+    "dataReady": "स्थानीय डेटा तैयार",
+    "loadFailed": "स्थानीय डेटा लोड नहीं हो सका",
+    "saved": "सफलतापूर्वक सहेजा गया",
+    "saveFailed": "सहेजना विफल",
+    "pdfExported": "PDF निर्यात हुआ",
+    "exportFailed": "निर्यात विफल"
+  }
+}
