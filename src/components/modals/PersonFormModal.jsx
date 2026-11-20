@@ -22,9 +22,9 @@ export default function PersonFormModal({ isNew, initial, onClose, onSuccess }) 
       const deviceContacts = await getDeviceContacts();
       setContacts(deviceContacts);
       setShowContacts(true);
-      if (!deviceContacts.length) setContactError('No contacts with names were found on this device.');
+      if (!deviceContacts.length) setContactError(t('legacy.No contacts with names were found on this device.'));
     } catch (error) {
-      setContactError(error?.message || 'Unable to read device contacts.');
+      setContactError(error?.message || t('legacy.Unable to read device contacts.'));
     } finally {
       setLoadingContacts(false);
     }
@@ -77,7 +77,7 @@ export default function PersonFormModal({ isNew, initial, onClose, onSuccess }) 
                 {filteredContacts.slice(0, 100).map((contact, index) => (
                   <button type="button" key={`${contact.name}-${contact.phone}-${index}`} onClick={() => chooseContact(contact)} className="w-full text-left py-2 px-1 hover:bg-alabaster">
                     <span className="block font-bold text-forest">{contact.name}</span>
-                    <span className="block text-[10px] text-stone-500">{contact.phone || contact.email || 'No phone number'}</span>
+                    <span className="block text-[10px] text-stone-500">{contact.phone || contact.email || t('legacy.No phone number')}</span>
                   </button>
                 ))}
                 {!filteredContacts.length && <p className="py-3 text-center text-stone-500">No matching contacts.</p>}
