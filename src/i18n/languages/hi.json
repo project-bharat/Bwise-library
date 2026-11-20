@@ -167,7 +167,7 @@
     "Add Reader Profile": "पाठक जोड़ें",
     "Edit Reader Profile": "पाठक संपादित करें",
     "Choose from device contacts": "फ़ोन संपर्कों से चुनें",
-    "Loading device contacts…": "संपर्क लोड हो रहे हैं…",
+    "Loading device contacts…": "फ़ोन संपर्क लोड हो रहे हैं…",
     "Device contacts": "फ़ोन संपर्क",
     "Search name or phone": "नाम या फोन खोजें",
     "Add": "जोड़ें",
@@ -233,6 +233,21 @@
     "PDF Exported": "PDF निर्यात हुआ",
     "Export failed:": "निर्यात विफल:",
     "Reset filters": "फ़िल्टर रीसेट करें",
-    "RESET FILTERS": "फ़िल्टर रीसेट करें"
+    "RESET FILTERS": "फ़िल्टर रीसेट करें",
+    "New Book Entry": "नई पुस्तक प्रविष्टि",
+    "Book title is required": "पुस्तक का नाम आवश्यक है",
+    "Initial Status": "प्रारंभिक स्थिति",
+    "Book In Date": "पुस्तक प्राप्ति तिथि",
+    "Amount (₹)": "राशि (₹)",
+    "Notes": "टिप्पणियाँ",
+    "Save Book": "पुस्तक सहेजें",
+    "Save Wishlist": "इच्छासूची सहेजें",
+    "Book title example": "जैसे Clean Code",
+    "Author name": "लेखक का नाम",
+    "Language": "भाषा",
+    "Update Status & Journey": "स्थिति और यात्रा अपडेट करें",
+    "Reading Stage": "पठन स्थिति",
+    "Please select a borrower.": "कृपया उधार लेने वाले का चयन करें।",
+    "Return book to library shelf: Click OK for 'At Home', or Cancel for 'At Office'": "पुस्तक लौटाते समय OK दबाएँ तो 'घर पर', Cancel दबाएँ तो 'कार्यालय में'"
   }
 }
