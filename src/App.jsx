@@ -596,7 +596,7 @@ This is a gentle reminder regarding the books borrowed from my library:
       {(bootSplash || !splashMinElapsed) && (
         <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center px-8" style={{ background: 'linear-gradient(145deg, #123D3B 0%, #047372 52%, #0A5550 100%)' }}>
           <img src="/horizontal-logo.png" alt={t('legacy.B-wise Library')} className="w-full max-w-[300px] max-h-[120px] object-contain" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-          <p className="mt-5 text-white/85 text-xs font-semibold tracking-[0.22em] uppercase">Your library. Always with you.</p>
+          <p className="mt-5 text-white/85 text-xs font-semibold tracking-[0.22em] uppercase">{t('legacy.Your library. Always with you.')}</p>
           <div className="absolute bottom-10 text-white/65 text-[10px] tracking-widest uppercase">{t('legacy.B-wise Library')}</div>
         </div>
       )}
