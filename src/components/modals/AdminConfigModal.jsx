@@ -7,8 +7,9 @@ export default function AdminConfigModal({ type, config, onClose, onSuccess }) {
   const [saving, setSaving] = useState(false);
   const configKey = ({ Category: 'categories', Location: 'locations', Current_Status: 'currentStatuses', Current_Statuses: 'currentStatuses', Initial_Status: 'initialStatuses' })[type] || 'categories';
   const existingItems = (config && config[configKey]) || [];
+  const typeLabel = ({ Category: t('legacy.Category'), Location: t('legacy.Location'), Current_Status: t('legacy.Status'), Current_Statuses: t('legacy.Status'), Initial_Status: t('legacy.Initial Status') })[type] || type.replace('_', ' ');
   const handleDelete = (item) => {
-    if (!window.confirm(`Remove ${item} from ${type.replace('_', ' ')} options?`)) return;
+    if (!window.confirm(t('legacy.Remove {{item}} from {{type}} options?', { item, type: typeLabel }))) return;
     google.script.run.withSuccessHandler(onSuccess).withFailureHandler(() => setSaving(false)).deleteAdminConfigItem(type, item);
   };
 
@@ -27,7 +28,7 @@ export default function AdminConfigModal({ type, config, onClose, onSuccess }) {
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-3">
       <div className="bg-white w-full max-w-sm rounded-2xl p-4 shadow-2xl border border-sand/40">
         <div className="flex justify-between items-center border-b pb-2 mb-3">
-          <h2 className="text-xs font-black uppercase text-forest">{type === 'Category' ? t('legacy.Manage & Add Genre') : `${t('legacy.Manage & Add Genre')} ${type.replace('_',' ')}`}</h2>
+          <h2 className="text-xs font-black uppercase text-forest">{t('legacy.Manage & Add {{type}}', { type: typeLabel })}</h2>
           <button onClick={onClose}><i className="fa-solid fa-xmark"></i></button>
         </div>
         <div className="mb-3 max-h-36 overflow-y-auto space-y-1">
