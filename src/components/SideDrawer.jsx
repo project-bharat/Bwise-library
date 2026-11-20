@@ -59,7 +59,6 @@ export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddP
         <div className="p-3.5 border-t border-white/10 text-center select-none flex flex-col items-center justify-center bg-gradient-to-r from-[#033636] via-[#047372] to-[#052626]">
           <div className="mb-2"><SupportDeveloper compact /></div>          <img src="/horizontal-logo.png" alt="B-wise Library" className="w-36 max-w-full h-auto max-h-10 object-contain mb-2" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
           <p className="text-[8px] font-black text-white/75 tracking-widest mb-1.5 uppercase">DEVELOPED BY - BHARAT RASVE © 2026</p>
-          <div className="mb-2"><SupportDeveloper compact /></div>
           <div className="flex items-center space-x-2">
             <button onClick={onCallDeveloper} className="w-6 h-6 rounded-full bg-white text-forest hover:bg-ochre flex items-center justify-center text-[10px] active:scale-95 transition-colors shadow-xs" title="Call Developer">
               <i className="fa-solid fa-phone"></i>
