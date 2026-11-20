@@ -34,8 +34,8 @@ export default function AdminConfigModal({ type, config, onClose, onSuccess }) {
         </div>
         <form onSubmit={handleSubmit} className="space-y-3 text-xs">
           <div><label className="text-[9px] font-black uppercase text-stone-500">Add new value *</label><input type="text" required value={val} onChange={e => setVal(e.target.value)} className="w-full bg-alabaster border rounded p-2 focus:outline-none" /></div>
-          <button type="submit" disabled={saving} className="w-full py-2.5 bg-forest text-alabaster font-black rounded text-xs uppercase tracking-wider active:scale-95">
-            {saving ? 'Saving...' : 'Add Config'}
+          <button type="submit" disabled={saving} className="w-auto min-w-[64px] px-4 py-2 bg-forest text-alabaster font-black rounded text-xs uppercase tracking-wider active:scale-95">
+            {saving ? 'Saving...' : 'Add'}
           </button>
         </form>
       </div>
