@@ -87,7 +87,7 @@ export default function WishlistFormModal({ isNew, initial, config, onClose, onS
             <div>
               <label className="text-[9px] font-black uppercase text-stone-500">{t('legacy.Language')}</label>
               <select value={language} onChange={e => setLanguage(e.target.value)} className="w-full bg-alabaster border border-sand/60 rounded px-2 py-1.5 text-xs">
-                <option>{t('legacy.English')</option><option>{t('legacy.Marathi')</option><option>{t('legacy.Hindi')</option><option>Sanskrit</option><option>Other</option>
+                <option>{t('legacy.English')}</option><option>{t('legacy.Marathi')}</option><option>{t('legacy.Hindi')}</option><option>Sanskrit</option><option>Other</option>
               </select>
             </div>
           </div>
@@ -110,7 +110,7 @@ export default function WishlistFormModal({ isNew, initial, config, onClose, onS
             <div className="p-2.5 bg-emerald-50 rounded border border-emerald-300 animate-fade-in">
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-[8px] font-black uppercase text-emerald-900">{t('legacy.Initial Status')</label>
+                  <label className="text-[8px] font-black uppercase text-emerald-900">{t('legacy.Initial Status')}</label>
                   <select
                     value={initialStatus}
                     onChange={e => setInitialStatus(e.target.value)}
@@ -122,16 +122,16 @@ export default function WishlistFormModal({ isNew, initial, config, onClose, onS
                   </select>
                 </div>
                 <div>
-                  <label className="text-[8px] font-black uppercase text-emerald-900">{t('legacy.Current Status')</label>
+                  <label className="text-[8px] font-black uppercase text-emerald-900">{t('legacy.Current Status')}</label>
                   <select
                     value={currentStatus}
                     onChange={e => setCurrentStatus(e.target.value)}
                     className="w-full bg-white border border-emerald-400 rounded px-1.5 py-1 text-[11px] font-bold text-forest outline-none"
                   >
-                    <option value="COLLECTED">{t('legacy.COLLECTED')</option>
-                    <option value="LENT">{t('legacy.LENT')</option>
-                    <option value="LOST">{t('legacy.LOST')</option>
-                    <option value="DAMAGED">{t('legacy.DAMAGED')</option>
+                    <option value="COLLECTED">{t('legacy.COLLECTED')}</option>
+                    <option value="LENT">{t('legacy.LENT')}</option>
+                    <option value="LOST">{t('legacy.LOST')}</option>
+                    <option value="DAMAGED">{t('legacy.DAMAGED')}</option>
                   </select>
                 </div>
               </div>
