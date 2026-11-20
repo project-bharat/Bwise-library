@@ -377,6 +377,8 @@
     "Close notifications": "सूचना बंद करा",
     "Held by": "यांच्याकडे",
     "Due today": "आज परत देय",
-    "You have {{count}} items to get.": "मिळवायच्या {{count}} वस्तू आहेत."
+    "You have {{count}} items to get.": "मिळवायच्या {{count}} वस्तू आहेत.",
+    "View Reader Complete Books History": "वाचकाच्या सर्व पुस्तकांचा इतिहास पाहा",
+    "Go to Reader Books History": "वाचकाच्या पुस्तकांच्या इतिहासाकडे जा"
   }
 }
