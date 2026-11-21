@@ -1,4 +1,44 @@
 {
+  "reader": {
+    "deleteConfirm": "{{name}} या वाचकाची नोंद हटवायची? पुस्तकांचा इतिहास जतन राहील, पण वाचकाशी असलेली जोडणी काढली जाईल.",
+    "deleted": "वाचकाची नोंद हटवली",
+    "deleteFailed": "वाचकाची नोंद हटवता आली नाही: {{error}}",
+    "returnShelf": "पुस्तक ग्रंथालयाच्या कपाटात परत ठेवा. घरी ठेवण्यासाठी OK किंवा कार्यालयात ठेवण्यासाठी Cancel निवडा."
+  },
+  "startup": {
+    "title": "ग्रंथालयाची स्क्रीन उघडता आली नाही.",
+    "detail": "अ‍ॅप बंद करून पुन्हा उघडा. समस्या कायम राहिल्यास, उपलब्ध बॅकअप निर्यात करा आणि त्रुटीची माहिती सहाय्य पथकाला द्या.",
+    "reload": "अ‍ॅप पुन्हा उघडा"
+  },
+  "counts": {
+    "book": "{{count}} पुस्तक",
+    "books": "{{count}} पुस्तके",
+    "dueToday": "आज परत करायची · {{count}}",
+    "all": "सर्व ({{count}})",
+    "notOwned": "माझ्याकडे नाहीत ({{count}})",
+    "owned": "माझ्याकडे आहेत ({{count}})"
+  },
+  "export": {
+    "sharePdf": "PDF शेअर करा",
+    "formatting": "PDF तयार होत आहे…",
+    "failed": "निर्यात अयशस्वी: {{error}}",
+    "statementDate": "अहवालाची तारीख: {{date}}",
+    "library": "ग्रंथालय अहवाल",
+    "status": "स्थितीनुसार पुस्तकांचा सारांश",
+    "lent": "सध्या दिलेल्या पुस्तकांचा सारांश",
+    "location": "ठिकाणानुसार पुस्तकांचा सारांश",
+    "collection": "पुस्तक संग्रहाची सूची",
+    "wishlist": "माझी पुस्तकांची इच्छासूची",
+    "readers": "वाचकांचा सारांश अहवाल",
+    "statement": "{{name}} — पुस्तकांचे विवरण",
+    "books": "{{name}} — पुस्तकांचा अहवाल",
+    "journey": "{{name}} — पुस्तकाचा प्रवास",
+    "backup": "ग्रंथालयाचा संपूर्ण डेटा निर्यात करा",
+    "backupDrive": "बॅकअप जतन करण्यासाठी शेअर मेनूमधून Google Drive निवडा",
+    "backupPreparing": "बॅकअप तयार होत आहे…",
+    "backupDone": "बॅकअप निर्यात केला",
+    "backupFailed": "बॅकअप अयशस्वी: {{error}}"
+  },
   "kpi": {
     "books": "पुस्तके",
     "withMe": "माझ्याकडे",
@@ -331,7 +371,7 @@
     "In Possession ({{count}})": "In Possession ({{count}})",
     "My Books Wishlist": "माझी पुस्तक इच्छासूची",
     "Add Book to Wishlist": "इच्छासूचीत पुस्तक जोडा",
-    "Export Wishlist PDF": "Export Wishlist PDF",
+    "Export Wishlist PDF": "इच्छासूची PDF निर्यात करा",
     "Book Title & Author": "पुस्तकाचे शीर्षक व लेखक",
     "Genre & Lang": "प्रकार व भाषा",
     "Available": "उपलब्ध",
@@ -341,7 +381,7 @@
     "Yes": "होय",
     "No": "नाही",
     "Readers summary": "वाचकांचा सारांश",
-    "Export Summary PDF": "Export Summary PDF",
+    "Export Summary PDF": "सारांश PDF निर्यात करा",
     "Lost": "हरवले",
     "Reader Name": "वाचकाचे नाव",
     "No reader records found for this status filter.": "या स्थिती फिल्टरसाठी वाचक नोंदी सापडल्या नाहीत.",

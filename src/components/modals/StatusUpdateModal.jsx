@@ -44,7 +44,7 @@ export default function StatusUpdateModal({ book, people, onAddReader, onClose, 
   const handlePersonStatusChange = (newPStatus) => {
     setPersonStatus(newPStatus);
     if (newPStatus === 'Returned') {
-      const targetLoc = window.confirm("Return book to library shelf: Click OK for 'At Home', or Cancel for 'At Office'") ? 'At Home' : 'At Office';
+      const targetLoc = window.confirm(t('reader.returnShelf')) ? 'At Home' : 'At Office';
       setLocation(targetLoc);
       setCurrentStatus('COLLECTED');
     } else if (newPStatus === 'Holding' || newPStatus === 'Gifted') {

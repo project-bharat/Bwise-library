@@ -1,10 +1,14 @@
 import React from 'react';
+import { formatLocaleNumber } from '../i18n';
 import { useTranslation } from '../i18n/useTranslation';
 import BrandingFooter from './BrandingFooter';
 import { formatDisplayDate, calculateDaysSince, getStatusBadgeStyle } from '../utils';
 
 export default function IndividualPersonPage({ person, allBooks, onBack, onOpenBookJourney, onEditBook, onSendReminder, onDirectDial, onExportPdf, onCallDeveloper }) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const formatCount = value => formatLocaleNumber(value, {
+    numberingSystem: language === 'en' ? 'latn' : 'deva',
+  }, language);
   const records = person.records || [];
   const holdingRecords = records.filter(r => String(r.personStatus || '').toUpperCase() === 'HOLDING');
   const holdingWorth = holdingRecords.reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
@@ -106,13 +110,13 @@ export default function IndividualPersonPage({ person, allBooks, onBack, onOpenB
         <div className="w-1/2 bg-white/10 p-1.5 rounded-lg border border-white/15 grid grid-cols-2 divide-x divide-white/20 text-center flex-none">
           <div className="px-1 flex flex-col justify-center">
             <p className="text-[7.5px] uppercase font-black text-sand leading-none">{t('legacy.Holding')}</p>
-            <p className="text-[11px] font-black text-amber-300 mt-1 leading-none">{holdingRecords.length} <span className="text-[8px] font-bold text-sand">(₹{holdingWorth})</span></p>
+            <p className="text-[11px] font-black text-amber-300 mt-1 leading-none">{formatCount(holdingRecords.length)} <span className="text-[8px] font-bold text-sand">(₹{formatCount(holdingWorth)})</span></p>
             <p className="text-[7.5px] text-stone-300 mt-1 leading-none truncate">{oldestDaysText}</p>
           </div>
           <div className="px-1 flex flex-col justify-center">
             <p className="text-[7.5px] uppercase font-black text-sand leading-none">{t('legacy.History')}</p>
-            <p className="text-[11px] font-black text-white mt-1 leading-none">{records.length} <span className="text-[8px] font-bold text-sand">{t('legacy.Books')}</span></p>
-            <p className="text-[7.5px] text-sand/90 mt-1 leading-none truncate">₹{totalWorth}</p>
+            <p className="text-[11px] font-black text-white mt-1 leading-none">{t(records.length === 1 ? 'counts.book' : 'counts.books', { count: formatCount(records.length) })}</p>
+            <p className="text-[7.5px] text-sand/90 mt-1 leading-none truncate">₹{formatCount(totalWorth)}</p>
           </div>
         </div>
       </div>
