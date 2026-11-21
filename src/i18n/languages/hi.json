@@ -1,4 +1,16 @@
 {
+  "kpi": {
+    "books": "पुस्तकें",
+    "withMe": "मेरे पास",
+    "out": "बाहर",
+    "wishlist": "इच्छासूची",
+    "worth": "मूल्य",
+    "allBooks": "सभी पुस्तकें",
+    "returned": "लौटाई गईं",
+    "holding": "पाठकों के पास",
+    "gifted": "उपहार में दी गईं",
+    "toGet": "लेनी हैं"
+  },
   "common": {
     "appName": "B-wise Library",
     "home": "होम",

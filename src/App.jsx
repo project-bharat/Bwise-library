@@ -8,7 +8,7 @@ import { requestInitialDevicePermissions } from './native/contacts';
 import { scheduleDueDateNotifications } from './native/dueNotifications';
 import { saveAndShareBlob, isShareCancel } from './native/files';
 import { formatDisplayDate, getStatusBadgeStyle, displayStatus, EMPTY_INITIAL_DATA } from './utils';
-import { setLanguage as persistLanguage } from './i18n';
+import { formatLocaleNumber, setLanguage as persistLanguage } from './i18n';
 import { useTranslation } from './i18n/useTranslation';
 
 import BrandingFooter from './components/BrandingFooter';
@@ -25,6 +25,9 @@ import SyncSettingsModal from './components/modals/SyncSettingsModal';
 
 export default function App() {
   const { t, language } = useTranslation();
+  const formatKpiNumber = value => formatLocaleNumber(value || 0, {
+    numberingSystem: language === 'en' ? 'latn' : 'deva',
+  }, language);
   const [appData, setAppData] = useState(EMPTY_INITIAL_DATA);
   const [bootSplash, setBootSplash] = useState(true);
   const handleLanguageChange = (lang) => { persistLanguage(lang); };
@@ -799,32 +802,32 @@ This is a gentle reminder regarding the books borrowed from my library:
             style={{ background: 'linear-gradient(to right, #033636 0%, #047372 45%, #0e4e4e 75%, #052626 100%)' }}
           >
             <div className="px-1">
-              <p className="text-[9px] uppercase font-bold tracking-widest text-white/80">
-                {activeTab === 'persons' ? 'All Books' : 'Books'}
+              <p className="text-[9px] uppercase font-bold leading-tight [overflow-wrap:anywhere] text-white/80">
+                {t(activeTab === 'persons' ? 'kpi.allBooks' : 'kpi.books')}
               </p>
-              <p className="text-base font-black text-amber-200 mt-0.5">{currentKpis.all || 0}</p>
+              <p className="text-base font-black text-amber-200 mt-0.5">{formatKpiNumber(currentKpis.all)}</p>
             </div>
             <div className="px-1">
-              <p className="text-[9px] uppercase font-bold tracking-widest text-white/80">
-                {activeTab === 'persons' ? 'Returned' : 'With Me'}
+              <p className="text-[9px] uppercase font-bold leading-tight [overflow-wrap:anywhere] text-white/80">
+                {t(activeTab === 'persons' ? 'kpi.returned' : 'kpi.withMe')}
               </p>
-              <p className="text-base font-black text-emerald-300 mt-0.5">{currentKpis.withMe || 0}</p>
+              <p className="text-base font-black text-emerald-300 mt-0.5">{formatKpiNumber(currentKpis.withMe)}</p>
             </div>
             <div className="px-1">
-              <p className="text-[9px] uppercase font-bold tracking-widest text-white/80">
-                {activeTab === 'persons' ? 'Holding' : 'Out'}
+              <p className="text-[9px] uppercase font-bold leading-tight [overflow-wrap:anywhere] text-white/80">
+                {t(activeTab === 'persons' ? 'kpi.holding' : 'kpi.out')}
               </p>
-              <p className="text-base font-black text-orange-300 mt-0.5">{currentKpis.lent || 0}</p>
+              <p className="text-base font-black text-orange-300 mt-0.5">{formatKpiNumber(currentKpis.lent)}</p>
             </div>
             <div className="px-1">
-              <p className="text-[9px] uppercase font-bold tracking-widest text-white/80">
-                {activeTab === 'wishlist' ? 'To Get' : (activeTab === 'persons' ? 'Gifted' : 'Wishlist')}
+              <p className="text-[9px] uppercase font-bold leading-tight [overflow-wrap:anywhere] text-white/80">
+                {t(activeTab === 'wishlist' ? 'kpi.toGet' : activeTab === 'persons' ? 'kpi.gifted' : 'kpi.wishlist')}
               </p>
-              <p className="text-base font-black text-purple-300 mt-0.5">{currentKpis.wishlisted || 0}</p>
+              <p className="text-base font-black text-purple-300 mt-0.5">{formatKpiNumber(currentKpis.wishlisted)}</p>
             </div>
             <div className="px-1">
-              <p className="text-[9px] uppercase font-bold tracking-widest text-white/80">{t('legacy.Worth')}</p>
-              <p className="text-sm font-black text-sand mt-0.5 truncate">₹{(currentKpis.totalWorth || 0).toLocaleString('en-IN')}</p>
+              <p className="text-[9px] uppercase font-bold leading-tight [overflow-wrap:anywhere] text-white/80">{t('kpi.worth')}</p>
+              <p className="text-sm font-black text-sand mt-0.5 truncate">₹{formatKpiNumber(currentKpis.totalWorth)}</p>
             </div>
           </div>
         )}
