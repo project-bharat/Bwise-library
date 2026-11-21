@@ -8,7 +8,7 @@ import { requestInitialDevicePermissions } from './native/contacts';
 import { scheduleDueDateNotifications } from './native/dueNotifications';
 import { saveAndShareBlob, isShareCancel } from './native/files';
 import { formatDisplayDate, getStatusBadgeStyle, displayStatus, EMPTY_INITIAL_DATA } from './utils';
-import { formatLocaleNumber, setLanguage as persistLanguage } from './i18n';
+import { formatLocaleDate, formatLocaleNumber, setLanguage as persistLanguage } from './i18n';
 import { useTranslation } from './i18n/useTranslation';
 
 import BrandingFooter from './components/BrandingFooter';
@@ -56,12 +56,12 @@ export default function App() {
   // Cross-Platform PDF Exporter (native: Android share sheet)
   const downloadPdfBlob = (pdfWorker, fileName) => {
     pdfWorker.output('blob').then((blob) => {
-      return saveAndShareBlob(blob, fileName, 'Share PDF').then(() => {
-        triggerStatus('PDF Exported', true);
+      return saveAndShareBlob(blob, fileName, t('export.sharePdf')).then(() => {
+        triggerStatus(t('legacy.PDF Exported'), true);
       });
     }).catch((err) => {
-      if (isShareCancel(err)) { triggerStatus('PDF Exported', true); return; }
-      triggerStatus('Export failed: ' + (err && err.message), false);
+      if (isShareCancel(err)) { triggerStatus(t('legacy.PDF Exported'), true); return; }
+      triggerStatus(t('export.failed', { error: err?.message }), false);
     });
   };
 
@@ -341,119 +341,127 @@ This is a gentle reminder regarding the books borrowed from my library:
     window.location.href = waUrl; // Follow the WhatsApp universal link so Android can open the installed app.
   };
 
-  const handleExportPdf = (elementId, fileName, customReportTitle) => {
+  const handleExportPdf = async (elementId, fileName, titleText) => {
     const sourceEl = document.getElementById(elementId);
     if (!sourceEl) return;
-    triggerStatus('Formatting PDF...', false);
+    triggerStatus(t('export.formatting'), false);
 
     const clone = sourceEl.cloneNode(true);
-    clone.querySelectorAll('button, .no-print, input, select, .fa-pencil, .fa-share-nodes, th:last-child, td:last-child, footer').forEach(n => n.remove());
+    clone.querySelectorAll('table').forEach(table => {
+      const actionColumns = table.tHead?.rows[0]?.querySelectorAll('th.no-print').length ?? 0;
+      if (!actionColumns) return;
+      for (const row of table.rows) {
+        for (const cell of row.cells) {
+          if (cell.colSpan > 1) cell.colSpan = Math.max(1, cell.colSpan - actionColumns);
+        }
+      }
+    });
+    clone.querySelectorAll('.no-print, footer').forEach(node => node.remove());
+    clone.querySelectorAll('button[data-pdf-text]').forEach(button => {
+      const text = document.createElement('span');
+      text.className = button.className;
+      text.textContent = button.textContent;
+      button.replaceWith(text);
+    });
+    clone.querySelectorAll('button, input, select').forEach(node => node.remove());
 
     const container = document.createElement('div');
-    container.style.padding = '20px';
-    container.style.backgroundColor = '#FFFFFF';
-    container.style.color = '#111827';
-    container.style.fontFamily = 'sans-serif';
+    container.style.cssText = 'padding:0 8px;background:#fff;color:#111827;box-sizing:border-box;';
+    container.style.fontFamily = '"Noto Sans Devanagari", sans-serif';
 
-    const titleText = customReportTitle || 'LIBRARY STATEMENT REPORT';
-    const header = document.createElement('div');
-    header.innerHTML = `
-      <div style="border-bottom: 2px solid #1E3535; padding-bottom: 8px; margin-bottom: 16px;">
-        <h2 style="font-size: 15px; font-weight: 800; color: #1E3535; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">${titleText}</h2>
-        <p style="font-size: 10px; color: #6B7280; margin: 3px 0 0 0;">Statement Date: ${formatDisplayDate(new Date())}</p>
-      </div>
-    `;
-    // PDF-specific layout: add generous spacing, prevent text clipping and
-    // allow headers/book titles to wrap instead of inheriting screen truncation.
-    clone.style.padding = '12px 4px 64px';
-    clone.style.boxSizing = 'border-box';
-    clone.style.overflow = 'visible';
-    clone.querySelectorAll('*').forEach(node => {
-      node.style.boxSizing = 'border-box';
-      if (node.classList.contains('truncate')) {
-        node.style.whiteSpace = 'normal';
-        node.style.overflow = 'visible';
-        node.style.textOverflow = 'clip';
-      }
-      node.style.lineHeight = '1.35';
+    const header = document.createElement('header');
+    header.style.cssText = 'border-bottom:2px solid #1E3535;padding-bottom:8px;margin-bottom:12px;';
+    const title = document.createElement('h2');
+    title.style.cssText = 'font-size:15px;font-weight:800;color:#1E3535;margin:0;';
+    title.textContent = titleText || t('export.library');
+    const date = document.createElement('p');
+    date.style.cssText = 'font-size:10px;color:#6B7280;margin:3px 0 0;';
+    date.textContent = t('export.statementDate', {
+      date: formatLocaleDate(new Date(), { dateStyle: 'medium', numberingSystem: language === 'en' ? 'latn' : 'deva' }, language),
     });
-    clone.querySelectorAll('tr, .bg-white, table').forEach(node => {
-      node.style.breakInside = 'avoid';
-      node.style.pageBreakInside = 'avoid';
+    header.append(title, date);
+
+    const makePrintable = node => {
+      node.style.minWidth = '0';
+      node.style.whiteSpace = 'normal';
+      node.style.overflow = 'visible';
+      node.style.textOverflow = 'clip';
+      node.style.overflowWrap = 'anywhere';
+    };
+    makePrintable(clone);
+    clone.style.margin = '0';
+    clone.querySelectorAll('.truncate, .overflow-hidden, .overflow-x-auto, .whitespace-nowrap')
+      .forEach(makePrintable);
+    clone.querySelectorAll('table').forEach(table => {
+      table.style.width = '100%';
+      table.style.minWidth = '0';
     });
-    // The reader profile is a tight two-column banner on-screen. In a PDF,
-    // stack its contact details above the stats so the name/phone/address fit.
-    const personBanner = clone.querySelector('#individual-person-report .bg-forest.text-white');
-    if (personBanner) {
-      personBanner.style.display = 'block';
-      personBanner.style.padding = '0';
-      personBanner.style.marginBottom = '14px';
-      const halves = personBanner.children;
-      if (halves[0]) { halves[0].style.width = '65%'; halves[0].style.padding = '0'; halves[0].style.gap = '5px'; halves[0].style.color = '#1E3535'; halves[0].style.background = 'transparent'; }
-      if (halves[1]) { halves[1].style.width = '35%'; halves[1].style.maxWidth = '35%'; halves[1].style.padding = '0'; halves[1].style.background = 'transparent'; halves[1].style.color = '#1E3535'; halves[1].style.border = '0'; halves[1].style.boxShadow = 'none'; }
-    }
-    clone.querySelectorAll('table th, table td').forEach(cell => {
-      cell.style.paddingTop = '8px';
-      cell.style.paddingBottom = '8px';
-      cell.style.verticalAlign = 'top';
-      cell.style.whiteSpace = 'normal';
-      cell.style.overflow = 'visible';
+    clone.querySelectorAll('th, td, td .truncate').forEach(makePrintable);
+    clone.querySelectorAll('th, td').forEach(cell => {
+      cell.style.padding = '7px 8px';
+      cell.style.verticalAlign = 'middle';
+      cell.style.lineHeight = '1.5';
     });
-    clone.querySelectorAll('table td p').forEach(p => {
-      p.style.whiteSpace = 'normal';
-      p.style.overflow = 'visible';
-      p.style.textOverflow = 'clip';
-      p.style.wordBreak = 'break-word';
+    clone.querySelectorAll('td .rounded-full').forEach(badge => {
+      badge.style.display = 'inline-block';
+      badge.style.lineHeight = '1.5';
+      badge.style.padding = '2px 6px';
+      badge.style.verticalAlign = 'middle';
     });
 
-    const footer = document.createElement('div');
-    footer.style.cssText = 'margin-top:30px;padding:22px 10px 30px;border-top:1px solid #E5E7EB;text-align:center;box-sizing:border-box;width:100%;';
+    const footer = document.createElement('footer');
+    footer.style.cssText = 'margin-top:16px;padding:14px 10px 8px;border-top:1px solid #E5E7EB;text-align:center;box-sizing:border-box;width:100%;';
     footer.innerHTML = `
       <img src="/horizontal-colored-logo.png" alt="B-wise Library" style="display:block;width:150px;max-width:80%;height:auto;max-height:48px;object-fit:contain;margin:0 auto 10px;" />
       <p style="font-size:9px;font-weight:800;color:#6B7280;letter-spacing:.3px;margin:0 0 12px;">B-wise Library Developed by - Bharat Rasve © 2026</p>
       <div style="display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;">
-        <a href="tel:+917218838122" aria-label="${t('legacy.Call')}" title="${t('legacy.Call')}" style="width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#1E3535;color:#fff;text-decoration:none;"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M6.6 2.8c-.6-.6-1.5-.6-2.1 0L3 4.3c-.8.8-.9 2-.4 3.1 2.7 5.8 7.2 10.3 13 13 1.1.5 2.3.4 3.1-.4l1.5-1.5c.6-.6.6-1.5 0-2.1l-3-3c-.5-.5-1.3-.6-1.9-.2l-1.6 1c-2.3-1.1-4.1-2.9-5.2-5.2l1-1.6c.4-.6.3-1.4-.2-1.9z"/></svg></a>
-        <a href="https://wa.me/917218838122" aria-label="WhatsApp" title="WhatsApp" style="width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#25D366;color:#fff;text-decoration:none;"><svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true"><path d="M20.5 3.5A11.5 11.5 0 0 0 2.3 17.2L1 23l5.9-1.2A11.5 11.5 0 0 0 20.5 3.5ZM12 20a8 8 0 0 1-4.1-1.1l-.3-.2-3.5.7.8-3.4-.2-.3A8.5 8.5 0 1 1 12 20Zm4.6-6.3c-.3-.2-1.5-.7-1.8-.8s-.4-.1-.6.2-.7.8-.8 1-.3.2-.5.1a7.1 7.1 0 0 1-2.1-1.3 8 8 0 0 1-1.5-1.8c-.2-.3 0-.4.1-.6l.4-.5c.1-.2.2-.3.3-.5s0-.3 0-.5-.6-1.4-.8-1.9-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.4-.3.3-1 1-1 2.4s1 2.7 1.1 2.9a10.8 10.8 0 0 0 4.2 4.1c.5.2 1 .4 1.4.5.6.2 1.1.2 1.5.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2-.1-.1-.2-.2-.5-.3z"/></svg></a>
-        <a href="https://www.linkedin.com/in/bharatrasve" aria-label={t('legacy.LinkedIn')} title={t('legacy.LinkedIn')} style="width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#0A66C2;color:#fff;text-decoration:none;font-family:Arial,sans-serif;font-size:13px;font-weight:800;line-height:1;">in</a>
-        <a href="https://github.com/bharombhar" aria-label={t('legacy.GitHub')} title={t('legacy.GitHub')} style="width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#171717;color:#fff;text-decoration:none;"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 .9a11.1 11.1 0 0 0-3.5 21.6c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.4-4-1.4-.5-1.1-1.1-1.4-1.1-1.4-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.9.1-.7.4-1.1.7-1.4-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.6.1-3.3 0 0 1-.3 3.4 1.2a11.8 11.8 0 0 1 6.2 0c2.4-1.6 3.4-1.2 3.4-1.2.6 1.7.2 3 .1 3.3.8.9 1.2 1.9 1.2 3.2 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1 .8 2v3c0 .3.2.7.8.6A11.1 11.1 0 0 0 12 .9z"/></svg></a>
+        <a href="tel:+917218838122" aria-label="${t('legacy.Call')}" title="${t('legacy.Call')}" style="width:26px;height:22px;display:flex;align-items:center;justify-content:center;color:#4C7774;text-decoration:none;"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M6.6 2.8c-.6-.6-1.5-.6-2.1 0L3 4.3c-.8.8-.9 2-.4 3.1 2.7 5.8 7.2 10.3 13 13 1.1.5 2.3.4 3.1-.4l1.5-1.5c.6-.6.6-1.5 0-2.1l-3-3c-.5-.5-1.3-.6-1.9-.2l-1.6 1c-2.3-1.1-4.1-2.9-5.2-5.2l1-1.6c.4-.6.3-1.4-.2-1.9z"/></svg></a>
+        <a href="https://wa.me/917218838122" aria-label="WhatsApp" title="WhatsApp" style="width:26px;height:22px;display:flex;align-items:center;justify-content:center;color:#4C7774;text-decoration:none;"><svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true"><path d="M20.5 3.5A11.5 11.5 0 0 0 2.3 17.2L1 23l5.9-1.2A11.5 11.5 0 0 0 20.5 3.5ZM12 20a8 8 0 0 1-4.1-1.1l-.3-.2-3.5.7.8-3.4-.2-.3A8.5 8.5 0 1 1 12 20Zm4.6-6.3c-.3-.2-1.5-.7-1.8-.8s-.4-.1-.6.2-.7.8-.8 1-.3.2-.5.1a7.1 7.1 0 0 1-2.1-1.3 8 8 0 0 1-1.5-1.8c-.2-.3 0-.4.1-.6l.4-.5c.1-.2.2-.3.3-.5s0-.3 0-.5-.6-1.4-.8-1.9-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.4-.3.3-1 1-1 2.4s1 2.7 1.1 2.9a10.8 10.8 0 0 0 4.2 4.1c.5.2 1 .4 1.4.5.6.2 1.1.2 1.5.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2-.1-.1-.2-.2-.5-.3z"/></svg></a>
+        <a href="https://www.linkedin.com/in/bharatrasve" aria-label="LinkedIn" title="LinkedIn" style="width:26px;height:22px;display:flex;align-items:center;justify-content:center;color:#4C7774;text-decoration:none;"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M6 8H2v14h4V8ZM4 2a2.3 2.3 0 1 0 0 4.6A2.3 2.3 0 0 0 4 2Zm18 11c0-3.6-1.8-5.4-4.6-5.4-1.8 0-3 .9-3.7 2V8H10v14h4v-7c0-1.9.8-3.2 2.3-3.2s2.1 1.1 2.1 3V22H22Z"/></svg></a>
+        <a href="https://github.com/bharombhar" aria-label="GitHub" title="GitHub" style="width:26px;height:22px;display:flex;align-items:center;justify-content:center;color:#4C7774;text-decoration:none;"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 .9a11.1 11.1 0 0 0-3.5 21.6c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.4-4-1.4-.5-1.1-1.1-1.4-1.1-1.4-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.9.1-.7.4-1.1.7-1.4-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.6.1-3.3 0 0 1-.3 3.4 1.2a11.8 11.8 0 0 1 6.2 0c2.4-1.6 3.4-1.2 3.4-1.2.6 1.7.2 3 .1 3.3.8.9 1.2 1.9 1.2 3.2 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1 .8 2v3c0 .3.2.7.8.6A11.1 11.1 0 0 0 12 .9z"/></svg></a>
       </div>
     `;
 
-    container.style.padding = '24px 20px 64px';
-    container.style.boxSizing = 'border-box';
     container.appendChild(header);
     container.appendChild(clone);
     container.appendChild(footer);
 
     const opt = {
-      margin: [0.4, 0.4, 0.95, 0.4],
+      margin: 0.4,
       filename: fileName || 'Library_Report.pdf',
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, allowTaint: true, letterRendering: true },
-      pagebreak: { mode: ['css', 'legacy'], avoid: ['tr', 'footer'] },
+      html2canvas: { scale: 2, useCORS: true, windowWidth: 840, scrollX: 0, scrollY: 0 },
+      pagebreak: { mode: ['css', 'legacy'], avoid: ['thead', 'tr', 'footer'] },
       jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
     };
 
+    // Load the PDF font before html2canvas measures its line boxes.
+    try {
+      await document.fonts?.load('400 12px "Noto Sans Devanagari"', 'Aa दे');
+      await document.fonts?.load('700 12px "Noto Sans Devanagari"', 'Aa दे');
+    } catch {
+      // The renderer can still use its fallback fonts.
+    }
     const worker = html2pdf().set(opt).from(container);
     downloadPdfBlob(worker, fileName || 'Library_Report.pdf');
   };
 
-  const handleExportFullBackup = (shareTitle = 'Export full library data') => {
+  const handleExportFullBackup = (shareTitle = t('export.backup')) => {
     setDrawerOpen(false);
-    triggerStatus('Generating backup...', false);
+    triggerStatus(t('export.backupPreparing'), false);
     if (window.google && google.script && google.script.run) {
       google.script.run
         .withSuccessHandler((csvString) => {
           const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
           const fileName = `Library_Backup_${new Date().toISOString().split('T')[0]}.csv`;
           saveAndShareBlob(blob, fileName, shareTitle)
-            .then(() => triggerStatus('Backup exported!', true))
+            .then(() => triggerStatus(t('export.backupDone'), true))
             .catch((err) => {
-              if (isShareCancel(err)) triggerStatus('Backup exported!', true);
-              else triggerStatus('Backup failed: ' + (err && err.message), false);
+              if (isShareCancel(err)) triggerStatus(t('export.backupDone'), true);
+              else triggerStatus(t('export.backupFailed', { error: err?.message }), false);
             });
         })
-        .withFailureHandler((err) => triggerStatus('Backup failed: ' + err.message, false))
+        .withFailureHandler((err) => triggerStatus(t('export.backupFailed', { error: err?.message }), false))
         .exportAllSheetsBackupCsv();
     }
   };
@@ -637,8 +645,8 @@ This is a gentle reminder regarding the books borrowed from my library:
         onAddCategory={() => { setDrawerOpen(false); setAdminConfigModal({ type: 'Category' }); }}
         onAddLocation={() => { setDrawerOpen(false); setAdminConfigModal({ type: 'Location' }); }}
         onAddStatus={() => { setDrawerOpen(false); setAdminConfigModal({ type: 'Current_Status' }); }}
-        onBackupWithGoogle={() => handleExportFullBackup('Choose Google Drive in the share sheet to save your backup')}
-        onExportBackup={() => handleExportFullBackup('Export full library data')}
+        onBackupWithGoogle={() => handleExportFullBackup(t('export.backupDrive'))}
+        onExportBackup={() => handleExportFullBackup(t('export.backup'))}
         onRestoreClick={() => { if (backupFileInputRef.current) { backupFileInputRef.current.value = ''; backupFileInputRef.current.click(); } }}
         onSyncSettings={() => { setDrawerOpen(false); setSyncModal(true); }}
         onCallDeveloper={() => handleDirectDial('917218838122')}
@@ -773,7 +781,7 @@ This is a gentle reminder regarding the books borrowed from my library:
               <button onClick={() => setAlertsOpen(false)} aria-label={t('legacy.Close notifications')}><i className="fa-solid fa-xmark"></i></button>
             </div>
             {dueTodayBooks.length > 0 && <div className="p-3 border-b border-sand/40 space-y-2">
-              <p className="text-[10px] font-black uppercase text-rose-700">Due today · {dueTodayBooks.length}</p>
+              <p className="text-[10px] font-black uppercase text-rose-700">{t('counts.dueToday', { count: formatKpiNumber(dueTodayBooks.length) })}</p>
               {dueTodayBooks.slice(0, 5).map(book => {
                 const reader = (appData.people || []).find(p => String(p.name || '').toLowerCase() === String(book.person || '').toLowerCase());
                 const phone = String(reader?.phone || '').replace(/\D/g, '');
@@ -887,7 +895,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                 badge={t('legacy.Status')}
                 rows={filteredBooks.filter(b => b.currentStatus !== 'WISHLISTED')}
                 onRowClick={b => { setSelectedBook(b); setActiveTab('bookDetail'); }}
-                onShare={() => handleExportPdf('st-1', 'Status_Summary.pdf', 'STATUS-WISE BOOKS SUMMARY')}
+                onShare={() => handleExportPdf('st-1', 'Status_Summary.pdf', t('export.status'))}
                 onCopyTitle={handleCopyTitle}
                 onOpenTag={handleOpenTagView}
               />
@@ -898,7 +906,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                 badge={t('legacy.Person')}
                 rows={filteredBooks.filter(b => b.person && (b.currentStatus === 'LENT' || (b.location || '').toUpperCase() === 'TO PERSON'))}
                 onRowClick={b => { setSelectedBook(b); setActiveTab('bookDetail'); }}
-                onShare={() => handleExportPdf('st-2', 'Lent_Summary.pdf', 'ACTIVE LENT SUMMARY')}
+                onShare={() => handleExportPdf('st-2', 'Lent_Summary.pdf', t('export.lent'))}
                 onCopyTitle={handleCopyTitle}
                 onOpenTag={handleOpenTagView}
               />
@@ -909,7 +917,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                 badge={t('legacy.Location')}
                 rows={filteredBooks.filter(b => b.location)}
                 onRowClick={b => { setSelectedBook(b); setActiveTab('bookDetail'); }}
-                onShare={() => handleExportPdf('st-3', 'Location_Summary.pdf', 'LOCATION DISTRIBUTION SUMMARY')}
+                onShare={() => handleExportPdf('st-3', 'Location_Summary.pdf', t('export.location'))}
                 onCopyTitle={handleCopyTitle}
                 onOpenTag={handleOpenTagView}
               />
@@ -924,8 +932,8 @@ This is a gentle reminder regarding the books borrowed from my library:
                 <div className="flex justify-between items-center px-3 py-2 bg-stone-100 border-b border-sand/40">
                   <span className="text-[10px] font-black uppercase tracking-wider text-forest">{t('legacy.Books Collections')}</span>
                   <div className="flex items-center space-x-3 text-stone-500">
-                    <span className="text-[9px] font-bold">{filteredBooks.length} books</span>
-                    <button onClick={() => handleExportPdf('books-table-export', 'Books_Collections.pdf', 'BOOKS COLLECTIONS DIRECTORY')} className="hover:text-forest" title={t('legacy.Export Table as PDF')}>
+                    <span className="text-[9px] font-bold">{t(filteredBooks.length === 1 ? 'counts.book' : 'counts.books', { count: formatKpiNumber(filteredBooks.length) })}</span>
+                    <button onClick={() => handleExportPdf('books-table-export', 'Books_Collections.pdf', t('export.collection'))} className="hover:text-forest" title={t('legacy.Export Table as PDF')}>
                       <i className="fa-solid fa-share-nodes text-xs"></i>
                     </button>
                   </div>
@@ -964,6 +972,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                               </div>
                               <p className="text-[9px] text-stone-500 truncate flex items-center space-x-1">
                                 <button
+                                  data-pdf-text
                                   onClick={(e) => handleOpenTagView('author', b.author, e)}
                                   className="hover:underline hover:text-forest truncate text-left"
                                   title={`Filter author: ${b.author}`}
@@ -972,6 +981,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                                 </button>
                                 <span>•</span>
                                 <button
+                                  data-pdf-text
                                   onClick={(e) => handleOpenTagView('category', b.category, e)}
                                   className="text-forest font-bold hover:underline hover:text-ochre"
                                   title={`Filter category: ${b.category}`}
@@ -1077,7 +1087,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                             : 'bg-alabaster text-stone-600 hover:bg-sand/30 border border-sand/40'
                         }`}
                       >
-                        ALL ({allCombinedWishlist.length})
+                        {t('counts.all', { count: formatKpiNumber(allCombinedWishlist.length) })}
                       </button>
                       <button
                         onClick={() => setWishlistFilter('NOT_IN_POSSESSION')}
@@ -1087,7 +1097,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                             : 'bg-alabaster text-stone-600 hover:bg-sand/30 border border-sand/40'
                         }`}
                       >
-                        Not In Possession ({notInPossessionCount})
+                        {t('counts.notOwned', { count: formatKpiNumber(notInPossessionCount) })}
                       </button>
                       <button
                         onClick={() => setWishlistFilter('IN_POSSESSION')}
@@ -1097,7 +1107,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                             : 'bg-alabaster text-stone-600 hover:bg-sand/30 border border-sand/40'
                         }`}
                       >
-                        In Possession ({inPossessionCount})
+                        {t('counts.owned', { count: formatKpiNumber(inPossessionCount) })}
                       </button>
                     </div>
 
@@ -1114,7 +1124,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                           >
                             <i className="fa-solid fa-plus text-[9px]"></i><span>{t('legacy.Add Wishlist')}</span>
                           </button>
-                          <button onClick={() => handleExportPdf('wishlist-table-export', 'My_Books_Wishlist.pdf', 'MY BOOKS WISHLIST')} className="hover:text-forest p-1" title={t('legacy.Export Wishlist PDF')}>
+                          <button onClick={() => handleExportPdf('wishlist-table-export', 'My_Books_Wishlist.pdf', t('export.wishlist'))} className="hover:text-forest p-1" title={t('legacy.Export Wishlist PDF')}>
                             <i className="fa-solid fa-share-nodes text-xs"></i>
                           </button>
                         </div>
@@ -1163,23 +1173,25 @@ This is a gentle reminder regarding the books borrowed from my library:
                                       </div>
                                       <p className="text-[9px] text-stone-500 truncate">
                                         <button
+                                          data-pdf-text
                                           onClick={(e) => handleOpenTagView('author', w.author, e)}
                                           className="hover:underline hover:text-forest truncate"
                                           title={`Filter author: ${w.author}`}
                                         >
-                                          {w.author || 'Unknown'}
+                                          {w.author || t('legacy.Unknown')}
                                         </button>
                                       </p>
                                     </td>
                                     <td className="px-2 py-2 text-[10px]">
                                       <button
+                                        data-pdf-text
                                         onClick={(e) => handleOpenTagView('category', w.category, e)}
                                         className="font-bold text-forest block truncate max-w-fit hover:underline hover:text-ochre"
                                         title={`Filter category: ${w.category}`}
                                       >
-                                        {w.category || 'General'}
+                                        {w.category || t('legacy.General')}
                                       </button>
-                                      <span className="text-[9px] text-stone-500 mt-0.5 block truncate">{w.language || 'English'}</span>
+                                      <span className="text-[9px] text-stone-500 mt-0.5 block truncate">{w.language || t('legacy.English')}</span>
                                     </td>
                                     <td className="px-2 py-2 text-right">
                                       <span className={`text-[9.5px] font-black uppercase tracking-wider ${isAvailable ? 'text-emerald-700' : 'text-purple-700'}`}>
@@ -1225,7 +1237,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                 <div className="flex justify-between items-center px-3 py-2.5 bg-stone-100 border-b border-sand/40">
                   <h2 className="text-xs font-black uppercase tracking-wider text-forest">{t('legacy.Readers summary')}</h2>
                   <div className="flex items-center space-x-2">
-                    <button onClick={() => handleExportPdf('persons-table-export', 'Readers_Summary.pdf', 'READERS SUMMARY REPORT')} className="text-stone-500 hover:text-forest p-1.5 rounded active:scale-90" title={t('legacy.Export Summary PDF')}>
+                    <button onClick={() => handleExportPdf('persons-table-export', 'Readers_Summary.pdf', t('export.readers'))} className="text-stone-500 hover:text-forest p-1.5 rounded active:scale-90" title={t('legacy.Export Summary PDF')}>
                       <i className="fa-solid fa-share-nodes text-xs"></i>
                     </button>
                     <button onClick={() => setPersonModal({ isNew: true, person: {} })} className="no-print px-2.5 py-1 bg-forest text-white text-[10px] font-bold rounded-lg flex items-center space-x-1 active:scale-95 shadow-xs">
@@ -1275,7 +1287,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                               </td>
                               <td className="px-2 py-2.5 text-center">
                                 <span className={`text-[9px] font-black px-2 py-0.5 rounded-full ${holdingCount > 0 ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'bg-stone-100 text-stone-700'}`}>
-                                  {totalBooksCount} {totalBooksCount === 1 ? 'Book' : 'Books'}
+                                  {t(totalBooksCount === 1 ? 'counts.book' : 'counts.books', { count: formatKpiNumber(totalBooksCount) })}
                                 </span>
                               </td>
                               <td className="px-2 py-2.5 text-right no-print">
@@ -1293,7 +1305,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                                     <i className="fa-solid fa-pen"></i>
                                   </button>
                                   <button
-                                    onClick={() => { if (window.confirm(`Delete reader ${p.name}? Their book history will remain, but the reader assignment will be cleared.`)) google.script.run.withSuccessHandler(payload => { if (payload) setAppData(payload); triggerStatus('Reader deleted', true); }).withFailureHandler(err => triggerStatus('Delete failed: ' + (err?.message || ''), false)).deletePerson(p.name); }}
+                                    onClick={() => { if (window.confirm(t('reader.deleteConfirm', { name: p.name }))) google.script.run.withSuccessHandler(payload => { if (payload) setAppData(payload); triggerStatus(t('reader.deleted'), true); }).withFailureHandler(err => triggerStatus(t('reader.deleteFailed', { error: err?.message }), false)).deletePerson(p.name); }}
                                     className="w-7 h-7 flex items-center justify-center text-rose-700 text-xs active:scale-90"
                                     title={t('legacy.Delete reader')}
                                   >
@@ -1337,7 +1349,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                 }
               }}
               onDirectDial={() => handleDirectDial(selectedPerson.phone)}
-              onExportPdf={() => handleExportPdf('individual-person-report', `${selectedPerson.name}_Statement.pdf`, `${selectedPerson.name.toUpperCase()} - BOOKS STATEMENT`)}
+              onExportPdf={() => handleExportPdf('individual-person-report', `${selectedPerson.name}_Statement.pdf`, t('export.statement', { name: selectedPerson.name }))}
               onCallDeveloper={() => handleDirectDial('917218838122')}
             />
           )}
@@ -1370,7 +1382,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                   </div>
                   <div className="flex items-center space-x-2">
                     <button
-                      onClick={() => handleExportPdf('tag-books-table-export', `${selectedTag.value.replace(/\s+/g, '_')}_Books.pdf`, `${selectedTag.value.toUpperCase()} - BOOKS REPORT`)}
+                      onClick={() => handleExportPdf('tag-books-table-export', `${selectedTag.value.replace(/\s+/g, '_')}_Books.pdf`, t('export.books', { name: selectedTag.value }))}
                       className="text-stone-500 hover:text-forest p-1 rounded active:scale-90"
                       title={t('legacy.Export Table as PDF')}
                     >
@@ -1417,17 +1429,19 @@ This is a gentle reminder regarding the books borrowed from my library:
                               </div>
                               <p className="text-[9px] text-stone-500 truncate flex items-center space-x-1">
                                 <button
+                                  data-pdf-text
                                   onClick={(e) => handleOpenTagView('author', b.author, e)}
                                   className="hover:underline hover:text-forest truncate text-left"
                                 >
-                                  {b.author || 'Unknown'}
+                                  {b.author || t('legacy.Unknown')}
                                 </button>
                                 <span>•</span>
                                 <button
+                                  data-pdf-text
                                   onClick={(e) => handleOpenTagView('category', b.category, e)}
                                   className="text-forest font-bold hover:underline hover:text-ochre"
                                 >
-                                  {b.category || 'General'}
+                                  {b.category || t('legacy.General')}
                                 </button>
                               </p>
                             </td>
@@ -1472,7 +1486,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                   alert('Reader profile not found for ' + personName);
                 }
               }}
-              onExportPdf={() => handleExportPdf('book-journey-report', `${selectedBook.title.replace(/\s+/g, '_')}_Journey.pdf`, `${selectedBook.title.toUpperCase()} - BOOK JOURNEY`)}
+              onExportPdf={() => handleExportPdf('book-journey-report', `${selectedBook.title.replace(/\s+/g, '_')}_Journey.pdf`, t('export.journey', { name: selectedBook.title }))}
               onCallDeveloper={() => handleDirectDial('917218838122')}
               onCopyTitle={handleCopyTitle}
               onOpenTag={handleOpenTagView}

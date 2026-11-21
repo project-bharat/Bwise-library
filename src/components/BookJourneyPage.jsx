@@ -88,6 +88,7 @@ export default function BookJourneyPage({ book, onBack, onEditDetails, onEditSta
           <div className="max-w-[75%]">
             <div className="flex items-center space-x-1.5 flex-wrap gap-y-1">
               <button
+                data-pdf-text
                 onClick={(e) => onOpenTag && onOpenTag('category', book.category, e)}
                 className="text-[9px] font-extrabold uppercase tracking-widest text-sand px-1.5 py-0.5 rounded-lg bg-white/10 border border-white/15 hover:bg-white/20 hover:text-white transition-colors"
                 title={`View all books in ${book.category}`}
@@ -109,6 +110,7 @@ export default function BookJourneyPage({ book, onBack, onEditDetails, onEditSta
             </div>
             <p className="text-[11px] text-sand/90 font-medium">
               {t('legacy.By')} <button
+                   data-pdf-text
                    onClick={(e) => onOpenTag && onOpenTag('author', book.author, e)}
                    className="underline hover:text-white font-bold"
                    title={`View all books by ${book.author}`}

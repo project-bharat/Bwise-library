@@ -62,16 +62,16 @@ export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddP
           <div className="mb-2"><SupportDeveloper compact /></div>          <img src="/horizontal-logo.png" alt={t('legacy.B-wise Library')} className="w-36 max-w-full h-auto max-h-10 object-contain mb-2" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
           <p className="text-[8px] font-black text-white/75 tracking-widest mb-1.5 uppercase">DEVELOPED BY - BHARAT RASVE © 2026</p>
           <div className="flex items-center space-x-2">
-            <button onClick={onCallDeveloper} className="w-6 h-6 rounded-full bg-white text-forest hover:bg-ochre flex items-center justify-center text-[10px] active:scale-95 transition-colors shadow-xs" title={t('legacy.Call Developer')}>
+            <button onClick={onCallDeveloper} className="w-8 h-8 flex items-center justify-center text-base text-sand hover:text-white active:scale-95 transition-colors" title={t('legacy.Call Developer')}>
               <i className="fa-solid fa-phone"></i>
             </button>
-            <button onClick={() => window.open('https://wa.me/917218838122', '_blank')} className="w-6 h-6 rounded-full bg-forest text-alabaster hover:bg-ochre flex items-center justify-center text-[11px] active:scale-95 transition-colors shadow-xs" title={t('legacy.WhatsApp Developer')}>
+            <button onClick={() => window.open('https://wa.me/917218838122', '_blank')} className="w-8 h-8 flex items-center justify-center text-base text-sand hover:text-white active:scale-95 transition-colors" title={t('legacy.WhatsApp Developer')}>
               <i className="fa-brands fa-whatsapp"></i>
             </button>
-            <a href="https://www.linkedin.com/in/bharatrasve" target="_blank" rel="noreferrer" className="w-6 h-6 rounded-full bg-forest text-alabaster hover:bg-ochre flex items-center justify-center text-[10px] active:scale-95 transition-colors shadow-xs" title={t('legacy.LinkedIn')}>
+            <a href="https://www.linkedin.com/in/bharatrasve" target="_blank" rel="noreferrer" className="w-8 h-8 flex items-center justify-center text-base text-sand hover:text-white active:scale-95 transition-colors" title={t('legacy.LinkedIn')}>
               <i className="fa-brands fa-linkedin-in"></i>
             </a>
-            <a href="https://github.com/bharombhar" target="_blank" rel="noreferrer" className="w-6 h-6 rounded-full bg-forest text-alabaster hover:bg-ochre flex items-center justify-center text-[10px] active:scale-95 transition-colors shadow-xs" title={t('legacy.GitHub')}>
+            <a href="https://github.com/bharombhar" target="_blank" rel="noreferrer" className="w-8 h-8 flex items-center justify-center text-base text-sand hover:text-white active:scale-95 transition-colors" title={t('legacy.GitHub')}>
               <i className="fa-brands fa-github"></i>
             </a>
           </div>

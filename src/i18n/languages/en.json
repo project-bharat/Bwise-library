@@ -1,4 +1,44 @@
 {
+  "reader": {
+    "deleteConfirm": "Delete reader {{name}}? Their book history will remain, but the reader assignment will be cleared.",
+    "deleted": "Reader deleted",
+    "deleteFailed": "Could not delete reader: {{error}}",
+    "returnShelf": "Return the book to the library shelf. Choose OK for At Home or Cancel for At Office."
+  },
+  "startup": {
+    "title": "The library screen could not be loaded.",
+    "detail": "Close and reopen the app. If this continues, export your backup if available and share the error with support.",
+    "reload": "Reload app"
+  },
+  "counts": {
+    "book": "{{count}} book",
+    "books": "{{count}} books",
+    "dueToday": "Due today · {{count}}",
+    "all": "All ({{count}})",
+    "notOwned": "Not in possession ({{count}})",
+    "owned": "In possession ({{count}})"
+  },
+  "export": {
+    "sharePdf": "Share PDF",
+    "formatting": "Preparing PDF…",
+    "failed": "Export failed: {{error}}",
+    "statementDate": "Statement date: {{date}}",
+    "library": "Library report",
+    "status": "Status-wise books summary",
+    "lent": "Active lending summary",
+    "location": "Location distribution summary",
+    "collection": "Books collection directory",
+    "wishlist": "My books wishlist",
+    "readers": "Readers summary report",
+    "statement": "{{name}} — Books statement",
+    "books": "{{name}} — Books report",
+    "journey": "{{name}} — Book journey",
+    "backup": "Export full library data",
+    "backupDrive": "Choose Google Drive in the share sheet to save your backup",
+    "backupPreparing": "Generating backup…",
+    "backupDone": "Backup exported",
+    "backupFailed": "Backup failed: {{error}}"
+  },
   "kpi": {
     "books": "Books",
     "withMe": "With Me",

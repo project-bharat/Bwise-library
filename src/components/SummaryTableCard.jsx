@@ -1,24 +1,41 @@
 import React, { useState } from 'react';
+import { flushSync } from 'react-dom';
+import { formatLocaleNumber } from '../i18n';
 import { displayStatus, getStatusBadgeStyle } from '../utils';
 import { useTranslation } from '../i18n/useTranslation';
 
 // Home Table with 6 Initial Entries & On-Demand "Load More" (+6) Button
 export default function SummaryTableCard({ id, title, badge, rows, onRowClick, onShare, onCopyTitle, onOpenTag }) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [visibleCount, setVisibleCount] = useState(6);
   const visibleRows = rows.slice(0, visibleCount);
   const hasMore = visibleCount < rows.length;
+
+  const formatCount = value => formatLocaleNumber(value, {
+    numberingSystem: language === 'en' ? 'latn' : 'deva',
+  }, language);
+
+  const share = () => {
+    if (!hasMore) return onShare();
+    // The exporter clones the table synchronously before loading PDF fonts.
+    flushSync(() => setVisibleCount(rows.length));
+    try {
+      return onShare();
+    } finally {
+      setVisibleCount(visibleCount);
+    }
+  };
 
   return (
     <div id={id} className="bg-white rounded-xl border border-sand/50 shadow-sm overflow-hidden mb-3.5 flex flex-col">
       <div className="px-3 py-1.5 bg-stone-100 border-b border-sand/40 flex justify-between items-center flex-none">
         <div className="flex items-center space-x-1.5">
           <h3 className="text-[10px] font-black text-forest uppercase tracking-wider leading-none">{title}</h3>
-          <span className="text-[8px] font-bold text-stone-500">({rows.length})</span>
+          <span className="text-[8px] font-bold text-stone-500">({formatCount(rows.length)})</span>
         </div>
         <div className="flex items-center space-x-2">
           <span className="text-[8px] font-extrabold text-ochre uppercase tracking-wider">{badge}</span>
-          <button onClick={(e) => { e.stopPropagation(); onShare(); }} className="hover:text-forest text-stone-500 p-0.5" title={t('legacy.Share Table as PDF')}>
+          <button onClick={(e) => { e.stopPropagation(); share(); }} className="hover:text-forest text-stone-500 p-0.5" title={t('legacy.Share Table as PDF')}>
             <i className="fa-solid fa-share-nodes text-[11px]"></i>
           </button>
         </div>
@@ -58,6 +75,7 @@ export default function SummaryTableCard({ id, title, badge, rows, onRowClick, o
                     </div>
                     <p className="text-[9px] text-stone-500 truncate flex items-center space-x-1">
                       <button
+                        data-pdf-text
                         onClick={(e) => onOpenTag('category', b.category, e)}
                         className="text-forest font-bold hover:underline hover:text-ochre"
                         title={`${t('legacy.Filter category:')} ${b.category}`}
@@ -70,6 +88,7 @@ export default function SummaryTableCard({ id, title, badge, rows, onRowClick, o
                   </td>
                   <td className="px-2 py-1.5 text-[10px] text-stone-600 truncate font-semibold">
                     <button
+                      data-pdf-text
                       onClick={(e) => onOpenTag('author', b.author, e)}
                       className="hover:underline hover:text-forest truncate max-w-full text-left"
                       title={`${t('legacy.Filter author:')} ${b.author}`}
@@ -91,12 +110,12 @@ export default function SummaryTableCard({ id, title, badge, rows, onRowClick, o
 
       {/* Minimal Load More Button with Light Transparent Box & Border */}
       {hasMore && (
-        <div className="p-2 bg-stone-50/50 border-t border-sand/30 text-center">
+        <div className="no-print p-2 bg-stone-50/50 border-t border-sand/30 text-center">
           <button
             onClick={() => setVisibleCount(prev => prev + 6)}
             className="text-[10px] font-bold text-forest hover:text-ochre bg-white/70 hover:bg-white border border-sand/60 py-1 px-3.5 rounded-full active:scale-95 transition-all shadow-xs"
           >
-            {t('legacy.Load More ({{count}}) • {{remaining}} remaining', { count: 6, remaining: rows.length - visibleCount })}
+            {t('legacy.Load More ({{count}}) • {{remaining}} remaining', { count: formatCount(Math.min(6, rows.length - visibleCount)), remaining: formatCount(rows.length - visibleCount) })}
           </button>
         </div>
       )}
