@@ -1,4 +1,10 @@
 {
+  "bookFilters": {
+    "title": "Filters",
+    "clear": "Clear {{count}}",
+    "empty": "No options available",
+    "done": "Done"
+  },
   "reader": {
     "deleteConfirm": "Delete reader {{name}}? Their book history will remain, but the reader assignment will be cleared.",
     "deleted": "Reader deleted",

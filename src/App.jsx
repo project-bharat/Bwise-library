@@ -12,6 +12,7 @@ import { formatLocaleDate, formatLocaleNumber, setLanguage as persistLanguage } 
 import { useTranslation } from './i18n/useTranslation';
 
 import BrandingFooter from './components/BrandingFooter';
+import BookFilterStrip from './components/BookFilterStrip';
 import SideDrawer from './components/SideDrawer';
 import SummaryTableCard from './components/SummaryTableCard';
 import IndividualPersonPage from './components/IndividualPersonPage';
@@ -41,12 +42,8 @@ export default function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   // Filters for Books Table
-  const [filterStatus, setFilterStatus] = useState('ALL');
-  const [filterCategory, setFilterCategory] = useState('ALL');
-  const [filterAuthor, setFilterAuthor] = useState('ALL');
-  const [filterLanguage, setFilterLanguage] = useState('ALL');
-  const [filterPerson, setFilterPerson] = useState('ALL');
-  const [filterLocation, setFilterLocation] = useState('ALL');
+  const [bookFilters, setBookFilters] = useState({});
+  const [openBookFilter, setOpenBookFilter] = useState(null);
 
   // Status capsule filter for Persons page
   const [personStatusFilter, setPersonStatusFilter] = useState('ALL');
@@ -165,14 +162,12 @@ export default function App() {
     scheduleDueDateNotifications(appData).catch(error => console.warn('[notifications] scheduling failed', error));
   }, [appData.books, appData.people]);
 
-  const handleResetFilters = () => {
-    setFilterStatus('ALL');
-    setFilterCategory('ALL');
-    setFilterAuthor('ALL');
-    setFilterLanguage('ALL');
-    setFilterPerson('ALL');
-    setFilterLocation('ALL');
-    setSearchQuery('');
+  const toggleBookFilter = (key, value) => {
+    setBookFilters(previous => {
+      const values = previous[key] || [];
+      const next = values.includes(value) ? values.filter(item => item !== value) : [...values, value];
+      return { ...previous, [key]: next };
+    });
   };
 
   // Contextual KPIs Tailored for Each Screen
@@ -507,15 +502,8 @@ This is a gentle reminder regarding the books borrowed from my library:
         b.currentStatus, b.location, b.person, b.notes
       ].map(val => val || '').join(' ').toLowerCase();
 
-      const matchesQuery = !q || searchHaystack.includes(q);
-      const matchesStatus = filterStatus === 'ALL' || b.currentStatus === filterStatus;
-      const matchesCategory = filterCategory === 'ALL' || b.category === filterCategory;
-      const matchesAuthor = filterAuthor === 'ALL' || b.author === filterAuthor;
-      const matchesLanguage = filterLanguage === 'ALL' || b.language === filterLanguage;
-      const matchesPerson = filterPerson === 'ALL' || b.person === filterPerson;
-      const matchesLocation = filterLocation === 'ALL' || b.location === filterLocation;
-
-      if (!matchesQuery || !matchesStatus || !matchesCategory || !matchesAuthor || !matchesLanguage || !matchesPerson || !matchesLocation) {
+      if (q && !searchHaystack.includes(q)) return false;
+      if (!Object.entries(bookFilters).every(([field, values]) => !values.length || values.includes(b[field]))) {
         return false;
       }
 
@@ -523,13 +511,24 @@ This is a gentle reminder regarding the books borrowed from my library:
       if (activeTab === 'books') return b.currentStatus !== 'WISHLISTED';
       return true;
     });
-  }, [appData.books, searchQuery, filterStatus, filterCategory, filterAuthor, filterLanguage, filterPerson, filterLocation, activeTab]);
+  }, [appData.books, searchQuery, bookFilters, activeTab]);
 
-  const filterOptions = useMemo(() => {
-    const authors = Array.from(new Set((appData.books || []).map(b => b && b.author).filter(Boolean))).sort();
-    const languages = Array.from(new Set((appData.books || []).map(b => b && b.language).filter(Boolean))).sort();
-    return { authors, languages };
-  }, [appData.books]);
+  const bookFilterGroups = useMemo(() => {
+    const books = appData.books || [];
+    const config = appData.config || {};
+    const options = (field, defaults = []) => [...new Set([
+      ...defaults,
+      ...books.map(book => book?.[field]),
+    ].filter(Boolean))].sort((a, b) => a.localeCompare(b));
+    return [
+      { key: 'currentStatus', label: 'Status', options: options('currentStatus', config.currentStatuses) },
+      { key: 'category', label: 'Category', options: options('category', config.categories) },
+      { key: 'location', label: 'Location', options: options('location', config.locations) },
+      { key: 'language', label: 'Language', options: options('language') },
+      { key: 'author', label: 'Author', options: options('author') },
+      { key: 'person', label: 'Reader', options: options('person', (appData.people || []).map(person => person.name)) },
+    ];
+  }, [appData.books, appData.config, appData.people]);
 
   const localTodayKey = (() => {
     const d = new Date();
@@ -559,6 +558,7 @@ This is a gentle reminder regarding the books borrowed from my library:
   // ---- Android hardware back button: close overlays -> go up one screen -> home -> exit ----
   const backRef = useRef(null);
   backRef.current = () => {
+    if (openBookFilter) { setOpenBookFilter(null); return true; }
     if (syncModal) { setSyncModal(false); return true; }
     if (restoreConfirmFile) { setRestoreConfirmFile(null); return true; }
     if (wishlistModal) { setWishlistModal(null); return true; }
@@ -842,48 +842,15 @@ This is a gentle reminder regarding the books borrowed from my library:
 
         <div className="flex-1 px-3.5 pt-4">
 
-          {/* FILTER BAR APPLIES ACROSS HOME & BOOKS */}
           {(activeTab === 'home' || activeTab === 'books') && (
-            <div className="bg-white p-2.5 rounded-xl border border-sand/50 shadow-sm space-y-2 mb-4">
-              <div className="grid grid-cols-3 gap-1.5 text-[10px] font-bold">
-                <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="bg-alabaster border border-sand/60 rounded p-1.5 text-charcoal outline-none">
-                  <option value="ALL">{t('legacy.Status: All')}</option>
-                  {((appData.config && appData.config.currentStatuses) || []).map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
-                <select value={filterCategory} onChange={e => setFilterCategory(e.target.value)} className="bg-alabaster border border-sand/60 rounded p-1.5 text-charcoal outline-none">
-                  <option value="ALL">{t('legacy.Category: All')}</option>
-                  {((appData.config && appData.config.categories) || []).map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-                <select value={filterLanguage} onChange={e => setFilterLanguage(e.target.value)} className="bg-alabaster border border-sand/60 rounded p-1.5 text-charcoal outline-none">
-                  <option value="ALL">{t('legacy.Language: All')}</option>
-                  {(filterOptions.languages || []).map(l => <option key={l} value={l}>{l}</option>)}
-                </select>
-              </div>
-              <div className="grid grid-cols-4 gap-1.5 text-[10px] font-bold items-center">
-                <select value={filterAuthor} onChange={e => setFilterAuthor(e.target.value)} className="bg-alabaster border border-sand/60 rounded p-1.5 text-charcoal outline-none">
-                  <option value="ALL">{t('legacy.Author: All')}</option>
-                  {(filterOptions.authors || []).map(a => <option key={a} value={a}>{a}</option>)}
-                </select>
-                <select value={filterPerson} onChange={e => setFilterPerson(e.target.value)} className="bg-alabaster border border-sand/60 rounded p-1.5 text-charcoal outline-none">
-                  <option value="ALL">{t('legacy.Person: All')}</option>
-                  {(appData.people || []).map(p => <option key={p.name} value={p.name}>{p.name}</option>)}
-                </select>
-                <select value={filterLocation} onChange={e => setFilterLocation(e.target.value)} className="bg-alabaster border border-sand/60 rounded p-1.5 text-charcoal outline-none">
-                  <option value="ALL">{t('legacy.Location: All')}</option>
-                  {((appData.config && appData.config.locations) || []).map(l => <option key={l} value={l}>{l}</option>)}
-                </select>
-                <div className="flex justify-end">
-                  <button
-                    onClick={handleResetFilters}
-                    className="w-full bg-sand/30 text-forest rounded py-1 px-2 uppercase text-[9px] font-extrabold flex items-center justify-center space-x-1 hover:bg-sand/50 active:scale-95 transition-all shadow-xs"
-                    title={t('legacy.Reset all filters')}
-                  >
-                    <i className="fa-solid fa-arrow-rotate-left text-[8px]"></i>
-                    <span>{t('legacy.Reset')}</span>
-                  </button>
-                </div>
-              </div>
-            </div>
+            <BookFilterStrip
+              groups={bookFilterGroups.map(group => ({ ...group, label: t(`legacy.${group.label}`) }))}
+              selections={bookFilters}
+              onChange={toggleBookFilter}
+              onReset={() => { setBookFilters({}); setSearchQuery(''); }}
+              openGroup={openBookFilter}
+              onOpenGroup={setOpenBookFilter}
+            />
           )}
 
           {/* TAB 1: HOME (CONNECTS FILTERS & SEARCH DIRECTLY TO SUMMARY TABLES) */}
