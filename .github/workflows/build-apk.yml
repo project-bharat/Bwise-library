@@ -71,16 +71,11 @@ jobs:
           cp android/app/build/outputs/apk/debug/app-debug.apk "${APK_NAME}"
           zip -j "${ZIP_NAME}" "${APK_NAME}"
 
-      - name: Upload named APK
+      - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: B-wise Library - Build ${{ github.run_number }} - Debug APK
-          path: B-wise Library - Build ${{ github.run_number }} - Debug APK.apk
-          if-no-files-found: error
-
-      - name: Upload named ZIP
-        uses: actions/upload-artifact@v4
-        with:
-          name: B-wise Library - Build ${{ github.run_number }} - ZIP
-          path: B-wise Library - Build ${{ github.run_number }}.zip
+          name: B-wise Library - Build ${{ github.run_number }}
+          path: |
+            B-wise Library - Build ${{ github.run_number }} - Debug APK.apk
+            B-wise Library - Build ${{ github.run_number }}.zip
           if-no-files-found: error
