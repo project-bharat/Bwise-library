@@ -62,20 +62,12 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
 
-      - name: Rename APK and create ZIP with app title and build number
-        run: |
-          BUILD_NUMBER="${{ github.run_number }}"
-          APP_TITLE="B-wise Library"
-          APK_NAME="${APP_TITLE} - Build ${BUILD_NUMBER} - Debug APK.apk"
-          ZIP_NAME="${APP_TITLE} - Build ${BUILD_NUMBER}.zip"
-          cp android/app/build/outputs/apk/debug/app-debug.apk "${APK_NAME}"
-          zip -j "${ZIP_NAME}" "${APK_NAME}"
+      - name: Rename APK with build number
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk "B-wise Library - Build ${{ github.run_number }} - Debug APK.apk"
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: B-wise Library - Build ${{ github.run_number }}
-          path: |
-            B-wise Library - Build ${{ github.run_number }} - Debug APK.apk
-            B-wise Library - Build ${{ github.run_number }}.zip
+          path: B-wise Library - Build ${{ github.run_number }} - Debug APK.apk
           if-no-files-found: error
