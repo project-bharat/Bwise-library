@@ -1,4 +1,16 @@
 {
+  "kpi": {
+    "books": "Books",
+    "withMe": "With Me",
+    "out": "Out",
+    "wishlist": "Wishlist",
+    "worth": "Worth",
+    "allBooks": "All Books",
+    "returned": "Returned",
+    "holding": "Holding",
+    "gifted": "Gifted",
+    "toGet": "To Get"
+  },
   "common": {
     "appName": "B-wise Library",
     "home": "Home",
