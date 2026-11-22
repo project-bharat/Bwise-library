@@ -363,6 +363,17 @@ async function mutateLocalNow(method, args = []) {
       ].join('\r\n');
     }
 
+    case 'applyEditionLookup': {
+      const book = payload.books.find(item => item.id === value.id);
+      if (!book || book.isbn !== value.isbn || book.metadataStatus !== 'pending') return clone(payload);
+      if (value.info) {
+        if (book.title === book.isbn) book.title = value.info.title;
+        if ((!book.author || book.author === 'Unknown') && value.info.author) book.author = value.info.author;
+      }
+      book.metadataStatus = value.info ? 'complete' : 'missing';
+      break;
+    }
+
     case 'exportBooksCsv':
       return recordsToCsv('Books', payload.books);
     case 'exportPersonsLedgerCsv':

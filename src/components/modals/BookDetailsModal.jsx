@@ -47,7 +47,7 @@ export default function BookDetailsModal({ isNew, initial, config, onClose, onSu
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!title.trim()) return alert(t('legacy.Book title is required'));
+    if (!title.trim() && !isbn13(isbn)) return alert(t('legacy.Book title is required'));
     if (isbn.trim() && !isbn13(isbn)) return alert(t('shelf.invalid'));
     setIsSubmitting(true);
     const payload = {
@@ -57,7 +57,9 @@ export default function BookDetailsModal({ isNew, initial, config, onClose, onSu
       tags: [...new Set(tags.split(',').map(tag => tag.trim()).filter(Boolean))],
       id: isNew ? '' : initial.id,
       bookInDate: bookInDate,
-      title: title.trim(),
+      title: title.trim() || isbn13(isbn),
+      metadataStatus: !title.trim() || (initial.metadataStatus === 'pending' && title.trim() === isbn13(isbn))
+        ? 'pending' : undefined,
       author: author.trim() || 'Unknown',
       category,
       language,
@@ -91,7 +93,7 @@ export default function BookDetailsModal({ isNew, initial, config, onClose, onSu
         <form onSubmit={handleSubmit} className="space-y-2 text-xs">
           <div>
             <label className="text-[8px] font-black uppercase text-stone-500">{t('legacy.Book Title')} *</label>
-            <input type="text" required autoFocus value={title} onChange={e => setTitle(e.target.value)} className="w-full bg-alabaster border border-sand/60 rounded px-2.5 py-1.5 font-bold text-xs" />
+            <input type="text" required={!isbn13(isbn)} autoFocus value={title} onChange={e => setTitle(e.target.value)} className="w-full bg-alabaster border border-sand/60 rounded px-2.5 py-1.5 font-bold text-xs" />
           </div>
 
           <label className="block font-bold">ISBN <input value={isbn} onChange={e => { lookupId.current++; setFeedback(''); setIsbn(e.target.value); }} className="w-full rounded border bg-alabaster p-1.5" /></label>
