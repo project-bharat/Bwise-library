@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { formatLocaleNumber } from '../i18n';
 import { useTranslation } from '../i18n/useTranslation';
 
-const chipStyle = 'min-h-11 shrink-0 inline-flex items-center gap-1.5 whitespace-nowrap rounded-xl border px-3 text-xs font-bold focus-visible:outline focus-visible:outline-2 focus-visible:outline-ochre';
+const chipStyle = 'min-h-8 shrink-0 inline-flex items-center gap-1.5 whitespace-nowrap rounded-xl border px-3 text-xs font-bold focus-visible:outline focus-visible:outline-2 focus-visible:outline-ochre';
 const idleStyle = 'border-sand/70 bg-white text-charcoal';
 const activeStyle = 'border-forest/40 bg-forest/10 text-forest';
 
@@ -44,7 +44,7 @@ export default function BookFilterStrip({ groups, selections, onChange, onReset,
         onClick={toggleOrClear}
       >
         <i aria-hidden="true" className={total ? 'fa-solid fa-xmark' : 'fa-solid fa-sliders'} />
-        {total ? t('bookFilters.clear', { count: formatCount(total) }) : t('bookFilters.title')}
+        {total ? <>{t('year.clear')} <span className="rounded bg-black px-1.5 text-white">{formatCount(total)}</span></> : t('bookFilters.title')}
       </button>
       <div
         id="book-filter-groups"
@@ -63,7 +63,7 @@ export default function BookFilterStrip({ groups, selections, onChange, onReset,
                 onClick={() => onOpenGroup(key)}
               >
                 {label}
-                {count > 0 && <span className="rounded-md bg-forest px-1.5 text-white">{formatCount(count)}</span>}
+                {count > 0 && <span className="rounded bg-black px-1.5 text-white">{formatCount(count)}</span>}
                 <i aria-hidden="true" className="fa-solid fa-chevron-down text-[9px]" />
               </button>
             );

@@ -8,9 +8,9 @@ In the listing for `com.bharatrasve.bwiselibrary`, activate the following produc
 
 | Product type | Product ID | Base plan | Intended India price |
 | --- | --- | --- | --- |
-| Auto-renewing subscription | `bwise_premium` | `monthly` | ₹119/month |
-| Auto-renewing subscription | `bwise_premium` | `yearly` | ₹499/year |
-| One-time non-consumable | `bwise_premium_lifetime` | — | ₹7,999 |
+| Auto-renewing subscription | `bwise_premium` | `monthly` | ₹29/month |
+| Auto-renewing subscription | `bwise_premium` | `yearly` | ₹265/year |
+| One-time non-consumable | `bwise_premium_lifetime` | — | ₹2,049 |
 
 The paywall uses the current Google Play price for each available product. Purchase buttons require a returned offer. Test with a signing key and distribution track that the Play Console recognizes, using the account that owns the test purchase. Configure regional prices, the privacy policy, and listing disclosures in Play Console before release.
 

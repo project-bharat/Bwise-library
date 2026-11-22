@@ -1,4 +1,19 @@
 {
+  "year": {
+    "title": "Your Reading Year",
+    "detail": "Set a yearly goal and follow your pace, month by month.",
+    "goal": "Yearly book goal",
+    "save": "Save goal",
+    "onPace": "On pace",
+    "behind": "Behind pace",
+    "reached": "Goal reached",
+    "profile": "Library reader",
+    "free": "Free",
+    "export": "Export Backup File",
+    "import": "Import Backup File",
+    "clear": "Clear",
+    "connectPro": "Get Premium to connect Google"
+  },
   "premium": {
     "title": "B-wise Library Premium",
     "promptTitle": "Save your library data",

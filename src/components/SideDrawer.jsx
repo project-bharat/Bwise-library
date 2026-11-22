@@ -1,9 +1,8 @@
 import React from 'react';
-import brandIcon from '../assets/brand-icon.png?inline';
 import SupportDeveloper from './SupportDeveloper';
 import { useTranslation } from '../i18n/useTranslation';
 
-export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddPerson, onAddCategory, onAddLocation, onAddStatus, onBackupWithGoogle, onPremium, onCloudBackup, isPro, onExportBackup, onRestoreClick, onSyncSettings, onCallDeveloper, displayLanguage = 'en', onLanguageChange }) {
+export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddPerson, onAddCategory, onAddLocation, onAddStatus, profile, onReadingYear, onPremium, onCloudBackup, isPro, onExportBackup, onRestoreClick, onSyncSettings, onCallDeveloper, displayLanguage = 'en', onLanguageChange }) {
   const { t } = useTranslation();
   return (
     <div className={`fixed inset-0 z-50 transition-all duration-300 ${isOpen ? 'visible opacity-100' : 'invisible opacity-0'}`}>
@@ -15,17 +14,24 @@ export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddP
             style={{ background: 'linear-gradient(to right, #033636 0%, #047372 45%, #0e4e4e 75%, #052626 100%)' }}
           >
             <div className="flex items-center space-x-2.5">
-              <img src={brandIcon} alt="" className="w-10 h-10 rounded-xl shadow-md border border-white/20" />
-              <div>
-                <p className="text-[10px] font-extrabold uppercase tracking-widest text-sand">{t('legacy.Library Manager')}</p>
-                <h2 className="text-lg font-black tracking-tight mt-0.5">{t('legacy.B-wise Library')}</h2>
+              <span className="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-full bg-white/15">
+                {profile.photo ? <img alt="" src={profile.photo} className="h-full w-full object-cover" /> : <i aria-hidden="true" className="fa-solid fa-user" />}
+              </span>
+              <div className="min-w-0">
+                <h2 className="truncate font-black">{profile.name || profile.account || t('year.profile')}</h2>
+                <span className="rounded bg-white/15 px-2 text-xs">{isPro ? 'Premium' : t('year.free')}</span>
               </div>
             </div>
             <button onClick={onClose} className="text-sand/80 hover:text-white p-1 rounded transition-colors" title={`${t('legacy.Close')} Menu (Esc)`}>
               <i className="fa-solid fa-xmark text-lg"></i>
             </button>
           </div>
-          <div className="p-4 space-y-4 text-xs font-bold text-charcoal">            <div className="rounded-xl border border-stone-200 bg-stone-50 p-3">              <label className="block text-[9px] font-black uppercase tracking-widest text-stone-400 mb-2">{t('legacy.App display language')}</label>              <select value={displayLanguage} onChange={e => onLanguageChange?.(e.target.value)} className="w-full rounded-lg border border-stone-200 bg-white px-2.5 py-2 text-xs font-bold text-charcoal">                <option value="en">{t('legacy.English (Default)')}</option><option value="mr">मराठी</option><option value="hi">हिन्दी</option>              </select>            </div>
+          <div className="p-4 space-y-4 text-xs font-bold text-charcoal"><label className="flex items-center gap-2 rounded-lg border bg-white px-3 text-forest">
+              <i aria-hidden="true" className="fa-solid fa-language" />
+              <select aria-label={t('legacy.App display language')} value={displayLanguage} onChange={e => onLanguageChange(e.target.value)} className="min-w-0 flex-1 bg-transparent py-2">
+                <option value="en">English</option><option value="mr">मराठी</option><option value="hi">हिन्दी</option>
+              </select></label>
+              <button onClick={onReadingYear} className="flex w-full items-center gap-2 p-2 text-forest"><i className="fa-solid fa-chart-column" />{t('year.title')}</button>
             <div>
               <p className="text-[9px] font-black uppercase tracking-widest text-stone-400 mb-1 px-1">{t('legacy.Reader Directory')}</p>
               <button onClick={onOpenPersonManage} className="w-full text-left p-2 rounded-lg hover:bg-stone-100 flex items-center space-x-2">
@@ -56,14 +62,11 @@ export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddP
                 <span className="flex-1">{t('premium.cloud')}</span>
                 {!isPro && <span className="rounded bg-forest px-1.5 py-0.5 text-[10px] text-white">PRO</span>}
               </button>
-              <button onClick={onBackupWithGoogle} className="w-full text-left p-2 rounded-lg hover:bg-stone-100 text-forest flex items-center space-x-2">
-                <i className="fa-brands fa-google-drive w-5"></i> <span>{t('legacy.Backup with Google')}</span>
-              </button>
               <button onClick={onExportBackup} className="w-full text-left p-2 rounded-lg hover:bg-stone-100 text-forest flex items-center space-x-2">
-                <i className="fa-solid fa-file-csv w-5"></i> <span>{t('legacy.Export Full Data (CSV)')}</span>
+                <i className="fa-solid fa-file-csv w-5"></i> <span>{t('year.export')}</span>
               </button>
               <button onClick={onRestoreClick} className="w-full text-left p-2 rounded-lg hover:bg-stone-100 text-rose-700 flex items-center space-x-2">
-                <i className="fa-solid fa-cloud-arrow-up w-5"></i> <span>{t('legacy.Restore Full Backup (CSV)')}</span>
+                <i className="fa-solid fa-cloud-arrow-up w-5"></i> <span>{t('year.import')}</span>
               </button>
             </div>
           </div>
