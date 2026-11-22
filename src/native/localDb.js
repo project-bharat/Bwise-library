@@ -412,3 +412,23 @@ export function mutateLocal(method, args = []) {
   mutationQueue = result.catch(() => {});
   return result;
 }
+
+export function restoreCloudLibrary(payload) {
+  const operation = async () => {
+    const lists = ['books', 'people', 'wishlist'];
+    if (!payload || !payload.config || typeof payload.config !== 'object' || Array.isArray(payload.config)
+        || lists.some(key => !Array.isArray(payload[key])
+          || payload[key].some(item => !item || typeof item !== 'object' || Array.isArray(item)))
+        || payload.books.some(book => typeof book.title !== 'string')
+        || payload.people.some(person => typeof person.name !== 'string')
+        || payload.wishlist.some(item => typeof item.title !== 'string')) {
+      throw new Error('invalidBackup');
+    }
+    const normalized = normalizePayload(payload);
+    await persistPayload(normalized);
+    return { data: clone(rebuildPeople(normalizePayload(clone(normalized)))), serialized: JSON.stringify(normalized) };
+  };
+  const result = mutationQueue.then(operation, operation);
+  mutationQueue = result.catch(() => {});
+  return result;
+}

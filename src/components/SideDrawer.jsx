@@ -3,7 +3,7 @@ import brandIcon from '../assets/brand-icon.png?inline';
 import SupportDeveloper from './SupportDeveloper';
 import { useTranslation } from '../i18n/useTranslation';
 
-export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddPerson, onAddCategory, onAddLocation, onAddStatus, onBackupWithGoogle, onExportBackup, onRestoreClick, onSyncSettings, onCallDeveloper, displayLanguage = 'en', onLanguageChange }) {
+export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddPerson, onAddCategory, onAddLocation, onAddStatus, onBackupWithGoogle, onPremium, onCloudBackup, isPro, onExportBackup, onRestoreClick, onSyncSettings, onCallDeveloper, displayLanguage = 'en', onLanguageChange }) {
   const { t } = useTranslation();
   return (
     <div className={`fixed inset-0 z-50 transition-all duration-300 ${isOpen ? 'visible opacity-100' : 'invisible opacity-0'}`}>
@@ -44,8 +44,18 @@ export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddP
                 <i className="fa-solid fa-list-check text-ochre w-5"></i> <span>{t('legacy.Add Status')}</span>
               </button>
             </div>
+            <button type="button" onClick={onPremium} className="flex w-full items-center gap-3 rounded-xl bg-gradient-to-r from-forest to-[#0A685F] p-3 text-left text-sm font-black text-white">
+              <i aria-hidden="true" className="fa-solid fa-crown text-amber-200" />
+              <span className="flex-1">{t('premium.title')}</span>
+              <i aria-hidden="true" className="fa-solid fa-chevron-right text-xs" />
+            </button>
             <div>
               <p className="text-[9px] font-black uppercase tracking-widest text-stone-400 mb-1 px-1">{t('legacy.Local & Cloud Backup')}</p>
+              <button type="button" onClick={onCloudBackup} className="flex min-h-11 w-full items-center gap-2 rounded-lg p-2 text-left text-forest hover:bg-stone-100">
+                <i aria-hidden="true" className="fa-solid fa-cloud-arrow-up w-5" />
+                <span className="flex-1">{t('premium.cloud')}</span>
+                {!isPro && <span className="rounded bg-forest px-1.5 py-0.5 text-[10px] text-white">PRO</span>}
+              </button>
               <button onClick={onBackupWithGoogle} className="w-full text-left p-2 rounded-lg hover:bg-stone-100 text-forest flex items-center space-x-2">
                 <i className="fa-brands fa-google-drive w-5"></i> <span>{t('legacy.Backup with Google')}</span>
               </button>
