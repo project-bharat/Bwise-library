@@ -14,6 +14,9 @@ import { formatLocaleDate, formatLocaleNumber, setLanguage as persistLanguage } 
 import { useTranslation } from './i18n/useTranslation';
 
 import BrandingFooter from './components/BrandingFooter';
+import { getLocalPayload, mutateLocal } from './native/localDb';
+import { lookupEdition } from './bookMetadata';
+import { catalogFile } from './catalogExport';
 import ShelfCheck from './components/ShelfCheck';
 import ReadingYear from './components/ReadingYear';
 import BookFilterStrip from './components/BookFilterStrip';
@@ -34,6 +37,31 @@ export default function App() {
     numberingSystem: language === 'en' ? 'latn' : 'deva',
   }, language);
   const [appData, setAppData] = useState(EMPTY_INITIAL_DATA);
+  const pendingEditions = (appData.books || []).filter(book => book.metadataStatus === 'pending').length;
+  useEffect(() => {
+    if (!pendingEditions) return;
+    let stopped = false;
+    let running = false;
+    async function fillPending() {
+      if (running || !navigator.onLine) return;
+      running = true;
+      try {
+        const snapshot = await getLocalPayload();
+        for (const book of snapshot.books.filter(item => item.metadataStatus === 'pending')) {
+          if (stopped || !navigator.onLine) break;
+          const info = await lookupEdition(book.isbn);
+          if (stopped) break;
+          const updated = await mutateLocal('applyEditionLookup', [{ id: book.id, isbn: book.isbn, info }]);
+          if (!stopped) setAppData(updated);
+          await new Promise(resolve => setTimeout(resolve, 1200));
+        }
+      } catch { /* Pending entries retry on reconnect or a later visit. */ }
+      finally { running = false; }
+    }
+    const timer = setTimeout(fillPending, 1200);
+    window.addEventListener('online', fillPending);
+    return () => { stopped = true; clearTimeout(timer); window.removeEventListener('online', fillPending); };
+  }, [pendingEditions]);
   const [bootSplash, setBootSplash] = useState(true);
   const handleLanguageChange = (lang) => { persistLanguage(lang); };
   const [splashMinElapsed, setSplashMinElapsed] = useState(false);
@@ -530,7 +558,7 @@ This is a gentle reminder regarding the books borrowed from my library:
       if (!b) return false;
       const searchHaystack = [
         b.title, b.author, b.category, b.language,
-        b.currentStatus, b.location, b.person, b.notes
+        b.currentStatus, b.location, b.person, b.notes, b.isbn, ...(b.tags || [])
       ].map(val => val || '').join(' ').toLowerCase();
 
       if (q && !searchHaystack.includes(q)) return false;
@@ -683,6 +711,14 @@ This is a gentle reminder regarding the books borrowed from my library:
         profile={premiumState}
         onShelfCheck={() => { setDrawerOpen(false); setActiveTab('shelfCheck'); }}
         onReadingYear={() => { setDrawerOpen(false); setActiveTab('readingYear'); }}
+        onCatalog={async format => {
+          setDrawerOpen(false);
+          try {
+            await saveAndShareBlob(catalogFile(appData.books || [], format), 'B-wise Catalog.' + format, t('meta.export'));
+          } catch (error) {
+            if (!isShareCancel(error)) triggerStatus(t('export.failed', { error: error.message }), false);
+          }
+        }}
         onExportBackup={() => handleExportFullBackup(t('export.backup'))}
         onRestoreClick={() => { if (backupFileInputRef.current) { backupFileInputRef.current.value = ''; backupFileInputRef.current.click(); } }}
         onSyncSettings={() => { setDrawerOpen(false); setSyncModal(true); }}

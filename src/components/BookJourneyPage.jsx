@@ -1,3 +1,4 @@
+import EditionCover from './EditionCover';
 import React from 'react';
 import { useTranslation } from '../i18n/useTranslation';
 import BrandingFooter from './BrandingFooter';
@@ -106,6 +107,7 @@ export default function BookJourneyPage({ book, onBack, onEditDetails, onEditSta
               >
                 <i className="fa-regular fa-copy text-xs"></i>
               </button>
+              <EditionCover isbn={book.isbn} />
               <h1 className="text-base font-black leading-tight truncate">{book.title}</h1>
             </div>
             <p className="text-[11px] text-sand/90 font-medium">

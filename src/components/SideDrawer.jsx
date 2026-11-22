@@ -2,7 +2,7 @@ import React from 'react';
 import SupportDeveloper from './SupportDeveloper';
 import { useTranslation } from '../i18n/useTranslation';
 
-export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddPerson, onAddCategory, onAddLocation, onAddStatus, profile, onShelfCheck, onReadingYear, onPremium, onCloudBackup, isPro, onExportBackup, onRestoreClick, onSyncSettings, onCallDeveloper, displayLanguage = 'en', onLanguageChange }) {
+export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddPerson, onAddCategory, onAddLocation, onAddStatus, profile, onShelfCheck, onReadingYear, onPremium, onCloudBackup, isPro, onCatalog, onExportBackup, onRestoreClick, onSyncSettings, onCallDeveloper, displayLanguage = 'en', onLanguageChange }) {
   const { t } = useTranslation();
   return (
     <div className={`fixed inset-0 z-50 transition-all duration-300 ${isOpen ? 'visible opacity-100' : 'invisible opacity-0'}`}>
@@ -63,6 +63,8 @@ export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddP
                 <span className="flex-1">{t('premium.cloud')}</span>
                 {!isPro && <span className="rounded bg-forest px-1.5 py-0.5 text-[10px] text-white">PRO</span>}
               </button>
+              <div className="flex items-center gap-3 px-2 py-2 text-forest"><span>{t('meta.export')}</span>{['csv','json'].map(format =>
+                <button key={format} onClick={() => onCatalog(format)} className="rounded border px-2 py-1 uppercase">{format}</button>)}</div>
               <button onClick={onExportBackup} className="w-full text-left p-2 rounded-lg hover:bg-stone-100 text-forest flex items-center space-x-2">
                 <i className="fa-solid fa-file-csv w-5"></i> <span>{t('year.export')}</span>
               </button>

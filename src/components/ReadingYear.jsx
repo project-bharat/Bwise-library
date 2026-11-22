@@ -9,6 +9,8 @@ export default function ReadingYear({ books }) {
   const key = 'bwise-reading-goal-' + year;
   const [goal, setGoal] = useState(() => Number(localStorage.getItem(key)) || 0);
   const [draft, setDraft] = useState(goal || '');
+  const authors = new Map();
+  const ratings = [];
   const months = Array(12).fill(0);
   const today = now.toLocaleDateString('sv-SE');
   for (const book of books) {
@@ -21,6 +23,9 @@ export default function ReadingYear({ books }) {
         const month = Number(entry.changeDate.slice(5, 7));
         if (month >= 1 && month <= 12 && entry.changeDate.slice(0, 10) <= today) {
           months[month - 1]++;
+          const author = book.author?.trim();
+          if (author && author !== 'Unknown') authors.set(author, (authors.get(author) || 0) + 1);
+          if (book.rating >= 1 && book.rating <= 5) ratings.push(Number(book.rating));
           break;
         }
       }
@@ -30,6 +35,7 @@ export default function ReadingYear({ books }) {
   const total = months.reduce((sum, count) => sum + count, 0);
   const locale = getLocale(language);
   const number = value => value.toLocaleString(locale, { numberingSystem: language === 'en' ? 'latn' : 'deva' });
+  const leaders = [...authors].filter(([, count]) => count === Math.max(...authors.values())).map(([name]) => name);
   const monthName = new Intl.DateTimeFormat(locale, { month: 'short' });
   const elapsed = (now - new Date(year, 0, 1)) / (new Date(year + 1, 0, 1) - new Date(year, 0, 1));
   return <section className="space-y-4">
@@ -39,6 +45,8 @@ export default function ReadingYear({ books }) {
       <p className="text-3xl font-black">{number(total)}{goal > 0 && ' / ' + number(goal)}</p>
       {goal > 0 && <><progress className="w-full accent-amber-300" value={Math.min(total, goal)} max={goal} /><p>{t(total >= goal ? 'year.reached' : total >= Math.floor(goal * elapsed) ? 'year.onPace' : 'year.behind')}</p></>}
     </div>
+    {!!leaders.length && <p>{t('meta.author')}: <b>{leaders.join(', ')}</b></p>}
+    {!!ratings.length && <p>{t('meta.average')}: <b>{number(Number((ratings.reduce((a,b) => a+b,0) / ratings.length).toFixed(1)))} ★</b></p>}
     <form className="flex items-end gap-2" onSubmit={event => { event.preventDefault(); const value = Number(draft); localStorage.setItem(key, String(value)); setGoal(value); }}>
       <label className="flex-1 text-sm font-bold">{t('year.goal')}<input required type="number" min="1" max="9999" step="1" value={draft} onChange={e => setDraft(e.target.value)} className="mt-1 block w-full rounded-lg border p-2" /></label>
       <button className="rounded-lg bg-forest px-4 py-2 text-white">{t('year.save')}</button>

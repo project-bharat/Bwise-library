@@ -1,12 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from '../../i18n/useTranslation';
 
+import { lookupEdition } from '../../bookMetadata';
 import { isbn13 } from '../../isbn';
 
 // DIALOG 1: EDIT BOOK DETAILS (With Location Dropdown, Default Current_Status='My Collection')
 export default function BookDetailsModal({ isNew, initial, config, onClose, onSuccess }) {
   const { t } = useTranslation();
   const [isbn, setIsbn] = useState(initial.isbn || '');
+  const [rating, setRating] = useState(initial.rating || '');
+  const [tags, setTags] = useState((initial.tags || []).join(', '));
+  const [feedback, setFeedback] = useState('');
+  const lookupId = useRef(0);
+  useEffect(() => () => { lookupId.current++; }, []);
+  async function lookup() {
+    const id = ++lookupId.current;
+    setFeedback('loading');
+    try {
+      const result = await lookupEdition(isbn);
+      if (lookupId.current !== id) return;
+      if (result) {
+        setTitle(value => value.trim() ? value : result.title);
+        setAuthor(value => value.trim() ? value : result.author);
+      }
+      setFeedback(result ? 'found' : 'missing');
+    } catch {
+      if (lookupId.current === id) setFeedback('offline');
+    }
+  }
   const [title, setTitle] = useState(initial.title || '');
   const [author, setAuthor] = useState(initial.author || '');
   const [category, setCategory] = useState(initial.category || (config.categories && config.categories[0]) || 'Literature');
@@ -26,15 +47,19 @@ export default function BookDetailsModal({ isNew, initial, config, onClose, onSu
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!title.trim()) return alert(t('legacy.Book title is required'));
+    if (!title.trim() && !isbn13(isbn)) return alert(t('legacy.Book title is required'));
     if (isbn.trim() && !isbn13(isbn)) return alert(t('shelf.invalid'));
     setIsSubmitting(true);
     const payload = {
       ...initial,
       isbn: isbn13(isbn),
+      rating: rating ? Number(rating) : null,
+      tags: [...new Set(tags.split(',').map(tag => tag.trim()).filter(Boolean))],
       id: isNew ? '' : initial.id,
       bookInDate: bookInDate,
-      title: title.trim(),
+      title: title.trim() || isbn13(isbn),
+      metadataStatus: !title.trim() || (initial.metadataStatus === 'pending' && title.trim() === isbn13(isbn))
+        ? 'pending' : undefined,
       author: author.trim() || 'Unknown',
       category,
       language,
@@ -68,10 +93,17 @@ export default function BookDetailsModal({ isNew, initial, config, onClose, onSu
         <form onSubmit={handleSubmit} className="space-y-2 text-xs">
           <div>
             <label className="text-[8px] font-black uppercase text-stone-500">{t('legacy.Book Title')} *</label>
-            <input type="text" required autoFocus value={title} onChange={e => setTitle(e.target.value)} className="w-full bg-alabaster border border-sand/60 rounded px-2.5 py-1.5 font-bold text-xs" />
+            <input type="text" required={!isbn13(isbn)} autoFocus value={title} onChange={e => setTitle(e.target.value)} className="w-full bg-alabaster border border-sand/60 rounded px-2.5 py-1.5 font-bold text-xs" />
           </div>
 
-          <label className="block font-bold">ISBN <input value={isbn} onChange={e => setIsbn(e.target.value)} className="w-full rounded border bg-alabaster p-1.5" /></label>
+          <label className="block font-bold">ISBN <input value={isbn} onChange={e => { lookupId.current++; setFeedback(''); setIsbn(e.target.value); }} className="w-full rounded border bg-alabaster p-1.5" /></label>
+          {isbn13(isbn) && <button type="button" disabled={feedback === 'loading'} className="font-bold text-ochre" onClick={lookup}>{t('meta.lookup')}</button>}
+          {feedback && <p role="status">{t('meta.' + feedback)}</p>}
+          <div className="flex gap-2">
+            <label>{t('meta.rating')}<select className="block rounded border p-1" value={rating} onChange={e => setRating(e.target.value)}>
+              <option value="">—</option>{[1,2,3,4,5].map(n => <option key={n} value={n}>{n} ★</option>)}</select></label>
+            <label className="flex-1">{t('meta.tags')}<input className="block w-full rounded border p-1" value={tags} onChange={e => setTags(e.target.value)} /></label>
+          </div>
           <div className="grid grid-cols-2 gap-2">
             <div><label className="text-[8px] font-black uppercase text-stone-500">{t('legacy.Author')}</label><input type="text" value={author} onChange={e => setAuthor(e.target.value)} className="w-full bg-alabaster border border-sand/60 rounded px-2 py-1 text-xs" /></div>
             <div><label className="text-[8px] font-black uppercase text-stone-500">{t('legacy.Amount (₹)')}</label><input type="number" value={amount} onChange={e => setAmount(e.target.value)} className="w-full bg-alabaster border border-sand/60 rounded px-2 py-1 text-xs" /></div>
