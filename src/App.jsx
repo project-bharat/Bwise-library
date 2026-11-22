@@ -2,6 +2,8 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import html2pdf from 'html2pdf.js';
 import { App as CapApp } from '@capacitor/app';
 import brandIcon from './assets/brand-icon.png?inline';
+import { libraryPremium } from './native/premium';
+import PremiumFlow from './components/PremiumFlow';
 import { isNative } from './native/storage';
 import { hideNativeSplash } from './native/init';
 import { requestInitialDevicePermissions } from './native/contacts';
@@ -40,6 +42,33 @@ export default function App() {
   const [selectedBook, setSelectedBook] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [premiumScreen, setPremiumScreen] = useState(null);
+  const [premiumState, setPremiumState] = useState({ pro: false });
+  useEffect(() => {
+    if (!isNative() || bootSplash || !splashMinElapsed) return;
+    let active = true;
+    const refresh = async () => {
+      try {
+        const state = await libraryPremium.status();
+        if (!active) return;
+        setPremiumState(state);
+        const lastPrompt = Number(localStorage.getItem('bwise-premium-prompt') || 0);
+        if (!state.pro && (!lastPrompt || Date.now() - lastPrompt >= 7 * 86400000)) {
+          const offers = await libraryPremium.products();
+          if (active && Object.keys(offers).length) {
+            localStorage.setItem('bwise-premium-prompt', String(Date.now()));
+            setPremiumScreen(current => current || 'prompt');
+          }
+        }
+      } catch {
+        // Play can be unavailable when offline or when installed outside Google Play.
+      }
+    };
+    refresh();
+    const subscription = CapApp.addListener('resume', refresh);
+    return () => { active = false; subscription.then(handle => handle.remove()).catch(() => {}); };
+  }, [bootSplash, splashMinElapsed]);
+
 
   // Filters for Books Table
   const [bookFilters, setBookFilters] = useState({});
@@ -558,6 +587,7 @@ This is a gentle reminder regarding the books borrowed from my library:
   // ---- Android hardware back button: close overlays -> go up one screen -> home -> exit ----
   const backRef = useRef(null);
   backRef.current = () => {
+    if (premiumScreen) { setPremiumScreen(null); return true; }
     if (openBookFilter) { setOpenBookFilter(null); return true; }
     if (syncModal) { setSyncModal(false); return true; }
     if (restoreConfirmFile) { setRestoreConfirmFile(null); return true; }
@@ -645,12 +675,17 @@ This is a gentle reminder regarding the books borrowed from my library:
         onAddCategory={() => { setDrawerOpen(false); setAdminConfigModal({ type: 'Category' }); }}
         onAddLocation={() => { setDrawerOpen(false); setAdminConfigModal({ type: 'Location' }); }}
         onAddStatus={() => { setDrawerOpen(false); setAdminConfigModal({ type: 'Current_Status' }); }}
+        isPro={premiumState.pro}
+        onPremium={() => { setDrawerOpen(false); setPremiumScreen(premiumState.pro ? 'cloud' : 'plans'); }}
+        onCloudBackup={() => { setDrawerOpen(false); setPremiumScreen('cloud'); }}
         onBackupWithGoogle={() => handleExportFullBackup(t('export.backupDrive'))}
         onExportBackup={() => handleExportFullBackup(t('export.backup'))}
         onRestoreClick={() => { if (backupFileInputRef.current) { backupFileInputRef.current.value = ''; backupFileInputRef.current.click(); } }}
         onSyncSettings={() => { setDrawerOpen(false); setSyncModal(true); }}
         onCallDeveloper={() => handleDirectDial('917218838122')}
       />
+      <PremiumFlow key={premiumScreen ? 'open' : 'closed'} screen={premiumScreen} onScreen={setPremiumScreen}
+        state={premiumState} onState={setPremiumState} onRestored={setAppData} />
       <input type="file" accept="*/*,.csv,text/csv,application/csv,application/vnd.ms-excel,text/plain,application/octet-stream" ref={backupFileInputRef} onChange={handleImportBackupFile} aria-label={t('legacy.Select library backup CSV')} style={{ position: "fixed", left: "-10000px", top: 0, width: "1px", height: "1px", opacity: 0 }} />
 
       <div className="flex-1 flex flex-col pt-[60px] pb-28">

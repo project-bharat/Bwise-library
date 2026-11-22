@@ -4,7 +4,8 @@
  - stamps versionCode / versionName into android/app/build.gradle
 Usage: python scripts/android-post-setup.py <versionCode> <versionName>
 """
-import re, sys, os
+import re, sys, os, shutil
+from xml.sax.saxutils import escape
 from PIL import Image
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'android', 'app')
@@ -66,12 +67,15 @@ if os.path.isfile(strings_path):
 else:
     strings_xml = '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n</resources>\n'
 shortcut_strings = {
+    'default_web_client_id': escape(os.getenv('GOOGLE_WEB_CLIENT_ID', '')),
     'shortcut_add_book': 'Add book',
     'shortcut_add_book_long': 'Add a book to your library',
     'shortcut_add_wishlist': 'Add wishlist',
     'shortcut_add_wishlist_long': 'Add a book to your wishlist'
 }
 for key, value in shortcut_strings.items():
+    if key == 'default_web_client_id' and value:
+        strings_xml = re.sub(r'<string name="default_web_client_id">.*?</string>\s*', '', strings_xml)
     if f'<string name="{key}">' not in strings_xml:
         strings_xml = strings_xml.replace('</resources>', f'    <string name="{key}">{value}</string>\n</resources>')
 with open(strings_path, 'w', encoding='utf-8') as strings_file:
@@ -85,6 +89,41 @@ g = re.sub(r'versionCode\s+\d+', 'versionCode ' + code, g, count=1)
 g = re.sub(r'versionName\s+"[^"]*"', 'versionName "' + name + '"', g, count=1)
 open(gradle, 'w', encoding='utf-8').write(g)
 print('gradle: versionCode', code, 'versionName', name)
+
+# Capacitor generates the Android project in CI. Install tracked native sources after sync.
+source_dir = os.path.join(os.path.dirname(__file__), '..', 'native', 'premium-android')
+activity_dir = os.path.join(ROOT, 'src', 'main', 'java', 'com', 'bharatrasve', 'bwiselibrary')
+for source in os.listdir(source_dir):
+    if source.endswith('.java'):
+        shutil.copyfile(os.path.join(source_dir, source), os.path.join(activity_dir, source))
+main_activity = os.path.join(activity_dir, 'MainActivity.java')
+with open(main_activity, encoding='utf-8') as main_file:
+    main_source = main_file.read()
+if 'registerPlugin(PremiumPlugin.class)' not in main_source:
+    main_source = main_source.replace('extends BridgeActivity {', '''extends BridgeActivity {
+    @Override public void onCreate(android.os.Bundle state) {
+        if (android.os.Build.VERSION.SDK_INT >= 24) registerPlugin(PremiumPlugin.class);
+        super.onCreate(state);
+    }
+''', 1)
+    with open(main_activity, 'w', encoding='utf-8') as main_file:
+        main_file.write(main_source)
+dependencies = (
+    'com.android.billingclient:billing:8.0.0',
+    'androidx.credentials:credentials:1.3.0',
+    'androidx.credentials:credentials-play-services-auth:1.3.0',
+    'com.google.android.libraries.identity.googleid:googleid:1.1.1',
+    'com.google.android.gms:play-services-auth:21.3.0',
+    'androidx.work:work-runtime:2.9.1',
+)
+with open(gradle, encoding='utf-8') as gradle_file:
+    gradle_source = gradle_file.read()
+for dependency in dependencies:
+    if dependency not in gradle_source:
+        gradle_source = gradle_source.replace('dependencies {', f'dependencies {{\n    implementation "{dependency}"', 1)
+with open(gradle, 'w', encoding='utf-8') as gradle_file:
+    gradle_file.write(gradle_source)
+
 
 # Build a transparent, safely-scaled monogram for the native Android splash.
 # The native splash background is supplied by capacitor.config.json; the HTML splash

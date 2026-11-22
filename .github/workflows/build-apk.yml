@@ -15,6 +15,7 @@ jobs:
     timeout-minutes: 30
     env:
       # optional build-time defaults (users can still change them in-app: menu > Sync Settings)
+      GOOGLE_WEB_CLIENT_ID: ${{ vars.GOOGLE_WEB_CLIENT_ID }}
       VITE_GAS_URL: ${{ vars.GAS_URL }}
       VITE_GAS_TOKEN: ${{ secrets.GAS_TOKEN }}
     steps:
