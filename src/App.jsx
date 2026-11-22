@@ -14,6 +14,7 @@ import { formatLocaleDate, formatLocaleNumber, setLanguage as persistLanguage } 
 import { useTranslation } from './i18n/useTranslation';
 
 import BrandingFooter from './components/BrandingFooter';
+import { catalogFile } from './catalogExport';
 import ShelfCheck from './components/ShelfCheck';
 import ReadingYear from './components/ReadingYear';
 import BookFilterStrip from './components/BookFilterStrip';
@@ -530,7 +531,7 @@ This is a gentle reminder regarding the books borrowed from my library:
       if (!b) return false;
       const searchHaystack = [
         b.title, b.author, b.category, b.language,
-        b.currentStatus, b.location, b.person, b.notes
+        b.currentStatus, b.location, b.person, b.notes, b.isbn, ...(b.tags || [])
       ].map(val => val || '').join(' ').toLowerCase();
 
       if (q && !searchHaystack.includes(q)) return false;
@@ -683,6 +684,14 @@ This is a gentle reminder regarding the books borrowed from my library:
         profile={premiumState}
         onShelfCheck={() => { setDrawerOpen(false); setActiveTab('shelfCheck'); }}
         onReadingYear={() => { setDrawerOpen(false); setActiveTab('readingYear'); }}
+        onCatalog={async format => {
+          setDrawerOpen(false);
+          try {
+            await saveAndShareBlob(catalogFile(appData.books || [], format), 'B-wise Catalog.' + format, t('meta.export'));
+          } catch (error) {
+            if (!isShareCancel(error)) triggerStatus(t('export.failed', { error: error.message }), false);
+          }
+        }}
         onExportBackup={() => handleExportFullBackup(t('export.backup'))}
         onRestoreClick={() => { if (backupFileInputRef.current) { backupFileInputRef.current.value = ''; backupFileInputRef.current.click(); } }}
         onSyncSettings={() => { setDrawerOpen(false); setSyncModal(true); }}

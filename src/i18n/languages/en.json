@@ -1,4 +1,16 @@
 {
+  "meta": {
+    "lookup": "Look up ISBN",
+    "loading": "Looking up edition…",
+    "found": "Edition found. Empty fields filled.",
+    "missing": "Edition not found. Enter details manually.",
+    "offline": "Lookup unavailable. You can enter details manually.",
+    "rating": "Rating",
+    "tags": "Tags (comma-separated)",
+    "author": "Most-read author",
+    "average": "Average rating",
+    "export": "Export catalog"
+  },
   "shelf": {
     "title": "Shelf Check",
     "lookup": "ISBN, title or author",
