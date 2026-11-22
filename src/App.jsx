@@ -14,6 +14,7 @@ import { formatLocaleDate, formatLocaleNumber, setLanguage as persistLanguage } 
 import { useTranslation } from './i18n/useTranslation';
 
 import BrandingFooter from './components/BrandingFooter';
+import ReadingYear from './components/ReadingYear';
 import BookFilterStrip from './components/BookFilterStrip';
 import SideDrawer from './components/SideDrawer';
 import SummaryTableCard from './components/SummaryTableCard';
@@ -678,7 +679,8 @@ This is a gentle reminder regarding the books borrowed from my library:
         isPro={premiumState.pro}
         onPremium={() => { setDrawerOpen(false); setPremiumScreen(premiumState.pro ? 'cloud' : 'plans'); }}
         onCloudBackup={() => { setDrawerOpen(false); setPremiumScreen('cloud'); }}
-        onBackupWithGoogle={() => handleExportFullBackup(t('export.backupDrive'))}
+        profile={premiumState}
+        onReadingYear={() => { setDrawerOpen(false); setActiveTab('readingYear'); }}
         onExportBackup={() => handleExportFullBackup(t('export.backup'))}
         onRestoreClick={() => { if (backupFileInputRef.current) { backupFileInputRef.current.value = ''; backupFileInputRef.current.click(); } }}
         onSyncSettings={() => { setDrawerOpen(false); setSyncModal(true); }}
@@ -839,7 +841,7 @@ This is a gentle reminder regarding the books borrowed from my library:
         )}
 
         {/* DARK GRADIENT TOP KPI CARD (Dynamic Titles per Active Screen) */}
-        {activeTab !== 'personDetail' && activeTab !== 'bookDetail' && (
+        {activeTab !== 'readingYear' && activeTab !== 'personDetail' && activeTab !== 'bookDetail' && (
           <div
             className="mt-3 mx-3.5 shadow-[0_4px_16px_rgba(4,115,114,0.35)] border border-white/15 rounded-2xl grid grid-cols-5 divide-x divide-white/10 text-center py-3 text-white flex-none"
             style={{ background: 'linear-gradient(to right, #033636 0%, #047372 45%, #0e4e4e 75%, #052626 100%)' }}
@@ -848,25 +850,25 @@ This is a gentle reminder regarding the books borrowed from my library:
               <p className="text-[9px] uppercase font-bold leading-tight [overflow-wrap:anywhere] text-white/80">
                 {t(activeTab === 'persons' ? 'kpi.allBooks' : 'kpi.books')}
               </p>
-              <p className="text-base font-black text-amber-200 mt-0.5">{formatKpiNumber(currentKpis.all)}</p>
+              <p className="text-base font-black text-sand mt-0.5">{formatKpiNumber(currentKpis.all)}</p>
             </div>
             <div className="px-1">
               <p className="text-[9px] uppercase font-bold leading-tight [overflow-wrap:anywhere] text-white/80">
                 {t(activeTab === 'persons' ? 'kpi.returned' : 'kpi.withMe')}
               </p>
-              <p className="text-base font-black text-emerald-300 mt-0.5">{formatKpiNumber(currentKpis.withMe)}</p>
+              <p className="text-base font-black text-sand mt-0.5">{formatKpiNumber(currentKpis.withMe)}</p>
             </div>
             <div className="px-1">
               <p className="text-[9px] uppercase font-bold leading-tight [overflow-wrap:anywhere] text-white/80">
                 {t(activeTab === 'persons' ? 'kpi.holding' : 'kpi.out')}
               </p>
-              <p className="text-base font-black text-orange-300 mt-0.5">{formatKpiNumber(currentKpis.lent)}</p>
+              <p className="text-base font-black text-sand mt-0.5">{formatKpiNumber(currentKpis.lent)}</p>
             </div>
             <div className="px-1">
               <p className="text-[9px] uppercase font-bold leading-tight [overflow-wrap:anywhere] text-white/80">
                 {t(activeTab === 'wishlist' ? 'kpi.toGet' : activeTab === 'persons' ? 'kpi.gifted' : 'kpi.wishlist')}
               </p>
-              <p className="text-base font-black text-purple-300 mt-0.5">{formatKpiNumber(currentKpis.wishlisted)}</p>
+              <p className="text-base font-black text-sand mt-0.5">{formatKpiNumber(currentKpis.wishlisted)}</p>
             </div>
             <div className="px-1">
               <p className="text-[9px] uppercase font-bold leading-tight [overflow-wrap:anywhere] text-white/80">{t('kpi.worth')}</p>
@@ -887,6 +889,8 @@ This is a gentle reminder regarding the books borrowed from my library:
               onOpenGroup={setOpenBookFilter}
             />
           )}
+
+          {activeTab === 'readingYear' && <><ReadingYear books={appData.books || []} /><BrandingFooter onCallDeveloper={() => handleDirectDial('917218838122')} /></>}
 
           {/* TAB 1: HOME (CONNECTS FILTERS & SEARCH DIRECTLY TO SUMMARY TABLES) */}
           {activeTab === 'home' && (

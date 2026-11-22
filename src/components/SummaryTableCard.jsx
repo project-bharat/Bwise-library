@@ -31,7 +31,7 @@ export default function SummaryTableCard({ id, title, badge, rows, onRowClick, o
       <div className="px-3 py-1.5 bg-stone-100 border-b border-sand/40 flex justify-between items-center flex-none">
         <div className="flex items-center space-x-1.5">
           <h3 className="text-[10px] font-black text-forest uppercase tracking-wider leading-none">{title}</h3>
-          <span className="text-[8px] font-bold text-stone-500">({formatCount(rows.length)})</span>
+          <span className="rounded bg-black px-1.5 py-0.5 text-[9px] font-bold text-white">{formatCount(rows.length)}</span>
         </div>
         <div className="flex items-center space-x-2">
           <span className="text-[8px] font-extrabold text-ochre uppercase tracking-wider">{badge}</span>

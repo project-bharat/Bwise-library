@@ -5,7 +5,7 @@ import { libraryPremium } from '../native/premium';
 import { restoreCloudLibrary } from '../native/localDb';
 import { isNative } from '../native/storage';
 
-const preview = { monthly: '₹119', yearly: '₹499', lifetime: '₹7,999' };
+const preview = { monthly: '₹29', yearly: '₹265', lifetime: '₹2,049' };
 const primary = 'min-h-12 w-full rounded-xl bg-forest px-4 py-2 text-sm font-black text-white disabled:opacity-45';
 const secondary = 'min-h-11 rounded-xl border border-forest/20 px-4 py-2 text-sm font-bold text-forest disabled:opacity-45';
 const knownErrors = new Set(['billingUnavailable', 'pending', 'requiresPro', 'googleSetup', 'reconnect',
@@ -76,9 +76,9 @@ export default function PremiumFlow({ screen, onScreen, onRestored, state, onSta
   const cloud = screen === 'cloud';
 
   return (
-    <section role="dialog" aria-modal="true" aria-labelledby="premium-title" className="fixed inset-0 z-[65] mx-auto flex max-w-xl flex-col bg-[#F4F8F6] text-charcoal">
+    <section role="dialog" aria-modal="true" aria-labelledby="premium-title" className="fixed inset-0 z-[65] mx-auto flex max-w-xl flex-col bg-gradient-to-b from-[#D6E9DD] via-[#F6F4EA] to-white text-charcoal">
       <header className="flex shrink-0 items-center justify-between border-b border-forest/10 bg-white px-5 py-3">
-        <h2 id="premium-title" className="text-xl font-black text-forest">{t(cloud ? 'premium.cloud' : 'premium.title')}</h2>
+        <h2 id="premium-title" className="flex items-center gap-2 text-xl font-black text-forest">{!cloud && <i className="fa-solid fa-crown text-[#B48129]" />}{t(cloud ? 'premium.cloud' : 'premium.title')}</h2>
         <button type="button" className="grid h-11 w-11 place-items-center text-lg text-forest" aria-label={t('legacy.Close')} onClick={close} disabled={busy}>
           <i aria-hidden="true" className="fa-solid fa-xmark" />
         </button>
@@ -86,9 +86,9 @@ export default function PremiumFlow({ screen, onScreen, onRestored, state, onSta
       <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 py-5">
         {cloud ? (
           <>
-            <p className="text-sm text-stone-600">{t('premium.cloudDetail')}</p>
+            <ul className="space-y-3 rounded-2xl bg-white p-4 text-sm">{['featureData', 'featureAuto', 'featureRestore'].map(key => <li key={key} className="flex gap-3"><i className="fa-solid fa-check text-forest" />{t('premium.' + key)}</li>)}</ul>
             {!state.pro ? (
-              <button type="button" className={primary} onClick={() => onScreen('plans')}>{t('premium.get')}</button>
+              <button type="button" className={primary} onClick={() => onScreen('plans')}>{t('year.connectPro')}</button>
             ) : state.account ? (
               <div className="space-y-3 rounded-2xl bg-white p-4">
                 <p className="break-all font-bold text-forest">{state.account}</p>
@@ -138,11 +138,11 @@ export default function PremiumFlow({ screen, onScreen, onRestored, state, onSta
         ) : (
           <>
             <div className="rounded-2xl bg-gradient-to-br from-forest to-[#096960] p-5 text-white">
-              <img src="/horizontal-logo.png" alt="B-wise Library" className="mb-3 h-9 w-auto object-contain" />
+              <div className="mb-3 flex items-center gap-3"><img src="/horizontal-logo.png" alt="B-wise Library" className="h-9 w-auto object-contain" /><span className="rounded bg-[#EDD294] px-2 py-1 text-xs font-black text-forest">Premium</span></div>
               <p className="text-lg font-black">{t('premium.promptTitle')}</p>
               <p className="mt-1 text-sm text-white/85">{t('premium.promptDetail')}</p>
             </div>
-            <fieldset className="space-y-2">
+            <fieldset className="space-y-4">
               <legend className="sr-only">{t('premium.title')}</legend>
               {Object.keys(preview).map(key => {
                 const product = products[key];
@@ -151,12 +151,12 @@ export default function PremiumFlow({ screen, onScreen, onRestored, state, onSta
                     .format(product.micros / 1e6 / (key === 'monthly' ? 30 : 365))
                   : null;
                 return (
-                  <label key={key} className={`flex cursor-pointer items-center gap-3 rounded-xl border bg-white p-3 ${plan === key ? 'border-forest ring-1 ring-forest' : 'border-forest/15'}`}>
+                  <label key={key} className={`relative flex cursor-pointer items-center gap-3 rounded-xl border bg-white p-3 ${plan === key ? 'border-forest ring-1 ring-forest' : 'border-forest/15'}`}>
                     <input type="radio" name="premium-plan" checked={plan === key} onChange={() => setPlan(key)} className="shrink-0 accent-forest" />
                     <span className="min-w-0 flex-1">
                       <span className="block text-base font-black text-forest">{t(`premium.${key}`)}</span>
                       <span className="block text-xs text-stone-600">{t(`premium.${key}Detail`)}</span>
-                      {key === 'yearly' && bestValue && <span className="text-xs font-bold text-forest">{t('premium.best')}</span>}
+                      {key === 'yearly' && bestValue && <span className="absolute -top-2.5 right-3 rounded bg-[#EDD294] px-2 text-xs font-bold text-forest">{t('premium.best')}</span>}
                     </span>
                     <span className="shrink-0 text-right">
                       <span className="block text-base font-black text-forest">{product?.price || preview[key]}</span>

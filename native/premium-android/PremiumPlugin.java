@@ -31,6 +31,7 @@ public final class PremiumPlugin extends Plugin {
     private PluginCall pendingPurchase;
     private PluginCall pendingAuthorization;
     private String authorizingAccount;
+    private String displayName, photo;
     private ActivityResultLauncher<IntentSenderRequest> authorizationLauncher;
 
     @Override public void load() {
@@ -74,6 +75,7 @@ public final class PremiumPlugin extends Plugin {
     private JSObject state(boolean pro) {
         var settings = DriveBackup.prefs(getContext());
         return new JSObject().put("pro", pro).put("account", settings.getString("account", ""))
+            .put("name", settings.getString("name", "")).put("photo", settings.getString("photo", ""))
             .put("auto", settings.getBoolean("auto", false)).put("synced", settings.getLong("synced", 0))
             .put("error", settings.getString("error", ""));
     }
@@ -181,7 +183,10 @@ public final class PremiumPlugin extends Plugin {
                     new CredentialManagerCallback<GetCredentialResponse, GetCredentialException>() {
                         @Override public void onResult(GetCredentialResponse response) {
                             try {
-                                String account = GoogleIdTokenCredential.createFrom(response.getCredential().getData()).getId();
+                                var identity = GoogleIdTokenCredential.createFrom(response.getCredential().getData());
+                                String account = identity.getId();
+                                displayName = identity.getDisplayName();
+                                photo = identity.getProfilePictureUri() == null ? null : identity.getProfilePictureUri().toString();
                                 authorizingAccount = account;
                                 Identity.getAuthorizationClient(getActivity()).authorize(DriveBackup.request(account))
                                     .addOnSuccessListener(getActivity(), result -> {
@@ -229,6 +234,7 @@ public final class PremiumPlugin extends Plugin {
                     settings.edit().remove("error").apply();
                 }
             }
+            DriveBackup.prefs(getContext()).edit().putString("name", displayName).putString("photo", photo).apply();
             call.resolve(state(true));
         });
     }
