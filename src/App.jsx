@@ -14,6 +14,7 @@ import { formatLocaleDate, formatLocaleNumber, setLanguage as persistLanguage } 
 import { useTranslation } from './i18n/useTranslation';
 
 import BrandingFooter from './components/BrandingFooter';
+import ShelfCheck from './components/ShelfCheck';
 import ReadingYear from './components/ReadingYear';
 import BookFilterStrip from './components/BookFilterStrip';
 import SideDrawer from './components/SideDrawer';
@@ -680,6 +681,7 @@ This is a gentle reminder regarding the books borrowed from my library:
         onPremium={() => { setDrawerOpen(false); setPremiumScreen(premiumState.pro ? 'cloud' : 'plans'); }}
         onCloudBackup={() => { setDrawerOpen(false); setPremiumScreen('cloud'); }}
         profile={premiumState}
+        onShelfCheck={() => { setDrawerOpen(false); setActiveTab('shelfCheck'); }}
         onReadingYear={() => { setDrawerOpen(false); setActiveTab('readingYear'); }}
         onExportBackup={() => handleExportFullBackup(t('export.backup'))}
         onRestoreClick={() => { if (backupFileInputRef.current) { backupFileInputRef.current.value = ''; backupFileInputRef.current.click(); } }}
@@ -890,6 +892,7 @@ This is a gentle reminder regarding the books borrowed from my library:
             />
           )}
 
+          {activeTab === 'shelfCheck' && <ShelfCheck books={appData.books || []} onAdd={book => setBookModal({isNew: true, book})} />}
           {activeTab === 'readingYear' && <><ReadingYear books={appData.books || []} /><BrandingFooter onCallDeveloper={() => handleDirectDial('917218838122')} /></>}
 
           {/* TAB 1: HOME (CONNECTS FILTERS & SEARCH DIRECTLY TO SUMMARY TABLES) */}

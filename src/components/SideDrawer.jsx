@@ -2,7 +2,7 @@ import React from 'react';
 import SupportDeveloper from './SupportDeveloper';
 import { useTranslation } from '../i18n/useTranslation';
 
-export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddPerson, onAddCategory, onAddLocation, onAddStatus, profile, onReadingYear, onPremium, onCloudBackup, isPro, onExportBackup, onRestoreClick, onSyncSettings, onCallDeveloper, displayLanguage = 'en', onLanguageChange }) {
+export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddPerson, onAddCategory, onAddLocation, onAddStatus, profile, onShelfCheck, onReadingYear, onPremium, onCloudBackup, isPro, onExportBackup, onRestoreClick, onSyncSettings, onCallDeveloper, displayLanguage = 'en', onLanguageChange }) {
   const { t } = useTranslation();
   return (
     <div className={`fixed inset-0 z-50 transition-all duration-300 ${isOpen ? 'visible opacity-100' : 'invisible opacity-0'}`}>
@@ -31,6 +31,7 @@ export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddP
               <select aria-label={t('legacy.App display language')} value={displayLanguage} onChange={e => onLanguageChange(e.target.value)} className="min-w-0 flex-1 bg-transparent py-2">
                 <option value="en">English</option><option value="mr">मराठी</option><option value="hi">हिन्दी</option>
               </select></label>
+              <button onClick={onShelfCheck} className="flex w-full items-center gap-2 p-2 text-forest"><i className="fa-solid fa-barcode" />{t('shelf.title')}</button>
               <button onClick={onReadingYear} className="flex w-full items-center gap-2 p-2 text-forest"><i className="fa-solid fa-chart-column" />{t('year.title')}</button>
             <div>
               <p className="text-[9px] font-black uppercase tracking-widest text-stone-400 mb-1 px-1">{t('legacy.Reader Directory')}</p>

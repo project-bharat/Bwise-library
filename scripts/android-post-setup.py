@@ -103,12 +103,15 @@ if 'registerPlugin(PremiumPlugin.class)' not in main_source:
     main_source = main_source.replace('extends BridgeActivity {', '''extends BridgeActivity {
     @Override public void onCreate(android.os.Bundle state) {
         if (android.os.Build.VERSION.SDK_INT >= 24) registerPlugin(PremiumPlugin.class);
+        registerPlugin(ShelfScanner.class);
         super.onCreate(state);
     }
 ''', 1)
     with open(main_activity, 'w', encoding='utf-8') as main_file:
         main_file.write(main_source)
 dependencies = (
+    'com.journeyapps:zxing-android-embedded:4.3.0',
+    'com.google.zxing:core:3.3.3',
     'com.android.billingclient:billing:8.0.0',
     'androidx.credentials:credentials:1.3.0',
     'androidx.credentials:credentials-play-services-auth:1.3.0',

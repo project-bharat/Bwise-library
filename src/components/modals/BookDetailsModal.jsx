@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from '../../i18n/useTranslation';
 
+import { isbn13 } from '../../isbn';
+
 // DIALOG 1: EDIT BOOK DETAILS (With Location Dropdown, Default Current_Status='My Collection')
 export default function BookDetailsModal({ isNew, initial, config, onClose, onSuccess }) {
   const { t } = useTranslation();
+  const [isbn, setIsbn] = useState(initial.isbn || '');
   const [title, setTitle] = useState(initial.title || '');
   const [author, setAuthor] = useState(initial.author || '');
   const [category, setCategory] = useState(initial.category || (config.categories && config.categories[0]) || 'Literature');
@@ -24,9 +27,11 @@ export default function BookDetailsModal({ isNew, initial, config, onClose, onSu
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!title.trim()) return alert(t('legacy.Book title is required'));
+    if (isbn.trim() && !isbn13(isbn)) return alert(t('shelf.invalid'));
     setIsSubmitting(true);
     const payload = {
       ...initial,
+      isbn: isbn13(isbn),
       id: isNew ? '' : initial.id,
       bookInDate: bookInDate,
       title: title.trim(),
@@ -52,7 +57,7 @@ export default function BookDetailsModal({ isNew, initial, config, onClose, onSu
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2.5">
-      <div className="bg-white w-full max-w-sm rounded-xl p-3.5 shadow-2xl border border-sand/40 overflow-hidden">
+      <div className="bg-white w-full max-w-sm rounded-xl p-3.5 shadow-2xl border border-sand/40 max-h-[90dvh] overflow-y-auto">
         <div className="flex justify-between items-center border-b border-sand/40 pb-1.5 mb-2.5">
           <h2 className="text-xs font-black uppercase text-forest tracking-wide">
             {isNew ? t('legacy.New Book Entry') : t('legacy.Edit Book Details')}
@@ -66,6 +71,7 @@ export default function BookDetailsModal({ isNew, initial, config, onClose, onSu
             <input type="text" required autoFocus value={title} onChange={e => setTitle(e.target.value)} className="w-full bg-alabaster border border-sand/60 rounded px-2.5 py-1.5 font-bold text-xs" />
           </div>
 
+          <label className="block font-bold">ISBN <input value={isbn} onChange={e => setIsbn(e.target.value)} className="w-full rounded border bg-alabaster p-1.5" /></label>
           <div className="grid grid-cols-2 gap-2">
             <div><label className="text-[8px] font-black uppercase text-stone-500">{t('legacy.Author')}</label><input type="text" value={author} onChange={e => setAuthor(e.target.value)} className="w-full bg-alabaster border border-sand/60 rounded px-2 py-1 text-xs" /></div>
             <div><label className="text-[8px] font-black uppercase text-stone-500">{t('legacy.Amount (₹)')}</label><input type="number" value={amount} onChange={e => setAmount(e.target.value)} className="w-full bg-alabaster border border-sand/60 rounded px-2 py-1 text-xs" /></div>
