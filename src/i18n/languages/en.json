@@ -1,4 +1,16 @@
 {
+  "shelf": {
+    "title": "Shelf Check",
+    "lookup": "ISBN, title or author",
+    "check": "Check library",
+    "scan": "Scan ISBN",
+    "invalid": "Enter a valid ISBN-10 or ISBN-13.",
+    "camera": "Camera unavailable. Enter the ISBN manually.",
+    "exact": "Copies of this edition",
+    "possible": "Possible matches",
+    "copy": "Add another copy",
+    "none": "No matching library records."
+  },
   "year": {
     "title": "Your Reading Year",
     "detail": "Set a yearly goal and follow your pace, month by month.",
