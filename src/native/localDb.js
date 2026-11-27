@@ -369,6 +369,13 @@ async function mutateLocalNow(method, args = []) {
       ].join('\r\n');
     }
 
+    case 'saveEditionCover': {
+      const book = payload.books.find(item => item.id === value.id);
+      if (!book || book.isbn !== value.isbn || book.coverData) return clone(payload);
+      book.coverData = value.coverData;
+      break;
+    }
+
     case 'applyEditionLookup': {
       const book = payload.books.find(item => item.id === value.id);
       if (!book || book.isbn !== value.isbn || book.metadataStatus !== 'pending') return clone(payload);

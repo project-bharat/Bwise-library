@@ -31,6 +31,7 @@ async function findEdition(isbn) {
   }
   if (!navigator.onLine) throw new Error('lookupUnavailable');
   let info, image;
+  let primaryUnavailable = false;
   try {
     const data = await request('https://www.googleapis.com/books/v1/volumes?q=isbn:' + isbn);
     const volume = data.items?.map(item => item.volumeInfo).find(book =>
@@ -39,11 +40,14 @@ async function findEdition(isbn) {
       info = { title: volume.title, author: (volume.authors || []).join(', ') };
       image = volume.imageLinks?.thumbnail?.replace(/^http:/, 'https:');
     }
-  } catch { /* Open Library also indexes editions by ISBN. */ }
+  } catch { primaryUnavailable = true; }
   if (!info) {
     const data = await request('https://openlibrary.org/api/books?format=json&jscmd=data&bibkeys=ISBN:' + isbn);
     const edition = data['ISBN:' + isbn];
-    if (!edition?.title) return null;
+    if (!edition?.title) {
+      if (primaryUnavailable) throw new Error('lookupUnavailable');
+      return null;
+    }
     info = { title: edition.title, author: (edition.authors || []).map(author => author.name).join(', ') };
     image = edition.cover?.medium;
   }

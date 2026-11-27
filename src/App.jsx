@@ -571,7 +571,7 @@ This is a gentle reminder regarding the books borrowed from my library:
       if (activeTab === 'books') return b.currentStatus !== 'WISHLISTED';
       return true;
     });
-  }, [appData.books, searchQuery, bookFilters, activeTab]);
+  }, [appData.books, searchQuery, bookFilters, activeTab, language]);
 
   const bookFilterGroups = useMemo(() => {
     const books = appData.books || [];
@@ -1519,6 +1519,7 @@ This is a gentle reminder regarding the books borrowed from my library:
           {/* TAB 6: DEDICATED SINGLE BOOK JOURNEY & LIFECYCLE TIMELINE PAGE */}
           {activeTab === 'bookDetail' && selectedBook && (
             <BookJourneyPage
+              onUpdated={setAppData}
               book={(appData.books || []).find(b => b.id === selectedBook.id) || selectedBook}
               onBack={() => setActiveTab('books')}
               onEditDetails={() => setBookModal({ isNew: false, book: (appData.books || []).find(b => b.id === selectedBook.id) || selectedBook })}

@@ -1,13 +1,30 @@
 import { categoryLabel } from '../genres';
 import EditionCover from './EditionCover';
-import React from 'react';
+import React, { useEffect } from 'react';
+import { lookupEdition } from '../bookMetadata';
+import { isbn13 } from '../isbn';
+import { mutateLocal } from '../native/localDb';
 import { useTranslation } from '../i18n/useTranslation';
 import BrandingFooter from './BrandingFooter';
 import { displayStatus, formatDisplayDate, getStatusBadgeStyle } from '../utils';
 
 // STREAMLINED BOOK PROFILE & "BOOK JOURNEY" TIMELINE
-export default function BookJourneyPage({ book, onBack, onEditDetails, onEditStatus, onNavigateToPerson, onExportPdf, onCallDeveloper, onCopyTitle, onOpenTag }) {
+export default function BookJourneyPage({ book, onUpdated, onBack, onEditDetails, onEditStatus, onNavigateToPerson, onExportPdf, onCallDeveloper, onCopyTitle, onOpenTag }) {
   const { t } = useTranslation();
+  useEffect(() => {
+    if (book.coverData || !isbn13(book.isbn)) return;
+    let active = true;
+    async function findCover() {
+      const edition = await lookupEdition(book.isbn);
+      if (!active || !edition?.coverData) return;
+      const updated = await mutateLocal('saveEditionCover', [{
+        id: book.id, isbn: book.isbn, coverData: edition.coverData
+      }]);
+      if (active) onUpdated(updated);
+    }
+    findCover().catch(() => {}); // The upload control stays available offline.
+    return () => { active = false; };
+  }, [book.id, book.isbn, book.coverData, onUpdated]);
   const cSt = String(book.currentStatus || 'UNREAD').toUpperCase();
   const loc = String(book.location || 'At Home');
   const isAvailable = (cSt === 'UNREAD' || cSt === 'DONE') && (loc.toUpperCase() === 'AT HOME' || loc.toUpperCase() === 'AT OFFICE') && loc !== 'To Person';
