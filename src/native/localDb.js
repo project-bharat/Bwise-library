@@ -1,3 +1,4 @@
+import { catalogCategories } from '../genres';
 import { Capacitor } from '@capacitor/core';
 import { Directory, Filesystem } from '@capacitor/filesystem';
 import { getItem } from './storage';
@@ -12,12 +13,17 @@ const clone = (value) => JSON.parse(JSON.stringify(value));
 
 function normalizePayload(value) {
   const source = value && typeof value === 'object' ? value : {};
+  const config = { ...clone(EMPTY_INITIAL_DATA.config), ...source.config };
+  if (!config.genreCatalogVersion) {
+    config.categories = [...new Set([...(config.categories || []), ...catalogCategories])];
+    config.genreCatalogVersion = 1;
+  }
   return {
     ...clone(EMPTY_INITIAL_DATA),
     ...source,
     status: 'success',
     offline: false,
-    config: { ...clone(EMPTY_INITIAL_DATA.config), ...(source.config || {}) },
+    config,
     books: Array.isArray(source.books) ? source.books : [],
     people: Array.isArray(source.people) ? source.people : [],
     wishlist: Array.isArray(source.wishlist) ? source.wishlist : []
@@ -367,6 +373,7 @@ async function mutateLocalNow(method, args = []) {
       const book = payload.books.find(item => item.id === value.id);
       if (!book || book.isbn !== value.isbn || book.metadataStatus !== 'pending') return clone(payload);
       if (value.info) {
+        if (!book.coverData && value.info.coverData) book.coverData = value.info.coverData;
         if (book.title === book.isbn) book.title = value.info.title;
         if ((!book.author || book.author === 'Unknown') && value.info.author) book.author = value.info.author;
       }

@@ -1,3 +1,4 @@
+import { categoryLabel } from '../genres';
 import EditionCover from './EditionCover';
 import React from 'react';
 import { useTranslation } from '../i18n/useTranslation';
@@ -85,16 +86,19 @@ export default function BookJourneyPage({ book, onBack, onEditDetails, onEditSta
         className="text-white p-3 rounded-2xl shadow-[0_4px_16px_rgba(4,115,114,0.35)] border border-white/15 space-y-2.5"
         style={{ background: 'linear-gradient(to right, #033636 0%, #047372 45%, #0e4e4e 75%, #052626 100%)' }}
       >
-        <div className="flex justify-between items-start">
-          <div className="max-w-[75%]">
+        <div className="flex items-start gap-3">
+          <button onClick={onEditDetails} title={t('meta.cover')} className="grid h-20 w-14 shrink-0 place-items-center overflow-hidden rounded bg-white/10">
+            <EditionCover isbn={book.isbn} coverData={book.coverData} />
+          </button>
+          <div className="min-w-0 flex-1">
             <div className="flex items-center space-x-1.5 flex-wrap gap-y-1">
               <button
                 data-pdf-text
                 onClick={(e) => onOpenTag && onOpenTag('category', book.category, e)}
                 className="text-[9px] font-extrabold uppercase tracking-widest text-sand px-1.5 py-0.5 rounded-lg bg-white/10 border border-white/15 hover:bg-white/20 hover:text-white transition-colors"
-                title={`View all books in ${book.category}`}
+                title={`View all books in ${categoryLabel(book.category)}`}
               >
-                {book.category}
+                {categoryLabel(book.category)}
               </button>
               <span className="text-[9px] font-medium text-sand/80">• {book.language}</span>
               <span className="text-[9px] font-bold text-sand/90">• ₹{book.amount || 0}</span>
@@ -107,7 +111,7 @@ export default function BookJourneyPage({ book, onBack, onEditDetails, onEditSta
               >
                 <i className="fa-regular fa-copy text-xs"></i>
               </button>
-              <EditionCover isbn={book.isbn} />
+
               <h1 className="text-base font-black leading-tight truncate">{book.title}</h1>
             </div>
             <p className="text-[11px] text-sand/90 font-medium">

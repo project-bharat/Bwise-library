@@ -1,3 +1,4 @@
+import { categoryLabel } from '../genres';
 import React, { useEffect, useRef, useState } from 'react';
 import { formatLocaleNumber } from '../i18n';
 import { useTranslation } from '../i18n/useTranslation';
@@ -90,7 +91,7 @@ export default function BookFilterStrip({ groups, selections, onChange, onReset,
                     onChange={() => onChange(group.key, value)}
                     className="h-4 w-4 shrink-0 accent-forest"
                   />
-                  <span className="[overflow-wrap:anywhere]">{value}</span>
+                  <span className="[overflow-wrap:anywhere]">{group.key === 'category' ? categoryLabel(value) : value}</span>
                 </label>
               ))}
             </div>

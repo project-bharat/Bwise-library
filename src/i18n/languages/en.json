@@ -9,7 +9,9 @@
     "tags": "Tags (comma-separated)",
     "author": "Most-read author",
     "average": "Average rating",
-    "export": "Export catalog"
+    "export": "Export catalog",
+    "cover": "Choose book cover",
+    "coverError": "This image could not be opened."
   },
   "shelf": {
     "title": "Shelf Check",
@@ -21,7 +23,7 @@
     "exact": "Copies of this edition",
     "possible": "Possible matches",
     "copy": "Add another copy",
-    "none": "No matching library records."
+    "none": "No matching copy in your saved library. For an ISBN, open New Book Entry to look up edition details online."
   },
   "year": {
     "title": "Your Reading Year",
@@ -67,7 +69,7 @@
     "noPurchase": "No active Premium purchase was found.",
     "cloud": "Google Drive backup",
     "cloudDetail": "Connect your Google account to back up to private app storage in Drive.",
-    "connect": "Connect Google account",
+    "connect": "Sign in with Google",
     "disconnect": "Disconnect",
     "auto": "Automatic backup",
     "lastSync": "Last synced: {{date}}",

@@ -1,3 +1,4 @@
+import { categoryLabel } from '../../genres';
 import React, { useState } from 'react';
 import { useTranslation } from '../../i18n/useTranslation';
 
@@ -33,7 +34,7 @@ export default function AdminConfigModal({ type, config, onClose, onSuccess }) {
         </div>
         <div className="mb-3 max-h-36 overflow-y-auto space-y-1">
           <p className="text-[9px] font-black uppercase tracking-wide text-stone-500">{t('legacy.Existing options')}</p>
-          {existingItems.length ? existingItems.map(item => <div key={item} className="flex items-center justify-between rounded bg-alabaster px-2 py-1.5"><span className="text-xs text-charcoal">{item}</span><button type="button" onClick={() => handleDelete(item)} className="text-rose-600 px-2" aria-label={`Remove ${item}`}><i className="fa-solid fa-trash"></i></button></div>) : <p className="text-[10px] text-stone-400">{t('legacy.No options added yet.')}</p>}
+          {existingItems.length ? existingItems.map(item => <div key={item} className="flex items-center justify-between rounded bg-alabaster px-2 py-1.5"><span className="text-xs text-charcoal">{configKey === 'categories' ? categoryLabel(item) : item}</span><button type="button" onClick={() => handleDelete(item)} className="text-rose-600 px-2" aria-label={`Remove ${item}`}><i className="fa-solid fa-trash"></i></button></div>) : <p className="text-[10px] text-stone-400">{t('legacy.No options added yet.')}</p>}
         </div>
         <form onSubmit={handleSubmit} className="space-y-3 text-xs">
           <div><label className="text-[9px] font-black uppercase text-stone-500">{t('legacy.Add new value *')}</label><input type="text" required value={val} onChange={e => setVal(e.target.value)} className="w-full bg-alabaster border rounded p-2 focus:outline-none" /></div>

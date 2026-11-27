@@ -1,3 +1,4 @@
+import { categoryLabel } from '../../genres';
 import React, { useState, useEffect } from 'react';
 import { formatDisplayDate } from '../../utils';
 import { useTranslation } from '../../i18n/useTranslation';
@@ -92,7 +93,7 @@ export default function StatusUpdateModal({ book, people, onAddReader, onClose, 
 
         {/* Read-Only Book Identity Card (Title, Author, In-Date, Price Not Editable Here) */}
         <div className="bg-forest text-white p-2.5 rounded-lg mb-2.5">
-          <p className="text-[10px] text-sand/80 font-bold uppercase tracking-wider">{book.category} • {book.language}</p>
+          <p className="text-[10px] text-sand/80 font-bold uppercase tracking-wider">{categoryLabel(book.category)} • {book.language}</p>
           <h3 className="font-extrabold text-xs text-white truncate leading-tight mt-0.5">{book.title}</h3>
           <p className="text-[9.5px] text-sand/90 mt-0.5">{t('legacy.By')} {book.author || t('legacy.Unknown')} • ₹{book.amount || 0} • In: {formatDisplayDate(book.bookInDate)}</p>
         </div>
