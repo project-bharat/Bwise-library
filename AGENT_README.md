@@ -1,6 +1,6 @@
-# AGENT_README — instructions for the AI agent managing this repository
+# AGENT_README — legacy repository notes
 
-You (ChatGPT / any coding agent) maintain this repo for the owner (Bharat). He tests builds from the GitHub Actions APK artifact. Read this whole file before editing.
+> **Not authoritative:** this file describes an earlier Google Sheets-backed version of the app. The current code is local-first. Follow the root [AGENTS.md](AGENTS.md) and the current guides in `docs/`; do not rely on conflicting architecture, sync, or troubleshooting details below.
 
 ## 1. What this project is
 Native Android app (Capacitor 6 wrapper around a React 18 + Tailwind 3.4 + Vite 5 UI) for **B-wise Library** – a personal book library & reader-lending manager.
