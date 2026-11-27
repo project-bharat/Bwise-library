@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from '../../i18n/useTranslation';
+import { libraryApi } from '../../native/libraryApi';
 
 // Dedicated Bookstore Wishlist Modal: Displays Initial & {t('legacy.Current Status')} ONLY when user chooses In Possession
 export default function WishlistFormModal({ isNew, initial, config, onClose, onSuccess }) {
@@ -43,17 +44,12 @@ export default function WishlistFormModal({ isNew, initial, config, onClose, onS
       readingStatus: 'WISHLISTED',
       notes: notes.trim()
     };
-    if (window.google && google.script && google.script.run) {
-      google.script.run
-        .withSuccessHandler((res) => onSuccess(res))
-        .withFailureHandler((err) => {
-          setIsSubmitting(false);
-          alert(t('legacy.Error saving wishlist item:') + ' ' + err.message);
-        })
-        .saveWishlistBook(payload);
-    } else {
-      setTimeout(() => onSuccess(null), 300);
-    }
+    libraryApi.saveWishlistBook(payload)
+      .then(onSuccess)
+      .catch((error) => {
+        setIsSubmitting(false);
+        alert(t('legacy.Error saving wishlist item:') + ' ' + error.message);
+      });
   };
 
   // Strict check: only true when user actively selects "in possession"

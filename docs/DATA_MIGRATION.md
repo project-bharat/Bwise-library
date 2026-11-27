@@ -10,7 +10,7 @@ Android app-private data is isolated from other apps. Uninstalling the app or cl
 
 ## Full backup and restore
 
-1. In the app menu, choose **Backup to Drive / Export CSV** or **Export Full Data (CSV)**.
+1. In the app menu, choose **Export Full Data (CSV)**.
 2. On Android, choose a destination in the system share sheet, such as Google Drive or Files. In a browser, the CSV downloads.
 3. Keep a separate copy of the backup before restoring.
 4. Choose **Restore Full Backup (CSV)** and select a backup exported in this app's full-backup format.
@@ -18,10 +18,12 @@ Android app-private data is isolated from other apps. Uninstalling the app or cl
 
 The file contains a `BWISE_FULL_BACKUP_V1,1` header and a JSON payload row. Restore replaces the current books, people, configuration, and wishlist; it is not a merge. CSV reports such as a books export are not full backups and cannot be restored by this flow.
 
-The loader currently normalizes missing payload fields to defaults. If the library unexpectedly appears empty after an update or restore, stop using the app and preserve the original device data and backup files; further writes may persist the empty payload.
+Current payloads include `schemaVersion` and `readingCompletions`. Existing books already marked FINISHED are migrated into the lifetime completion count without an assumed completion date; they do not count toward a calendar-year goal until a completion date is recorded.
+
+On startup, a malformed primary data file is preserved as a timestamped recovery copy. When a valid rolling `.bak` exists, the app restores it and reports the recovery. If neither source can be read, it refuses to replace the library with empty data. Before a restore, the app validates the CSV and payload, previews the book/reader/wishlist counts, and keeps the previous valid library in the rolling `.bak`. Restore replaces the library; it is not a merge.
 
 ## Legacy limits
 
-The native loader migrates the old `bwise_payload_cache_v1` cache when no native data file exists. It does not import arbitrary Google Sheets exports or contact lists. The current importer accepts the versioned full-backup format only. Compatibility with older exports should be verified against a copy before relying on them.
+The native loader migrates the old `bwise_payload_cache_v1` cache when no native data file exists. The current importer accepts the versioned full-backup format only. Compatibility with older exports should be verified against a copy before relying on them.
 
 For the file-sharing behavior, see [Google Drive backup](GOOGLE_DRIVE_SETUP.md).

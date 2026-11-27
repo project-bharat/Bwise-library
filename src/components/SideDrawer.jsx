@@ -3,7 +3,7 @@ import brandIcon from '../assets/brand-icon.png?inline';
 import SupportDeveloper from './SupportDeveloper';
 import { useTranslation } from '../i18n/useTranslation';
 
-export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddPerson, onAddCategory, onAddLocation, onAddStatus, onBackupWithGoogle, onExportBackup, onRestoreClick, onSyncSettings, onCallDeveloper, displayLanguage = 'en', onLanguageChange }) {
+export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddPerson, onAddCategory, onAddLocation, onAddStatus, onExportBackup, onRestoreClick, onAccount, onCallDeveloper, displayLanguage = 'en', onLanguageChange }) {
   const { t } = useTranslation();
   return (
     <div className={`fixed inset-0 z-50 transition-all duration-300 ${isOpen ? 'visible opacity-100' : 'invisible opacity-0'}`}>
@@ -45,9 +45,9 @@ export default function SideDrawer({ isOpen, onClose, onOpenPersonManage, onAddP
               </button>
             </div>
             <div>
-              <p className="text-[9px] font-black uppercase tracking-widest text-stone-400 mb-1 px-1">{t('legacy.Local & Cloud Backup')}</p>
-              <button onClick={onBackupWithGoogle} className="w-full text-left p-2 rounded-lg hover:bg-stone-100 text-forest flex items-center space-x-2">
-                <i className="fa-brands fa-google-drive w-5"></i> <span>{t('legacy.Backup with Google')}</span>
+              <p className="text-[9px] font-black uppercase tracking-widest text-stone-400 mb-1 px-1">{t('legacy.Local Backup')}</p>
+              <button onClick={onAccount} className="w-full text-left p-2 rounded-lg hover:bg-stone-100 text-forest flex items-center space-x-2">
+                <i className="fa-brands fa-google w-5"></i> <span>{t('legacy.Google Account')}</span>
               </button>
               <button onClick={onExportBackup} className="w-full text-left p-2 rounded-lg hover:bg-stone-100 text-forest flex items-center space-x-2">
                 <i className="fa-solid fa-file-csv w-5"></i> <span>{t('legacy.Export Full Data (CSV)')}</span>

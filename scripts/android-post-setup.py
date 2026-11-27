@@ -4,7 +4,7 @@
  - stamps versionCode / versionName into android/app/build.gradle
 Usage: python scripts/android-post-setup.py <versionCode> <versionName>
 """
-import re, sys, os
+import re, sys, os, shutil
 from PIL import Image
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'android', 'app')
@@ -14,7 +14,7 @@ name = sys.argv[2] if len(sys.argv) > 2 else '1.0'
 manifest = os.path.join(ROOT, 'src', 'main', 'AndroidManifest.xml')
 s = open(manifest, encoding='utf-8').read()
 # Declare runtime permissions for device contact selection and Android 13 notifications.
-for permission in ('android.permission.READ_CONTACTS', 'android.permission.WRITE_CONTACTS', 'android.permission.POST_NOTIFICATIONS'):
+for permission in ('android.permission.READ_CONTACTS', 'android.permission.POST_NOTIFICATIONS'):
     declaration = f'<uses-permission android:name="{permission}" />'
     if declaration not in s:
         s = s.replace('<application', f'    {declaration}\n    <application', 1)
@@ -90,27 +90,37 @@ print('gradle: versionCode', code, 'versionName', name)
 # The native splash background is supplied by capacitor.config.json; the HTML splash
 # that follows uses public/horizontal-logo.png on the branded gradient.
 res = os.path.join(ROOT, 'src', 'main', 'res')
-icons = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'resources', 'icons')
-fg_path = os.path.join(icons, 'ic_launcher_foreground.png')
-if os.path.isfile(fg_path):
-    fg_source = Image.open(fg_path).convert('RGBA')
-    alpha = fg_source.getchannel('A').point(lambda value: 255 if value > 8 else 0)
-    bbox = alpha.getbbox()
-    if bbox:
-        mark = fg_source.crop(bbox)
-        canvas_size = max(fg_source.size)
-        # Keep the mark well inside Android 12's splash icon safe area.
-        target = int(canvas_size * 0.52)
-        scale = min(target / mark.width, target / mark.height)
-        mark = mark.resize((max(1, round(mark.width * scale)), max(1, round(mark.height * scale))), Image.Resampling.LANCZOS)
-        foreground = Image.new('RGBA', (canvas_size, canvas_size), (0, 0, 0, 0))
-        foreground.alpha_composite(mark, ((canvas_size - mark.width) // 2, (canvas_size - mark.height) // 2))
-        drawable = os.path.join(res, 'drawable')
-        os.makedirs(drawable, exist_ok=True)
-        foreground.save(os.path.join(drawable, 'splash.png'), optimize=True)
-        print('native splash: transparent centered monogram generated; background comes from Capacitor config')
-    else:
-        print('native splash: foreground has no visible artwork; retaining default')
+brand_splash = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    '..', 'resources', 'brand', 'Bwise_Brand_Assets', 'android', 'res', 'drawable-nodpi', 'splash_icon_white.png'
+)
+if os.path.isfile(brand_splash):
+    drawable = os.path.join(res, 'drawable')
+    os.makedirs(drawable, exist_ok=True)
+    shutil.copy2(brand_splash, os.path.join(drawable, 'splash.png'))
+    print('native splash: official white brand mark copied')
 else:
-    print('native splash: source icon asset missing; retaining default')
+    icons = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'resources', 'icons')
+    fg_path = os.path.join(icons, 'ic_launcher_foreground.png')
+    if not os.path.isfile(fg_path):
+        print('native splash: source icon asset missing; retaining default')
+    else:
+        fg_source = Image.open(fg_path).convert('RGBA')
+        alpha = fg_source.getchannel('A').point(lambda value: 255 if value > 8 else 0)
+        bbox = alpha.getbbox()
+        if bbox:
+            mark = fg_source.crop(bbox)
+            canvas_size = max(fg_source.size)
+            # Keep the mark well inside Android 12's splash icon safe area.
+            target = int(canvas_size * 0.52)
+            scale = min(target / mark.width, target / mark.height)
+            mark = mark.resize((max(1, round(mark.width * scale)), max(1, round(mark.height * scale))), Image.Resampling.LANCZOS)
+            foreground = Image.new('RGBA', (canvas_size, canvas_size), (0, 0, 0, 0))
+            foreground.alpha_composite(mark, ((canvas_size - mark.width) // 2, (canvas_size - mark.height) // 2))
+            drawable = os.path.join(res, 'drawable')
+            os.makedirs(drawable, exist_ok=True)
+            foreground.save(os.path.join(drawable, 'splash.png'), optimize=True)
+            print('native splash: transparent centered monogram generated; background comes from Capacitor config')
+        else:
+            print('native splash: foreground has no visible artwork; retaining default')
 

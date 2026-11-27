@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from '../../i18n/useTranslation';
 import { getDeviceContacts } from '../../native/contacts';
+import { libraryApi } from '../../native/libraryApi';
 
 export default function PersonFormModal({ isNew, initial, onClose, onSuccess }) {
   const { t } = useTranslation();
@@ -47,11 +48,12 @@ export default function PersonFormModal({ isNew, initial, onClose, onSuccess }) 
     if (!name.trim()) return;
     setSaving(true);
     const p = { isNew, oldName: initial.name || '', name: name.trim(), phone, address, email };
-    if (window.google && google.script && google.script.run) {
-      google.script.run.withSuccessHandler(onSuccess).withFailureHandler(() => setSaving(false)).updatePerson(p);
-    } else {
-      setTimeout(() => onSuccess(null), 300);
-    }
+    libraryApi.updatePerson(p)
+      .then(onSuccess)
+      .catch((error) => {
+        setSaving(false);
+        alert(`Unable to save reader: ${error.message}`);
+      });
   };
 
   return (

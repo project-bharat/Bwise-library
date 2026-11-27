@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from '../../i18n/useTranslation';
+import { libraryApi } from '../../native/libraryApi';
+import { getLocalDateKey } from '../../utils';
 
 // DIALOG 1: EDIT BOOK DETAILS (With Location Dropdown, Default Current_Status='My Collection')
 export default function BookDetailsModal({ isNew, initial, config, onClose, onSuccess }) {
@@ -11,7 +13,7 @@ export default function BookDetailsModal({ isNew, initial, config, onClose, onSu
   const [amount, setAmount] = useState(initial.amount || '');
   const [initialStatus, setInitialStatus] = useState(initial.initialStatus || 'Purchased');
   const [location, setLocation] = useState(initial.location || 'At Home');
-  const [bookInDate, setBookInDate] = useState(initial.bookInDate || new Date().toISOString().split('T')[0]);
+  const [bookInDate, setBookInDate] = useState(initial.bookInDate || getLocalDateKey());
   const [notes, setNotes] = useState(initial.notes || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -43,11 +45,12 @@ export default function BookDetailsModal({ isNew, initial, config, onClose, onSu
       eventDate: initial.eventDate || bookInDate,
       promiseReturnDate: initial.promiseReturnDate || ''
     };
-    if (window.google && google.script && google.script.run) {
-      google.script.run.withSuccessHandler(onSuccess).withFailureHandler(() => setIsSubmitting(false)).saveBook(payload);
-    } else {
-      setTimeout(() => onSuccess(null), 300);
-    }
+    libraryApi.saveBook(payload)
+      .then(onSuccess)
+      .catch((error) => {
+        setIsSubmitting(false);
+        alert(`Unable to save book: ${error.message}`);
+      });
   };
 
   return (

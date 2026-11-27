@@ -3,10 +3,17 @@ import { Preferences } from '@capacitor/preferences';
 
 export const isNative = () => Capacitor.isNativePlatform();
 
+export async function getItemStrict(key) {
+  if (isNative()) {
+    const { value } = await Preferences.get({ key });
+    return value;
+  }
+  return window.localStorage.getItem(key);
+}
+
 export async function getItem(key) {
   try {
-    if (isNative()) { const { value } = await Preferences.get({ key }); return value; }
-    return window.localStorage.getItem(key);
+    return await getItemStrict(key);
   } catch (e) { return null; }
 }
 

@@ -6,10 +6,12 @@ The app stores one JSON payload; it does not use Room, SQLite, or a relational d
 
 ```text
 {
-  config: { categories[], locations[], initialStatuses[], currentStatuses[] },
+  schemaVersion,
+  config: { categories[], locations[], initialStatuses[], currentStatuses[], readingGoal? },
   books: [ ... ],
   people: [ ... ],
-  wishlist: [ ... ]
+  wishlist: [ ... ],
+  readingCompletions: [{ bookId, completedAt }]
 }
 ```
 
@@ -25,10 +27,12 @@ Journey entries are stored on a book and may include `journeyId`, `changeDate`, 
 
 ### People and wishlist
 
-- People store a name and optional contact fields such as phone, address, and email. Names, rather than a separate person ID, are used to associate people with books.
+- People store a name and optional contact fields such as phone, address, and email. Names, rather than a separate person ID, are currently used to associate people with books; stable person identifiers are a prerequisite for reliable multi-device sync.
 - `people[].records` is rebuilt from book data by `rebuildPeople`; it is not an independent loan ledger.
 - Wishlist entries are separate from books and can include `id`, `dateAdded`, title/author/category/language, target location, notes, and status. Marking an item in possession promotes it into the book collection and removes the wishlist row.
 
-IDs are generated locally as prefixed strings. The full-backup CSV has a `BWISE_FULL_BACKUP_V1` envelope, but the stored JSON payload does not currently declare a separate schema version. Treat format changes as migrations and preserve backwards compatibility.
+IDs are generated locally as prefixed strings. `readingCompletions` tracks one unique completion per book, retaining achievements if the book is later deleted. Entries migrated from pre-existing FINISHED books have an empty `completedAt`; they count for lifetime milestones only, not for an annual goal. The goal is stored as `{ year, target }` under `config.readingGoal`.
+
+The stored payload declares `schemaVersion`. The full-backup CSV retains its `BWISE_FULL_BACKUP_V1` envelope for compatibility while carrying the current schema version in the JSON payload. Treat format changes as migrations and preserve backwards compatibility.
 
 See [Data migration](DATA_MIGRATION.md) before changing persistence or backup formats.

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { formatDisplayDate } from '../../utils';
+import { formatDisplayDate, getLocalDateKey } from '../../utils';
 import { useTranslation } from '../../i18n/useTranslation';
+import { libraryApi } from '../../native/libraryApi';
 
 // DIALOG 2: EDIT STATUS & CUSTODY ONLY (Metadata Locked Read-Only)
-export default function StatusUpdateModal({ book, people, onAddReader, onClose, onSuccess }) {
+export default function StatusUpdateModal({ book, people, config, onAddReader, onClose, onSuccess }) {
   const { t } = useTranslation();
   const isLentInitially = String(book.location || '') === 'To Person' || Boolean(book.person && book.person.trim() !== '');
   const [location, setLocation] = useState(isLentInitially ? 'To Person' : (book.location || 'At Home'));
@@ -19,7 +20,7 @@ export default function StatusUpdateModal({ book, people, onAddReader, onClose, 
 
   const [currentStatus, setCurrentStatus] = useState(computeCustody());
   const [personStatus, setPersonStatus] = useState(book.personStatus || (isLentInitially ? 'Holding' : 'Returned'));
-  const [eventDate, setEventDate] = useState(new Date().toISOString().split('T')[0]);
+  const [eventDate, setEventDate] = useState(getLocalDateKey);
   const [promiseReturnDate, setPromiseReturnDate] = useState(book.promiseReturnDate || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -44,8 +45,9 @@ export default function StatusUpdateModal({ book, people, onAddReader, onClose, 
   const handlePersonStatusChange = (newPStatus) => {
     setPersonStatus(newPStatus);
     if (newPStatus === 'Returned') {
-      const targetLoc = window.confirm("Return book to library shelf: Click OK for 'At Home', or Cancel for 'At Office'") ? 'At Home' : 'At Office';
-      setLocation(targetLoc);
+      const currentShelf = location !== 'To Person' ? location : '';
+      const firstShelf = (config?.locations || []).find(item => item !== 'To Person') || 'At Home';
+      setLocation(currentShelf || firstShelf);
       setCurrentStatus('COLLECTED');
     } else if (newPStatus === 'Holding' || newPStatus === 'Gifted') {
       setLocation('To Person');
@@ -60,7 +62,6 @@ export default function StatusUpdateModal({ book, people, onAddReader, onClose, 
     }
 
     setIsSubmitting(true);
-    const todayStr = new Date().toISOString().split('T')[0];
     const payload = {
       ...book,
       readingStatus,
@@ -69,18 +70,26 @@ export default function StatusUpdateModal({ book, people, onAddReader, onClose, 
       location,
       person: (location === 'To Person' && personStatus !== 'Returned') ? person : '',
       prevPerson: book.person || person,
-      eventDate: todayStr,
+      eventDate,
       promiseReturnDate: (currentStatus === 'LENT' && personStatus === 'Holding') ? promiseReturnDate : ''
     };
 
-    if (window.google && google.script && google.script.run) {
-      google.script.run.withSuccessHandler(onSuccess).withFailureHandler(() => setIsSubmitting(false)).saveBook(payload);
-    } else {
-      setTimeout(() => onSuccess(null), 300);
-    }
+    libraryApi.saveBook(payload)
+      .then(onSuccess)
+      .catch((error) => {
+        setIsSubmitting(false);
+        alert(`Unable to update book: ${error.message}`);
+      });
   };
 
   const isToPerson = location === 'To Person';
+  const availableLocations = Array.from(new Set([
+    ...(config?.locations || []),
+    'At Home',
+    'At Office',
+    'To Person',
+    location
+  ].filter(Boolean)));
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2.5">
@@ -146,9 +155,11 @@ export default function StatusUpdateModal({ book, people, onAddReader, onClose, 
                 onChange={e => handleLocationChange(e.target.value)}
                 className="w-full bg-alabaster border border-sand/60 rounded px-2 py-1 font-bold text-xs text-forest"
               >
-                <option value="At Home">{t('legacy.At Home')}</option>
-                <option value="At Office">{t('legacy.At Office')}</option>
-                <option value="To Person">{t('legacy.To Person')}</option>
+                {availableLocations.map(item => (
+                  <option key={item} value={item}>
+                    {item === 'At Home' ? t('legacy.At Home') : item === 'At Office' ? t('legacy.At Office') : item === 'To Person' ? t('legacy.To Person') : item}
+                  </option>
+                ))}
               </select>
             </div>
             <div>

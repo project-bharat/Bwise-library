@@ -4,10 +4,9 @@ import { App as CapApp } from '@capacitor/app';
 import brandIcon from './assets/brand-icon.png?inline';
 import { isNative } from './native/storage';
 import { hideNativeSplash } from './native/init';
-import { requestInitialDevicePermissions } from './native/contacts';
 import { scheduleDueDateNotifications } from './native/dueNotifications';
 import { saveAndShareBlob, isShareCancel } from './native/files';
-import { formatDisplayDate, getStatusBadgeStyle, displayStatus, EMPTY_INITIAL_DATA } from './utils';
+import { formatDisplayDate, getLocalDateKey, getStatusBadgeStyle, displayStatus, EMPTY_INITIAL_DATA } from './utils';
 import { setLanguage as persistLanguage } from './i18n';
 import { useTranslation } from './i18n/useTranslation';
 
@@ -21,7 +20,10 @@ import StatusUpdateModal from './components/modals/StatusUpdateModal';
 import PersonFormModal from './components/modals/PersonFormModal';
 import AdminConfigModal from './components/modals/AdminConfigModal';
 import WishlistFormModal from './components/modals/WishlistFormModal';
-import SyncSettingsModal from './components/modals/SyncSettingsModal';
+import AccountModal from './components/modals/AccountModal';
+import ProgressPage from './components/ProgressPage';
+import { libraryApi } from './native/libraryApi';
+import { initializeAccountAuth, observeAccount, signInWithGoogle, signOutAccount } from './native/accountAuth';
 
 export default function App() {
   const { t, language } = useTranslation();
@@ -98,7 +100,10 @@ export default function App() {
   const [personModal, setPersonModal] = useState(null);
   const [adminConfigModal, setAdminConfigModal] = useState(null);
   const [wishlistModal, setWishlistModal] = useState(null);
-  const [syncModal, setSyncModal] = useState(false);
+  const [accountModal, setAccountModal] = useState(false);
+  const [accountConfigured, setAccountConfigured] = useState(false);
+  const [accountSetupReason, setAccountSetupReason] = useState('');
+  const [accountUser, setAccountUser] = useState(null);
   const [restoreConfirmFile, setRestoreConfirmFile] = useState(null);
   const backupFileInputRef = useRef(null);
 
@@ -120,27 +125,16 @@ export default function App() {
     }, isSuccess ? 1200 : 3000);
   };
 
-  const fetchData = (force = false) => {
+  const fetchData = async () => {
     triggerStatus('Loading data...', false);
-    if (window.google && google.script && google.script.run) {
-      google.script.run
-        .withSuccessHandler(res => {
-          if (res && res.status === 'success') {
-            setAppData(res);
-            setBootSplash(false);
-            triggerStatus('Local data ready', true);
-          } else {
-            setBootSplash(false);
-          triggerStatus('Failed to load local data', false);
-          }
-        })
-        .withFailureHandler(err => {
-          setBootSplash(false);
-          triggerStatus('Local storage error: ' + (err.message || 'Check device storage'), false);
-        })
-        .getLibraryPayload(force);
-    } else {
-      setTimeout(() => { setBootSplash(false); triggerStatus('Local data ready', true); }, 600);
+    try {
+      const payload = await libraryApi.getPayload();
+      setAppData(payload);
+      setBootSplash(false);
+      triggerStatus(payload.recoveryNotice ? t(`legacy.${payload.recoveryNotice}`) : 'Local data ready', true);
+    } catch (error) {
+      setBootSplash(false);
+      triggerStatus('Local storage error: ' + (error.message || 'Check device storage'), false);
     }
   };
 
@@ -151,10 +145,29 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    // Request Android runtime permissions on first launch. The app remains usable if either is denied.
-    requestInitialDevicePermissions().catch(error => console.warn('[permissions] startup request failed', error));
     // Local-first startup: load the phone database without requiring a Google account or server.
-    fetchData(false);
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    let unsubscribe = null;
+    initializeAccountAuth()
+      .then(({ configured, auth, reason }) => {
+        if (!active) return;
+        setAccountConfigured(configured);
+        setAccountSetupReason(reason);
+        if (auth) unsubscribe = observeAccount(setAccountUser);
+      })
+      .catch((error) => {
+        if (!active) return;
+        setAccountSetupReason('initialization');
+        console.error('[auth] initialization failed', error);
+      });
+    return () => {
+      active = false;
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
@@ -171,6 +184,20 @@ export default function App() {
     setFilterLocation('ALL');
     setSearchQuery('');
   };
+
+  const handleDeletePerson = async (name) => {
+    if (!window.confirm(`Delete reader ${name}? Their book history will remain, but the reader assignment will be cleared.`)) return;
+    try {
+      const payload = await libraryApi.deletePerson(name);
+      setAppData(payload);
+      triggerStatus('Reader deleted', true);
+    } catch (error) {
+      triggerStatus('Delete failed: ' + (error.message || 'Unable to delete reader'), false);
+    }
+  };
+
+  const handleGoogleSignIn = () => signInWithGoogle();
+  const handleGoogleSignOut = () => signOutAccount();
 
   // Contextual KPIs Tailored for Each Screen
   const currentKpis = useMemo(() => {
@@ -435,23 +462,18 @@ This is a gentle reminder regarding the books borrowed from my library:
     downloadPdfBlob(worker, fileName || 'Library_Report.pdf');
   };
 
-  const handleExportFullBackup = (shareTitle = 'Export full library data') => {
+  const handleExportFullBackup = async (shareTitle = 'Export full library data') => {
     setDrawerOpen(false);
     triggerStatus('Generating backup...', false);
-    if (window.google && google.script && google.script.run) {
-      google.script.run
-        .withSuccessHandler((csvString) => {
-          const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-          const fileName = `Library_Backup_${new Date().toISOString().split('T')[0]}.csv`;
-          saveAndShareBlob(blob, fileName, shareTitle)
-            .then(() => triggerStatus('Backup exported!', true))
-            .catch((err) => {
-              if (isShareCancel(err)) triggerStatus('Backup exported!', true);
-              else triggerStatus('Backup failed: ' + (err && err.message), false);
-            });
-        })
-        .withFailureHandler((err) => triggerStatus('Backup failed: ' + err.message, false))
-        .exportAllSheetsBackupCsv();
+    try {
+      const csvString = await libraryApi.exportFullBackup();
+      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      const fileName = `Library_Backup_${getLocalDateKey()}.csv`;
+      await saveAndShareBlob(blob, fileName, shareTitle);
+      triggerStatus('Backup exported!', true);
+    } catch (error) {
+      if (isShareCancel(error)) triggerStatus('Backup exported!', true);
+      else triggerStatus('Backup failed: ' + (error && error.message), false);
     }
   };
 
@@ -459,32 +481,45 @@ This is a gentle reminder regarding the books borrowed from my library:
     const file = e.target.files && e.target.files[0];
     if (!file) return;
     setDrawerOpen(false);
-    setRestoreConfirmFile(file);
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const text = String(reader.result || '');
+        const counts = libraryApi.previewFullBackup(text);
+        setRestoreConfirmFile({ fileName: file.name, text, counts });
+      } catch (error) {
+        triggerStatus('Restore failed: ' + error.message, false);
+        if (backupFileInputRef.current) backupFileInputRef.current.value = '';
+      }
+    };
+    reader.onerror = () => {
+      if (backupFileInputRef.current) backupFileInputRef.current.value = '';
+      triggerStatus('Restore failed: Unable to read the selected file', false);
+    };
+    reader.readAsText(file);
   };
 
   const executeRestore = () => {
     if (!restoreConfirmFile) return;
-    const file = restoreConfirmFile;
+    const backupText = restoreConfirmFile.text;
     setRestoreConfirmFile(null);
     triggerStatus('Restoring backup...', false);
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      if (window.google && google.script && google.script.run) {
-        google.script.run
-          .withSuccessHandler((payload) => {
-            if (backupFileInputRef.current) backupFileInputRef.current.value = '';
-            if (payload) setAppData(payload);
-            triggerStatus('Restored successfully!', true);
-          })
-          .withFailureHandler((err) => {
-            if (backupFileInputRef.current) backupFileInputRef.current.value = '';
-            triggerStatus('Restore failed: ' + err.message, false);
-          })
-          .importAllSheetsBackupCsv(event.target.result);
-      }
-    };
-    reader.readAsText(file);
+    libraryApi.importFullBackup(backupText)
+      .then(payload => {
+        setAppData(payload);
+        triggerStatus('Restored successfully!', true);
+      })
+      .catch(error => triggerStatus('Restore failed: ' + error.message, false))
+      .finally(() => {
+        if (backupFileInputRef.current) backupFileInputRef.current.value = '';
+      });
+  };
+
+  const handleSaveReadingGoal = async (goal) => {
+    const payload = await libraryApi.saveReadingGoal(goal);
+    setAppData(payload);
+    return payload;
   };
 
   const filteredBooks = useMemo(() => {
@@ -520,10 +555,7 @@ This is a gentle reminder regarding the books borrowed from my library:
     return { authors, languages };
   }, [appData.books]);
 
-  const localTodayKey = (() => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  })();
+  const localTodayKey = getLocalDateKey();
   const dueDateKey = (value) => {
     const raw = String(value || '').trim();
     const iso = raw.match(/^(\d{4}-\d{2}-\d{2})/);
@@ -535,11 +567,14 @@ This is a gentle reminder regarding the books borrowed from my library:
     }
     return '';
   };
-  const dueTodayBooks = (appData.books || []).filter(book =>
-    dueDateKey(book.promiseReturnDate) === localTodayKey &&
-    String(book.currentStatus || '').toUpperCase() === 'LENT' &&
-    String(book.personStatus || 'HOLDING').toUpperCase() === 'HOLDING' && Boolean(book.person)
-  );
+  const dueAlertBooks = (appData.books || [])
+    .filter(book => {
+      const dueDate = dueDateKey(book.promiseReturnDate);
+      return dueDate && dueDate <= localTodayKey &&
+        String(book.currentStatus || '').toUpperCase() === 'LENT' &&
+        String(book.personStatus || 'HOLDING').toUpperCase() === 'HOLDING' && Boolean(book.person);
+    })
+    .sort((left, right) => dueDateKey(left.promiseReturnDate).localeCompare(dueDateKey(right.promiseReturnDate)));
   const wishlistAlertCount = (appData.wishlist || []).filter(item => {
     const status = String(item.status || '').toUpperCase();
     return status.includes('NOT IN POSSESSION') || !status.includes('IN POSSESSION');
@@ -548,8 +583,8 @@ This is a gentle reminder regarding the books borrowed from my library:
   // ---- Android hardware back button: close overlays -> go up one screen -> home -> exit ----
   const backRef = useRef(null);
   backRef.current = () => {
-    if (syncModal) { setSyncModal(false); return true; }
     if (restoreConfirmFile) { setRestoreConfirmFile(null); return true; }
+    if (accountModal) { setAccountModal(false); return true; }
     if (wishlistModal) { setWishlistModal(null); return true; }
     if (adminConfigModal) { setAdminConfigModal(null); return true; }
     if (personModal) { setPersonModal(null); return true; }
@@ -634,13 +669,23 @@ This is a gentle reminder regarding the books borrowed from my library:
         onAddCategory={() => { setDrawerOpen(false); setAdminConfigModal({ type: 'Category' }); }}
         onAddLocation={() => { setDrawerOpen(false); setAdminConfigModal({ type: 'Location' }); }}
         onAddStatus={() => { setDrawerOpen(false); setAdminConfigModal({ type: 'Current_Status' }); }}
-        onBackupWithGoogle={() => handleExportFullBackup('Choose Google Drive in the share sheet to save your backup')}
         onExportBackup={() => handleExportFullBackup('Export full library data')}
         onRestoreClick={() => { if (backupFileInputRef.current) { backupFileInputRef.current.value = ''; backupFileInputRef.current.click(); } }}
-        onSyncSettings={() => { setDrawerOpen(false); setSyncModal(true); }}
+        onAccount={() => { setDrawerOpen(false); setAccountModal(true); }}
         onCallDeveloper={() => handleDirectDial('917218838122')}
       />
       <input type="file" accept="*/*,.csv,text/csv,application/csv,application/vnd.ms-excel,text/plain,application/octet-stream" ref={backupFileInputRef} onChange={handleImportBackupFile} aria-label={t('legacy.Select library backup CSV')} style={{ position: "fixed", left: "-10000px", top: 0, width: "1px", height: "1px", opacity: 0 }} />
+
+      {accountModal && (
+        <AccountModal
+          configured={accountConfigured}
+          setupReason={accountSetupReason}
+          user={accountUser}
+          onClose={() => setAccountModal(false)}
+          onSignIn={handleGoogleSignIn}
+          onSignOut={handleGoogleSignOut}
+        />
+      )}
 
       <div className="flex-1 flex flex-col pt-[60px] pb-28">
 
@@ -755,7 +800,7 @@ This is a gentle reminder regarding the books borrowed from my library:
             </button>
             <button onClick={() => setAlertsOpen(value => !value)} className="relative p-2 text-white hover:opacity-80 active:scale-95 transition-all text-sm" title={t('legacy.Notifications and reminders')} aria-label={t('legacy.Notifications')}>
               <i className="fa-regular fa-bell"></i>
-              {(dueTodayBooks.length + wishlistAlertCount > 0) && <span className="absolute right-0 top-0 min-w-[15px] h-[15px] px-1 rounded-full bg-rose-500 text-white text-[9px] font-black flex items-center justify-center">{Math.min(99, dueTodayBooks.length + wishlistAlertCount)}</span>}
+              {(dueAlertBooks.length + wishlistAlertCount > 0) && <span className="absolute right-0 top-0 min-w-[15px] h-[15px] px-1 rounded-full bg-rose-500 text-white text-[9px] font-black flex items-center justify-center">{Math.min(99, dueAlertBooks.length + wishlistAlertCount)}</span>}
             </button>
             <button onClick={() => setDrawerOpen(true)} className="p-2 text-white hover:opacity-80 active:scale-95 transition-all text-base" title={t('legacy.Open Menu')}>
               <i className="fa-solid fa-bars"></i>
@@ -769,31 +814,43 @@ This is a gentle reminder regarding the books borrowed from my library:
               <h3 className="text-xs font-black uppercase tracking-wide">{t('legacy.Notifications')}</h3>
               <button onClick={() => setAlertsOpen(false)} aria-label={t('legacy.Close notifications')}><i className="fa-solid fa-xmark"></i></button>
             </div>
-            {dueTodayBooks.length > 0 && <div className="p-3 border-b border-sand/40 space-y-2">
-              <p className="text-[10px] font-black uppercase text-rose-700">Due today · {dueTodayBooks.length}</p>
-              {dueTodayBooks.slice(0, 5).map(book => {
+            {dueAlertBooks.length > 0 && <div className="p-3 border-b border-sand/40 space-y-2">
+              <p className="text-[10px] font-black uppercase text-rose-700">
+                {t('legacy.Overdue and due today · {{count}}', { count: dueAlertBooks.length })}
+              </p>
+              {dueAlertBooks.slice(0, 5).map(book => {
                 const reader = (appData.people || []).find(p => String(p.name || '').toLowerCase() === String(book.person || '').toLowerCase());
                 const phone = String(reader?.phone || '').replace(/\D/g, '');
-                const message = `Hi ${book.person}, the book \"${book.title}\" borrowed from my library is due today (${localTodayKey}). Please return it when convenient. Thank you!`;
+                const dueDate = dueDateKey(book.promiseReturnDate);
+                const isOverdue = dueDate < localTodayKey;
+                const message = t(isOverdue ? 'legacy.WhatsApp overdue reminder' : 'legacy.WhatsApp due reminder', {
+                  reader: book.person,
+                  title: book.title,
+                  dueDate
+                });
                 const waUrl = phone ? `https://wa.me/${phone.length === 10 ? '91' : ''}${phone}?text=${encodeURIComponent(message)}` : `https://wa.me/?text=${encodeURIComponent(message)}`;
                 return <div key={book.id} className="flex items-center justify-between gap-2">
                   <button className="min-w-0 flex-1 text-left" onClick={() => { setSelectedBook(book); setActiveTab('bookDetail'); setAlertsOpen(false); }}>
-                    <span className="block text-[11px] font-bold truncate">{book.title}</span><span className="block text-[10px] text-stone-500 truncate">{t('legacy.Held by')} {book.person}</span>
+                    <span className="block text-[11px] font-bold truncate">{book.title}</span>
+                    <span className="block text-[10px] text-stone-500 truncate">{t('legacy.Held by')} {book.person}</span>
+                    <span className={`block text-[10px] font-bold ${isOverdue ? 'text-rose-700' : 'text-amber-700'}`}>
+                      {isOverdue ? t('legacy.Overdue · {{date}}', { date: dueDate }) : t('legacy.Due today')}
+                    </span>
                   </button>
                   <button onClick={() => { window.open(waUrl, '_blank'); setAlertsOpen(false); }} className="shrink-0 rounded-full bg-emerald-600 text-white px-2.5 py-1.5 text-[10px] font-bold"><i className="fa-brands fa-whatsapp mr-1"></i>{t('legacy.Remind')}</button>
                 </div>;
               })}
             </div>}
             <button onClick={() => { setActiveTab('wishlist'); setAlertsOpen(false); }} className="w-full p-3 text-left flex items-center justify-between hover:bg-sand/20">
-              <span><span className="block text-[11px] font-bold">{t('legacy.Wishlist')}</span><span className="block text-[10px] text-stone-500">You have {wishlistAlertCount} item{wishlistAlertCount === 1 ? '' : 's'} to get.</span></span>
+              <span><span className="block text-[11px] font-bold">{t('legacy.Wishlist')}</span><span className="block text-[10px] text-stone-500">{t('legacy.You have {{count}} items to get.', { count: wishlistAlertCount })}</span></span>
               <i className="fa-solid fa-chevron-right text-stone-400"></i>
             </button>
-            {dueTodayBooks.length === 0 && wishlistAlertCount === 0 && <p className="p-4 text-center text-xs text-stone-500">{t('legacy.You’re all caught up.')}</p>}
+            {dueAlertBooks.length === 0 && wishlistAlertCount === 0 && <p className="p-4 text-center text-xs text-stone-500">{t('legacy.You’re all caught up.')}</p>}
           </div>
         )}
 
         {/* DARK GRADIENT TOP KPI CARD (Dynamic Titles per Active Screen) */}
-        {activeTab !== 'personDetail' && activeTab !== 'bookDetail' && (
+        {activeTab !== 'personDetail' && activeTab !== 'bookDetail' && activeTab !== 'progress' && (
           <div
             className="mt-3 mx-3.5 shadow-[0_4px_16px_rgba(4,115,114,0.35)] border border-white/15 rounded-2xl grid grid-cols-5 divide-x divide-white/10 text-center py-3 text-white flex-none"
             style={{ background: 'linear-gradient(to right, #033636 0%, #047372 45%, #0e4e4e 75%, #052626 100%)' }}
@@ -873,6 +930,14 @@ This is a gentle reminder regarding the books borrowed from my library:
                 </div>
               </div>
             </div>
+          )}
+
+          {activeTab === 'progress' && (
+            <ProgressPage
+              completions={appData.readingCompletions}
+              readingGoal={appData.config?.readingGoal}
+              onSaveGoal={handleSaveReadingGoal}
+            />
           )}
 
           {/* TAB 1: HOME (CONNECTS FILTERS & SEARCH DIRECTLY TO SUMMARY TABLES) */}
@@ -1290,7 +1355,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                                     <i className="fa-solid fa-pen"></i>
                                   </button>
                                   <button
-                                    onClick={() => { if (window.confirm(`Delete reader ${p.name}? Their book history will remain, but the reader assignment will be cleared.`)) google.script.run.withSuccessHandler(payload => { if (payload) setAppData(payload); triggerStatus('Reader deleted', true); }).withFailureHandler(err => triggerStatus('Delete failed: ' + (err?.message || ''), false)).deletePerson(p.name); }}
+                                    onClick={() => handleDeletePerson(p.name)}
                                     className="w-7 h-7 flex items-center justify-center text-rose-700 text-xs active:scale-90"
                                     title={t('legacy.Delete reader')}
                                   >
@@ -1478,8 +1543,8 @@ This is a gentle reminder regarding the books borrowed from my library:
         </div>
       </div>
 
-      {/* DARK BOTTOM NAVIGATION BAR WITH ENLARGED CENTER PLUS FAB */}
-      <nav className="fixed bottom-0 left-0 right-0 max-w-xl mx-auto bg-forest text-alabaster h-[64px] flex items-center justify-around z-40 px-2 shadow-[0_-4px_20px_rgba(0,0,0,0.25)]">
+      {/* DARK BOTTOM NAVIGATION BAR */}
+      <nav className="fixed bottom-0 left-0 right-0 max-w-xl mx-auto bg-forest text-alabaster h-[64px] flex items-center justify-around z-40 px-1 shadow-[0_-4px_20px_rgba(0,0,0,0.25)]">
         {/* Helper style object for the dark-to-white gradient icon */}
         {(() => {
           const activeIconGradient = {
@@ -1521,17 +1586,15 @@ This is a gentle reminder regarding the books borrowed from my library:
                 </span>
               </button>
 
-              {/* OVERLAPPING LARGE FLOATING '+' BUTTON WITH GRADIENT FILL & NO RING */}
-              <div className="absolute left-1/2 -translate-x-1/2 -top-6">
-                <button
-                  onClick={() => setBookModal({ isNew: true, book: {} })}
-                  className="w-[62px] h-[62px] rounded-full text-white shadow-xl border-[4px] border-[#F4F1EA] flex items-center justify-center active:scale-90 transition-transform"
-                  style={{ background: 'linear-gradient(135deg, #047372 0%, #38D0C9 100%)' }}
-                  title={t('legacy.New Entry')}
-                >
-                  <i className="fa-solid fa-plus text-2xl font-black drop-shadow-sm"></i>
-                </button>
-              </div>
+              <button
+                onClick={() => setBookModal({ isNew: true, book: {} })}
+                className="shrink-0 w-11 h-11 rounded-full text-white shadow-xl border-[3px] border-[#F4F1EA] flex items-center justify-center active:scale-90 transition-transform"
+                style={{ background: 'linear-gradient(135deg, #047372 0%, #38D0C9 100%)' }}
+                title={t('legacy.New Entry')}
+                aria-label={t('legacy.New Entry')}
+              >
+                <i className="fa-solid fa-plus text-xl font-black drop-shadow-sm"></i>
+              </button>
 
               <button
                 onClick={() => setActiveTab('persons')}
@@ -1562,6 +1625,21 @@ This is a gentle reminder regarding the books borrowed from my library:
                   {t('legacy.Wishlist')}
                 </span>
               </button>
+
+              <button
+                onClick={() => setActiveTab('progress')}
+                className={`flex flex-col items-center justify-center flex-1 py-1 transition-all ${
+                  activeTab === 'progress' ? 'scale-110' : 'hover:opacity-100 opacity-70'
+                }`}
+              >
+                <i
+                  className="fa-solid fa-chart-line text-xl"
+                  style={activeTab === 'progress' ? activeIconGradient : { color: '#D4C1A3' }}
+                ></i>
+                <span className={`text-[9px] mt-0.5 tracking-wide ${activeTab === 'progress' ? 'text-white font-black' : 'text-sand/80 font-medium'}`}>
+                  {t('progress.tab')}
+                </span>
+              </button>
             </>
           );
         })()}
@@ -1577,7 +1655,7 @@ This is a gentle reminder regarding the books borrowed from my library:
           onSuccess={(payload) => {
             setBookModal(null);
             if (payload) setAppData(payload);
-            else fetchData(true);
+            else fetchData();
             triggerStatus(bookModal.isNew ? 'New book added!' : 'Book details saved!', true);
           }}
         />
@@ -1586,12 +1664,13 @@ This is a gentle reminder regarding the books borrowed from my library:
         <StatusUpdateModal
           book={statusModal.book}
           people={appData.people}
+          config={appData.config}
           onAddReader={() => setPersonModal({ isNew: true, person: {} })}
           onClose={() => setStatusModal(null)}
           onSuccess={(payload) => {
             setStatusModal(null);
             if (payload) setAppData(payload);
-            else fetchData(true);
+            else fetchData();
             triggerStatus('Status & custody updated!', true);
           }}
         />
@@ -1604,7 +1683,7 @@ This is a gentle reminder regarding the books borrowed from my library:
           onSuccess={(payload) => {
             setPersonModal(null);
             if (payload) setAppData(payload);
-            else fetchData(true);
+            else fetchData();
             triggerStatus(personModal.isNew ? 'Reader added!' : 'Reader updated!', true);
           }}
         />
@@ -1617,7 +1696,7 @@ This is a gentle reminder regarding the books borrowed from my library:
           onSuccess={(payload) => {
             setAdminConfigModal(null);
             if (payload) setAppData(payload);
-            else fetchData(true);
+            else fetchData();
             triggerStatus('Configuration saved!', true);
           }}
         />
@@ -1632,19 +1711,8 @@ This is a gentle reminder regarding the books borrowed from my library:
           onSuccess={(payload) => {
             setWishlistModal(null);
             if (payload) setAppData(payload);
-            else fetchData(true);
+            else fetchData();
             triggerStatus(wishlistModal.isNew ? 'Wishlist book added!' : 'Wishlist item updated!', true);
-          }}
-        />
-      )}
-
-      {syncModal && (
-        <SyncSettingsModal
-          onClose={() => setSyncModal(false)}
-          onSuccess={(payload) => {
-            setSyncModal(false);
-            if (payload) setAppData(payload);
-            triggerStatus('Google Sheet connected!', true);
           }}
         />
       )}
@@ -1658,7 +1726,14 @@ This is a gentle reminder regarding the books borrowed from my library:
               <h3 className="text-sm font-black uppercase tracking-wide">{t('legacy.Restore Database')}</h3>
             </div>
             <p className="text-xs text-charcoal font-medium">
-              {t('legacy.Restoring')} <b>{restoreConfirmFile.name}</b> will replace this phone’s books, reader records, configuration, and wishlist data.
+              {t('legacy.Restoring')} <b>{restoreConfirmFile.fileName}</b> will replace this phone’s books, reader records, configuration, and wishlist data.
+            </p>
+            <p className="rounded-lg bg-sand/20 p-2 text-xs font-bold text-forest">
+              {t('legacy.Backup contents: {{books}} books, {{people}} readers, and {{wishlist}} wishlist items.', {
+                books: restoreConfirmFile.counts.books,
+                people: restoreConfirmFile.counts.people,
+                wishlist: restoreConfirmFile.counts.wishlist
+              })}
             </p>
             <p className="text-[11px] text-stone-500 italic">
               {t('legacy.Are you sure you want to proceed with this restore operation?')}

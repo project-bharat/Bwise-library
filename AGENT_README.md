@@ -1,90 +1,52 @@
-# AGENT_README — legacy repository notes
+# B-wise Library — project notes
 
-> **Not authoritative:** this file describes an earlier Google Sheets-backed version of the app. The current code is local-first. Follow the root [AGENTS.md](AGENTS.md) and the current guides in `docs/`; do not rely on conflicting architecture, sync, or troubleshooting details below.
+This file summarizes the current repository. The root [AGENTS.md](AGENTS.md) contains the rules for making changes.
 
-## 1. What this project is
-Native Android app (Capacitor 6 wrapper around a React 18 + Tailwind 3.4 + Vite 5 UI) for **B-wise Library** – a personal book library & reader-lending manager.
-The UI was ported 1:1 from a Google Apps Script web app (`Index.html` + `Code.gs`). **Pixel-perfect parity with that UI is a hard requirement. Do not restyle, rename classes, or "improve" layout unless asked.**
+## Current architecture
 
-appId `com.bharatrasve.bwiselibrary` · appName `B-wise Library` · webDir `dist` · config file is `capacitor.config.json` (JSON, not TS).
-
-## 2. Architecture (3 layers)
+```text
+React UI (src/) -> src/native/libraryApi.js -> src/native/localDb.js
+                                            -> app-private JSON file (Android)
+                                            -> localStorage (browser)
 ```
-React UI (src/)  --google.script.run API-->  src/native/gasShim.js  --HTTPS POST-->  Apps Script Web App (backend/ApiBridge.gs doPost)
-                                                                                         |
-                                                                                   Code.gs functions  <->  Google Sheet (6 tabs)
+
+- Stack: React 18, Vite 5, Tailwind CSS 3, Capacitor 8, JavaScript.
+- The local library is the primary copy. Mutations are serialized and saved to `bwise-library-data.json`; browser development uses the same payload format in local storage. The payload includes unique book completion history and a year-scoped annual reading goal for the Progress screen.
+- Full backup export/restore remains a versioned CSV envelope. Restore replaces the current local library; malformed data is preserved for recovery, and a rolling backup is kept before writes or restore. Preserve and test these safeguards when changing persistence.
+- Contacts and local notifications are optional native features. Denied permissions must not prevent core library use.
+- Google sign-in, hidden Drive `appDataFolder` sync, and Google Play billing are approved future integrations but are not operational yet.
+
+## Approved product requirements
+
+- Free: maximum 50 books and 20 people.
+- Pro: unlimited books and people, plus on-demand Drive sync.
+- Intended price points: ₹29/month, ₹265/year, and ₹2,049 lifetime. Product IDs are pending; never invent them.
+- After Pro expires, retain all data and permit read/export. Block additions only above Free caps and pause Drive sync; never delete data.
+- Drive sync is two-way, merges non-conflicting edits, and asks the user to resolve same-record conflicts. The target is hidden `appDataFolder`, not a visible Drive folder.
+- Firebase Auth identifies the app account. Drive authorization is separate; purchase tokens are verified by a trusted backend.
+
+## Key files
+
+```text
+src/App.jsx                         Main screens, navigation, backup/restore
+src/components/ProgressPage.jsx     Annual reading goal and reader milestone badges
+src/native/libraryApi.js            Local data-operation facade
+src/native/localDb.js               Serialized persistence, completion history, and recovery
+src/native/storage.js               Browser/native storage helpers
+src/native/backupFormat.js           Full-backup validation and restore preview
+src/native/files.js                 Native share sheet and browser downloads
+src/native/contacts.js              Optional contacts permission and picker
+src/native/dueNotifications.js       Local due-date notifications
+scripts/android-post-setup.py       Patches generated Android project
+.github/workflows/build-apk.yml     Debug APK CI workflow
+docs/                               Architecture, data, build, Drive, and Play guides
 ```
-* **Google Sheet is the only database.** The app has no local DB. `gasShim` only caches the last successful payload (Capacitor Preferences key `bwise_payload_cache_v1`) for offline *viewing*; writes need connectivity.
-* `src/native/gasShim.js` recreates `google.script.run.withSuccessHandler().withFailureHandler().<fn>(args)`. Every component still calls `google.script.run...saveBook(payload)` etc. **Keep that call style** – do not call fetch from components.
-* Request format: `POST <WebAppURL>` body `{token, fn, args[]}` as `text/plain` (avoids CORS preflight; `CapacitorHttp` is enabled in `capacitor.config.json` so native HTTP is used). Response: `{ok:true,data}` or `{ok:false,error}`.
-* `ApiBridge.gs` uses a `switch` whitelist. **Any new server function must be added to Code.gs AND to that switch**, then the owner must redeploy the Web App as *New version*.
-* Token is the Apps Script property `API_TOKEN` (made by `generateApiToken()`), stored on the phone via Sync Settings (or injected at build from `vars.GAS_URL` / `secrets.GAS_TOKEN`).
 
-## 3. File map
-```
-index.html                  Vite entry
-src/main.jsx                bootstraps fonts, CSS, gasShim, native init, mounts <App/>
-src/App.jsx                 main screen: state, tabs (home/books/persons/wishlist/tagView/personDetail/bookDetail), header, KPI card, bottom nav, PDF export, backup/restore, Android back handler
-src/utils.js                formatDisplayDate, displayStatus, calculateDaysSince, getStatusBadgeStyle, EMPTY_INITIAL_DATA
-src/components/*.jsx        BrandingFooter, SideDrawer, SummaryTableCard, IndividualPersonPage, BookJourneyPage
-src/components/modals/*.jsx BookDetailsModal, StatusUpdateModal, PersonFormModal, AdminConfigModal, WishlistFormModal, SyncSettingsModal(new)
-src/native/gasShim.js       google.script.run emulation + offline cache
-src/native/config.js        stores Web App URL + token (Preferences / localStorage)
-src/native/storage.js       Preferences wrapper, isNative()
-src/native/files.js         saveAndShareBlob(): Filesystem(cache)+Share sheet (native) / anchor download (web)
-src/native/init.js          StatusBar, window.open -> Capacitor Browser, splash hide
-src/assets/brand-icon.png   GENERATED by scripts/generate-icons.py (committed; CI regenerates)
-src/index.css               Tailwind directives + original global CSS
-tailwind.config.js          original palette: forest #1E3535, moss #868d7d, ochre #047372, sage, sand #D4C1A3, alabaster #F4F1EA, charcoal #0F1E1E; font Mukta + Noto Sans Devanagari
-resources/icons/            SOURCE icons: ic_launcher_foreground.png, ic_launcher_background.png (1024²)
-scripts/generate-icons.py   --brand (in-app icon) / --android (mipmap-*, adaptive xml, removes default vector layers)
-scripts/android-post-setup.py  portrait lock + versionCode/versionName
-scripts/make-source-icons.py   one-time: draws the placeholder source PNGs (do not run unless asked to re-draw placeholders)
-backend/ApiBridge.gs        doPost router + generateApiToken
-.github/workflows/build-apk.yml  CI
-```
-`android/` is **NOT committed** (in `.gitignore`); CI creates it with `npx cap add android` + `npx cap sync android` on every run, then patches it with the two scripts above. Never commit `android/`, `dist/`, `node_modules/`.
+Capacitor 8 requires Node.js 22+ and Android SDK 36. The Android project is generated in CI and is ignored by Git. Never commit generated `android/`, `dist/`, `node_modules/`, user library data, credentials, or signing materials.
 
-## 4. CI pipeline (build-apk.yml) – order matters
-1. `npm install` → 2. `pip install pillow` → 3. `generate-icons.py --brand` → 4. `npm run build` → 5. `npx cap add android` + `npx cap sync android` → 6. `generate-icons.py --android` + `android-post-setup.py <run_number> 1.0.<run_number>` → 7. `./gradlew assembleDebug` (JDK 17) → 8. upload artifact `bwise-library-debug-apk` (`android/app/build/outputs/apk/debug/app-debug.apk`).
-Cap packages are pinned to major **6** (needs JDK 17 / AGP 8.2). Don't bump Capacitor major versions without being asked.
+## Validation
 
-## 5. Data model (Google Sheet tabs — headers are enforced by `getOrCreateSheet_`)
-* `BOOK_RECORD`: ENTRY_ID, Book_In_Date, Title, Author, Category, Language, Amount, Initial_Status, Current_Status, Location, Associated_Person, Event_Date, Promise_Return_Date, Notes, Reading_Status
-* `PERSON_CONFIG`: Person_Name, Mobile_No, Address, Email_Id
-* `ADMIN_CONFIG`: Category, Location, Initial_Status, Current_Status (dropdown values)
-* `PERSON_RECORDS`: RECORD_ID, Person_Name, Book_ID, Book_Title, Author, Category, Language, Amount, Person_Status, Event_Date, Promise_Return_Date, Notes, Timestamp
-* `BOOK_JOURNEY`: JOURNEY_ID, Book_ID, Book_Title, Change_Date, Previous_Status, New_Status, Location, Associated_Person, Notes, Timestamp
-* `WISHLIST_RECORD`: WISHLIST_ID, Date_Added, Title, Author, Category, Language, Target_Location, Notes, Status
-Business rules (keep intact): Reading_Status ∈ UNREAD/READING/FINISHED/WISHLISTED; custody Current_Status ∈ COLLECTED/LENT/LOST/DAMAGED/GIFTED OUT; UI shows LENT as "OUT", DONE as "FINISHED"; anything with Location "To Person" or an Associated_Person is LENT (or GIFTED OUT); Person_Status ∈ Holding/Returned/Gifted/Lost; dates are `yyyy-MM-dd` strings; displayed as `dd-mmm-0yy` (e.g. `10-aug-026` — intentional).
-
-## 6. How to make common changes
-* **UI tweak** → edit the specific component; keep Tailwind class strings otherwise identical. Tailwind scans `./src/**/*.{js,jsx}`; arbitrary values like `text-[9px]` are fine.
-* **New server feature** → (1) add function in `Code.gs` (owner's file – give him the exact snippet), (2) add `case` in `backend/ApiBridge.gs`, (3) call via `google.script.run...` in the UI, (4) tell the owner to redeploy a *new version* of the Web App.
-* **New native feature** (camera, contacts…) → `npm i @capacitor/<plugin>@^6`, wrap it in `src/native/`, add any manifest permission by extending `scripts/android-post-setup.py` (idempotent string replace, same style) — not by editing `android/` by hand.
-* **Icons** → replace the two PNGs in `resources/icons/` only. Never hand-edit mipmap files.
-* **Export / share** → always go through `saveAndShareBlob()`; blob-anchor downloads do not work inside the Android WebView.
-* **Opening links** → `window.open(url)` is overridden on native to Capacitor Browser; `tel:` uses `window.location.href`.
-* **Back button** → add new overlays/screens to the `backRef.current` chain in `App.jsx`.
-
-## 7. Rules for you
-1. Make small, reviewable commits; one concern per commit; never rewrite files wholesale for a small change.
-2. Do not add CI "patch scripts" that regex-edit source files (the owner's other project suffered from this). Edit the source directly. The only scripts allowed are the build-time asset/Android-project ones listed above.
-3. Never commit secrets (token / Web App URL belong in Actions variables/secrets or in the app).
-4. Don't introduce TypeScript, state libraries, routers or UI kits. Keep the structure.
-5. After every change: `npm run build` must pass locally/CI. If the Action fails, read the failing step's log first; fix the root cause.
-6. When the owner pastes updated `Code.gs`, check every function name used through `google.script.run` still exists and is whitelisted in `ApiBridge.gs`.
-7. Keep user-facing wording/labels as is (Marathi/Hindi book data must render – fonts are bundled).
-
-## 8. Troubleshooting cheatsheet
-| Symptom | Cause / fix |
-|---------|-------------|
-| App toast "Server not set up" | Sync Settings empty → enter URL (ends `/exec`) + token |
-| "Bad server response" | Web App not deployed with access **Anyone**, or old deployment version |
-| `{error: Unauthorized}` | token mismatch → re-run `generateApiToken` and re-enter |
-| "No connection" + old data shown | offline; cached payload displayed, writes disabled |
-| Unknown function error | missing `case` in `ApiBridge.gs` or Web App not redeployed |
-| PDF share does nothing | check `@capacitor/filesystem` + `@capacitor/share` installed and `cap sync` ran |
-| Icons not changed | source PNG not 1024², or workflow step "Launcher icons…" skipped |
-| Gradle fails on Java | workflow must use JDK 17 |
-| Header overlapped by status bar | `StatusBar.setOverlaysWebView({overlay:false})` in `src/native/init.js` |
+- Run `npm test` for backup validation, reading progress calculations, and localization parity; run `npm run build` for the production bundle.
+- There are no configured lint or type-check scripts. Add focused tests for new quota, migration, sync-merge, and entitlement rules when those features are implemented.
+- For native changes, sync and build the generated Android project when the Android toolchain is available. Verify the merged manifest and permissions.
+- Owner-controlled Firebase, OAuth, and Play Console setup/deployment is outside repository-only validation.

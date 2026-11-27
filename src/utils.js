@@ -18,6 +18,13 @@ export const formatDisplayDate = (dateStr) => {
   return `${String(d.getDate()).padStart(2, '0')}-${months[d.getMonth()]}-${yrShort}`;
 };
 
+export function getLocalDateKey(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 // User-Friendly Terminology: LENT -> OUT, DONE -> FINISHED
 export const displayStatus = (st) => {
   const u = String(st || '').toUpperCase();

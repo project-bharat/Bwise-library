@@ -1,27 +1,25 @@
 # Google Play Billing
 
-## Current status
+## Approved product model and current status
 
-The checked-in app does not currently integrate Google Play Billing. No billing SDK, purchase flow, product or entitlement handling, or purchase verification implementation is present in the app source or `package.json`. The app should not be described as supporting in-app purchases or subscriptions.
+Billing is approved but not integrated. No purchase flow, entitlement handling, or server verification is currently available. Do not advertise Pro or imply that payment can be made until the complete flow is implemented and tested.
 
-No Play Console products have been configured by this repository. Console configuration, pricing decisions, account access, and product publication are for the developer account owner.
+- Free: local storage and export/restore up to 50 books and 20 people.
+- Pro: unlimited books and people, plus on-demand Drive sync.
+- Intended price points: ₹29 monthly, ₹265 annual, and ₹2,049 lifetime. Monthly and annual are subscriptions; lifetime is a one-time purchase.
+- Product IDs have not been created. Keep IDs configurable and pending; do not invent or hard-code plausible-looking IDs. Display prices from Play product details.
+- On expiry, preserve all data and allow reading/export. Block new additions only when the Free caps are exceeded and pause Drive sync; never delete existing data.
 
-## Decisions required before implementation
+Use Firebase Auth for app identity and a trusted Cloud Function to verify Play purchase tokens with the Google Play Developer API before granting entitlements. The client must not make purchase callbacks authoritative. Keep service-account credentials out of the app and repository. Treat pending, cancelled, refunded, revoked, account-changed, and offline states explicitly.
 
-Before adding billing, decide:
-
-1. Which app feature or digital content is paid, and whether the model is a one-time purchase or subscription.
-2. What entitlement a successful purchase grants and how the app restores access after reinstall or device change.
-3. How cancellations, refunds, pending purchases, account changes, and offline behavior are handled.
-4. Whether a trusted backend is required for purchase verification and entitlement state. Do not treat a client-only success callback as authoritative proof of payment.
-
-Then verify the current Google Play Payments policy and official Billing integration guidance, select a maintained compatible library, and implement/test the purchase lifecycle before creating corresponding Console products. Avoid collecting or storing payment-card data in the app.
+The app's Play Console products, service-account access, Firebase project, and billing setup are controlled by the account owner. Do not deploy or publish resources from this guide.
 
 ## Release checks
 
-- [ ] Confirm the current policy permits the proposed payment flow for the app, product, regions, and distribution channel.
+- [ ] Create Play products with owner-approved IDs and prices; keep monthly/annual recurring and lifetime one-time.
+- [ ] Confirm current policy permits the proposed payment flow for the app, product, regions, and distribution channel.
 - [ ] Implement purchase, acknowledgement, restore/query, pending, cancellation, and error flows with clear user-facing states.
-- [ ] Verify purchases using the supported secure design; do not put service-account credentials or private keys in the app or repository.
+- [ ] Verify purchases using a trusted backend; do not put service-account credentials or private keys in the app or repository.
 - [ ] Test using Play's licensed tester and internal testing flows before release.
 - [ ] Align the Play listing, in-app disclosures, privacy policy, and Console declarations with the implemented behavior.
 

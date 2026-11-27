@@ -1,9 +1,13 @@
 import { Capacitor } from '@capacitor/core';
 import { Directory, Filesystem } from '@capacitor/filesystem';
-import { getItem } from './storage';
-import { EMPTY_INITIAL_DATA } from '../utils';
+import { getItemStrict } from './storage';
+import { getLocalDateKey, EMPTY_INITIAL_DATA } from '../utils';
+import { parseFullBackup, validateBackupPayload } from './backupFormat';
+import { validateAnnualReadingGoal } from '../utils/progress';
 
 const DATA_FILE = 'bwise-library-data.json';
+const BACKUP_FILE = `${DATA_FILE}.bak`;
+const TEMP_FILE = `${DATA_FILE}.tmp`;
 const LEGACY_CACHE_KEY = 'bwise_payload_cache_v1';
 let writeQueue = Promise.resolve();
 let mutationQueue = Promise.resolve();
@@ -12,30 +16,63 @@ const clone = (value) => JSON.parse(JSON.stringify(value));
 
 function normalizePayload(value) {
   const source = value && typeof value === 'object' ? value : {};
+  const books = Array.isArray(source.books) ? source.books : [];
+  const readingCompletions = Array.isArray(source.readingCompletions)
+    ? source.readingCompletions.filter(item => item && typeof item === 'object' && item.bookId != null)
+    : [];
+  const knownCompletionIds = new Set(readingCompletions.map(item => String(item.bookId)));
+  books.forEach(book => {
+    const bookId = String(book?.id || '');
+    if (bookId && isFinishedReading(book.readingStatus) && !knownCompletionIds.has(bookId)) {
+      readingCompletions.push({ bookId, completedAt: '', legacy: true });
+      knownCompletionIds.add(bookId);
+    }
+  });
   return {
     ...clone(EMPTY_INITIAL_DATA),
     ...source,
+    schemaVersion: Math.max(2, Number(source.schemaVersion) || 1),
     status: 'success',
     offline: false,
     config: { ...clone(EMPTY_INITIAL_DATA.config), ...(source.config || {}) },
-    books: Array.isArray(source.books) ? source.books : [],
+    books,
     people: Array.isArray(source.people) ? source.people : [],
-    wishlist: Array.isArray(source.wishlist) ? source.wishlist : []
+    wishlist: Array.isArray(source.wishlist) ? source.wishlist : [],
+    readingCompletions
   };
 }
 
-async function readFile() {
-  const result = await Filesystem.readFile({
-    path: DATA_FILE,
-    directory: Directory.Data,
-    encoding: 'utf8'
-  });
+function isFinishedReading(status) {
+  return ['FINISHED', 'DONE'].includes(String(status || '').toUpperCase());
+}
+
+function dataFilename(suffix) {
+  return `${DATA_FILE}.${suffix}-${new Date().toISOString().replace(/[:.]/g, '-')}`;
+}
+
+async function fileExists(path) {
+  if (!Capacitor.isNativePlatform()) {
+    return window.localStorage.getItem(path) !== null;
+  }
+  const { files } = await Filesystem.readdir({ path: '', directory: Directory.Data });
+  return (files || []).some(file => file.name === path);
+}
+
+async function readStoredFile(path) {
+  if (!Capacitor.isNativePlatform()) return window.localStorage.getItem(path);
+  if (!(await fileExists(path))) return null;
+  const result = await Filesystem.readFile({ path, directory: Directory.Data, encoding: 'utf8' });
   return result.data;
 }
 
-async function writeFile(text) {
+async function writeStoredFile(path, text) {
+  if (!Capacitor.isNativePlatform()) {
+    window.localStorage.setItem(path, text);
+    return;
+  }
+
   await Filesystem.writeFile({
-    path: DATA_FILE,
+    path,
     directory: Directory.Data,
     data: text,
     encoding: 'utf8',
@@ -43,49 +80,135 @@ async function writeFile(text) {
   });
 }
 
-async function loadPayload() {
+async function removeStoredFile(path) {
   if (!Capacitor.isNativePlatform()) {
-    const raw = window.localStorage.getItem(DATA_FILE);
-    if (raw) {
-      try { return normalizePayload(JSON.parse(raw)); } catch (_) { /* reset invalid data */ }
-    }
-  } else {
+    window.localStorage.removeItem(path);
+    return;
+  }
+  if (await fileExists(path)) await Filesystem.deleteFile({ path, directory: Directory.Data });
+}
+
+function validateStoredPayload(raw) {
+  return normalizePayload(validateBackupPayload(JSON.parse(raw)));
+}
+
+async function quarantineStoredFile(raw) {
+  await writeStoredFile(dataFilename('corrupt'), raw);
+}
+
+async function replacePayloadFile(serialized, rotateBackup) {
+  await writeStoredFile(TEMP_FILE, serialized);
+  const current = await readStoredFile(DATA_FILE);
+
+  if (current !== null && rotateBackup) {
     try {
-      const raw = await readFile();
-      if (raw) return normalizePayload(JSON.parse(raw));
+      validateStoredPayload(current);
+      await writeStoredFile(BACKUP_FILE, current);
     } catch (_) {
-      // First launch: try migrating the old offline viewing cache.
+      await quarantineStoredFile(current);
     }
   }
 
-  const legacy = await getItem(LEGACY_CACHE_KEY);
-  if (legacy) {
+  try {
+    await removeStoredFile(DATA_FILE);
+    if (Capacitor.isNativePlatform()) {
+      await Filesystem.rename({ from: TEMP_FILE, to: DATA_FILE, directory: Directory.Data });
+    } else {
+      const temporary = window.localStorage.getItem(TEMP_FILE);
+      if (temporary === null) throw new Error('The temporary library snapshot is missing.');
+      window.localStorage.setItem(DATA_FILE, temporary);
+      window.localStorage.removeItem(TEMP_FILE);
+    }
+  } catch (error) {
+    if (!(await fileExists(DATA_FILE))) {
+      const backup = await readStoredFile(BACKUP_FILE);
+      if (backup !== null) await writeStoredFile(DATA_FILE, backup);
+    }
+    throw error;
+  }
+}
+
+async function persistPayload(payload, { rotateBackup = true } = {}) {
+  const normalized = normalizePayload(payload);
+  delete normalized.recoveryNotice;
+  const serialized = JSON.stringify(normalized);
+  writeQueue = writeQueue.catch(() => {}).then(() => replacePayloadFile(serialized, rotateBackup));
+  await writeQueue;
+}
+
+async function loadPayload() {
+  const raw = await readStoredFile(DATA_FILE);
+  if (raw !== null) {
     try {
-      const migrated = normalizePayload(JSON.parse(legacy));
-      await persistPayload(migrated);
-      return migrated;
-    } catch (_) { /* ignore invalid legacy cache */ }
+      const parsed = JSON.parse(raw);
+      const payload = normalizePayload(validateBackupPayload(parsed));
+      const needsMigration = Number(parsed.schemaVersion || 1) < 2 ||
+        !Array.isArray(parsed.readingCompletions) ||
+        payload.readingCompletions.length > parsed.readingCompletions.length;
+      if (needsMigration) await persistPayload(payload);
+      return payload;
+    } catch (error) {
+      await quarantineStoredFile(raw);
+      const backup = await readStoredFile(BACKUP_FILE);
+      if (backup === null) {
+        throw new Error(`Library data is unreadable. A damaged copy was preserved; restore a backup to continue. ${error.message}`);
+      }
+      try {
+        const recovered = validateStoredPayload(backup);
+        await persistPayload(recovered, { rotateBackup: false });
+        recovered.recoveryNotice = 'Recovered library from local backup';
+        return recovered;
+      } catch (backupError) {
+        throw new Error(`Library data and its local backup are unreadable. Restore a verified backup to continue. ${backupError.message}`);
+      }
+    }
+  }
+
+  const backup = await readStoredFile(BACKUP_FILE);
+  if (backup !== null) {
+    try {
+      const recovered = validateStoredPayload(backup);
+      await persistPayload(recovered, { rotateBackup: false });
+      recovered.recoveryNotice = 'Recovered library from local backup';
+      return recovered;
+    } catch (error) {
+      throw new Error(`The local library backup is unreadable. Restore a verified backup to continue. ${error.message}`);
+    }
+  }
+
+  const legacy = await getItemStrict(LEGACY_CACHE_KEY);
+  if (legacy) {
+    let migrated;
+    try {
+      migrated = validateStoredPayload(legacy);
+    } catch (error) {
+      throw new Error(`The previous local library cache is unreadable and was not replaced. ${error.message}`);
+    }
+    await persistPayload(migrated, { rotateBackup: false });
+    return migrated;
   }
 
   const initial = normalizePayload(EMPTY_INITIAL_DATA);
-  await persistPayload(initial);
+  await persistPayload(initial, { rotateBackup: false });
   return initial;
-}
-
-async function persistPayload(payload) {
-  const serialized = JSON.stringify(normalizePayload(payload));
-  writeQueue = writeQueue.catch(() => {}).then(async () => {
-    if (Capacitor.isNativePlatform()) {
-      await writeFile(serialized);
-    } else {
-      window.localStorage.setItem(DATA_FILE, serialized);
-    }
-  });
-  await writeQueue;
 }
 
 function nextId(prefix) {
   return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
+}
+
+function recordFinishedBook(payload, book, completedAt) {
+  const bookId = String(book.id || '');
+  if (!bookId) return;
+  const index = payload.readingCompletions.findIndex(item => String(item.bookId) === bookId);
+  if (index >= 0) {
+    const existing = payload.readingCompletions[index];
+    if (completedAt && existing.completedAt !== completedAt) {
+      payload.readingCompletions[index] = { ...existing, completedAt, legacy: false };
+    }
+    return;
+  }
+  payload.readingCompletions.push({ bookId, completedAt: completedAt || '' });
 }
 
 function rebuildPeople(payload) {
@@ -123,10 +246,19 @@ function rebuildPeople(payload) {
 
 export async function getLocalPayload() {
   const payload = await loadPayload();
-  return clone(rebuildPeople(payload));
+  const result = clone(rebuildPeople(payload));
+  if (payload.recoveryNotice) result.recoveryNotice = payload.recoveryNotice;
+  return result;
 }
 
 async function mutateLocalNow(method, args = []) {
+  if (method === 'importFullBackup') {
+    const restored = normalizePayload(parseFullBackup(String(args[0] || '')));
+    rebuildPeople(restored);
+    await persistPayload(restored);
+    return clone(restored);
+  }
+
   const payload = await loadPayload();
   const value = args[0];
 
@@ -145,8 +277,11 @@ async function mutateLocalNow(method, args = []) {
           String(previous[field] || '') !== String(merged[field] || '')
         );
         const journey = Array.isArray(previous.journey) ? [...previous.journey] : [];
+        if (isFinishedReading(merged.readingStatus) && !isFinishedReading(previous.readingStatus)) {
+          recordFinishedBook(payload, merged, merged.finishedAt || getLocalDateKey());
+        }
         if (changed) {
-          const today = new Date().toISOString().slice(0, 10);
+          const today = getLocalDateKey();
           const reading = merged.readingStatus ? ` · Reading: ${merged.readingStatus}` : '';
           const borrower = merged.person ? ` · Reader: ${merged.person}` : '';
           const due = merged.promiseReturnDate ? ` · Due: ${merged.promiseReturnDate}` : '';
@@ -165,6 +300,7 @@ async function mutateLocalNow(method, args = []) {
         payload.books[index] = { ...merged, journey };
       } else {
         book.id = book.id || nextId('book');
+        if (isFinishedReading(book.readingStatus)) recordFinishedBook(payload, book, book.finishedAt || getLocalDateKey());
         payload.books.push({ ...book, journey: Array.isArray(book.journey) ? book.journey : [] });
       }
       break;
@@ -172,6 +308,7 @@ async function mutateLocalNow(method, args = []) {
 
     case 'addNewBook': {
       const book = { ...(value || {}), id: (value && value.id) || nextId('book') };
+      if (isFinishedReading(book.readingStatus)) recordFinishedBook(payload, book, book.finishedAt || getLocalDateKey());
       payload.books.push(book);
       break;
     }
@@ -187,8 +324,11 @@ async function mutateLocalNow(method, args = []) {
           String(previous[field] || '') !== String(merged[field] || '')
         );
         const journey = Array.isArray(previous.journey) ? [...previous.journey] : [];
+        if (isFinishedReading(merged.readingStatus) && !isFinishedReading(previous.readingStatus)) {
+          recordFinishedBook(payload, merged, merged.finishedAt || getLocalDateKey());
+        }
         if (changed) {
-          const today = new Date().toISOString().slice(0, 10);
+          const today = getLocalDateKey();
           journey.push({
             journeyId: nextId('journey'),
             changeDate: merged.eventDate || today,
@@ -224,7 +364,7 @@ async function mutateLocalNow(method, args = []) {
         const existingIndex = payload.books.findIndex(book =>
           String(book.title || '').trim().toLowerCase() === titleKey
         );
-        const today = new Date().toISOString().slice(0, 10);
+        const today = getLocalDateKey();
         if (existingIndex >= 0) {
           const existing = payload.books[existingIndex];
           const wasWishlistOnly =
@@ -342,18 +482,17 @@ async function mutateLocalNow(method, args = []) {
       break;
     }
 
-    case 'importAllSheetsBackupCsv': {
-      const text = String(value || '');
-      const rows = parseCsv(text);
-      if (rows[0] && rows[0][0] === 'BWISE_FULL_BACKUP_V1' && rows[1] && rows[1][0] === 'payload_json') {
-        const restored = normalizePayload(JSON.parse(rows[1][1] || '{}'));
-        await persistPayload(restored);
-        return clone(rebuildPeople(restored));
+    case 'saveReadingGoal': {
+      const goal = args[0] || {};
+      const year = Number(goal.year);
+      if (!Number.isInteger(year) || year < 2000 || year > 9999) {
+        throw new Error('The reading-goal year is invalid.');
       }
-      throw new Error('This CSV is not a B-wise full backup. Import a backup exported by this app.');
+      payload.config.readingGoal = { year, target: validateAnnualReadingGoal(goal.target) };
+      break;
     }
 
-    case 'exportAllSheetsBackupCsv': {
+    case 'exportFullBackup': {
       const backup = clone(payload);
       delete backup.status;
       delete backup.offline;
@@ -385,24 +524,6 @@ function recordsToCsv(title, records) {
     const text = String(cell == null ? '' : cell);
     return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
   }).join(',')).join('\r\n');
-}
-
-function parseCsv(text) {
-  const rows = [];
-  let row = [], cell = '', quoted = false;
-  for (let i = 0; i < text.length; i++) {
-    const ch = text[i];
-    if (quoted) {
-      if (ch === '"' && text[i + 1] === '"') { cell += '"'; i++; }
-      else if (ch === '"') quoted = false;
-      else cell += ch;
-    } else if (ch === '"' && cell === '') quoted = true;
-    else if (ch === ',') { row.push(cell); cell = ''; }
-    else if (ch === '\n') { row.push(cell.replace(/\r$/, '')); rows.push(row); row = []; cell = ''; }
-    else cell += ch;
-  }
-  if (cell.length || row.length) { row.push(cell.replace(/\r$/, '')); rows.push(row); }
-  return rows;
 }
 
 // Serialize complete read-modify-write operations so rapid edits cannot overwrite each other.

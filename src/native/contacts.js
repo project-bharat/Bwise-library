@@ -1,36 +1,5 @@
 import { Capacitor } from '@capacitor/core';
-import { Preferences } from '@capacitor/preferences';
 import { Contacts } from '@capacitor-community/contacts';
-
-const CONTACTS_PERMISSION_ASKED = 'bwise_contacts_permission_asked_v1';
-const NOTIFICATIONS_PERMISSION_ASKED = 'bwise_notifications_permission_asked_v1';
-
-export async function requestInitialDevicePermissions() {
-  if (!Capacitor.isNativePlatform()) return;
-  const [contactsAsked, notificationsAsked] = await Promise.all([
-    Preferences.get({ key: CONTACTS_PERMISSION_ASKED }),
-    Preferences.get({ key: NOTIFICATIONS_PERMISSION_ASKED })
-  ]);
-
-  if (!contactsAsked.value) {
-    try { await Contacts.requestPermissions(); } catch (error) {
-      console.warn('[permissions] Contacts permission was not granted', error);
-    } finally {
-      await Preferences.set({ key: CONTACTS_PERMISSION_ASKED, value: 'true' });
-    }
-  }
-
-  if (!notificationsAsked.value) {
-    try {
-      const { LocalNotifications } = await import('@capacitor/local-notifications');
-      await LocalNotifications.requestPermissions();
-    } catch (error) {
-      console.warn('[permissions] Notification permission was not granted', error);
-    } finally {
-      await Preferences.set({ key: NOTIFICATIONS_PERMISSION_ASKED, value: 'true' });
-    }
-  }
-}
 
 export async function getDeviceContacts() {
   if (!Capacitor.isNativePlatform()) {

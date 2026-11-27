@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from '../../i18n/useTranslation';
+import { libraryApi } from '../../native/libraryApi';
 
 export default function AdminConfigModal({ type, config, onClose, onSuccess }) {
   const { t } = useTranslation();
@@ -10,18 +11,25 @@ export default function AdminConfigModal({ type, config, onClose, onSuccess }) {
   const typeLabel = ({ Category: t('legacy.Category'), Location: t('legacy.Location'), Current_Status: t('legacy.Status'), Current_Statuses: t('legacy.Status'), Initial_Status: t('legacy.Initial Status') })[type] || type.replace('_', ' ');
   const handleDelete = (item) => {
     if (!window.confirm(t('legacy.Remove {{item}} from {{type}} options?', { item, type: typeLabel }))) return;
-    google.script.run.withSuccessHandler(onSuccess).withFailureHandler(() => setSaving(false)).deleteAdminConfigItem(type, item);
+    setSaving(true);
+    libraryApi.deleteAdminConfigItem(type, item)
+      .then(onSuccess)
+      .catch((error) => {
+        setSaving(false);
+        alert(`Unable to remove option: ${error.message}`);
+      });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!val.trim()) return;
     setSaving(true);
-    if (window.google && google.script && google.script.run) {
-      google.script.run.withSuccessHandler(onSuccess).withFailureHandler(() => setSaving(false)).addAdminConfigItem(type, val.trim());
-    } else {
-      setTimeout(() => onSuccess(null), 300);
-    }
+    libraryApi.addAdminConfigItem(type, val.trim())
+      .then(onSuccess)
+      .catch((error) => {
+        setSaving(false);
+        alert(`Unable to save option: ${error.message}`);
+      });
   };
 
   return (

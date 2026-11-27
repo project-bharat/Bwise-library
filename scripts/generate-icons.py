@@ -9,11 +9,12 @@ Usage:
     python scripts/generate-icons.py --android   # writes android/app/src/main/res/mipmap-* (needs `npx cap add android` first)
     python scripts/generate-icons.py             # both (android only if the android/ folder exists)
 """
-import os, sys
+import os, sys, shutil
 from PIL import Image, ImageDraw
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 SRC = os.path.join(ROOT, 'resources', 'icons')
+BRAND = os.path.join(ROOT, 'resources', 'brand', 'Bwise_Brand_Assets')
 _FG_SOURCE = Image.open(os.path.join(SRC, 'ic_launcher_foreground.png')).convert('RGBA')
 BG = Image.open(os.path.join(SRC, 'ic_launcher_background.png')).convert('RGBA')
 S = max(_FG_SOURCE.size)
@@ -56,16 +57,45 @@ def rounded(img, radius_ratio):
 
 def make_brand():
     out_dir = os.path.join(ROOT, 'src', 'assets'); os.makedirs(out_dir, exist_ok=True)
-    img = rounded(legacy_square().resize((192, 192), Image.LANCZOS), 0.22)
-    img.save(os.path.join(out_dir, 'brand-icon.png'), optimize=True)
     pub = os.path.join(ROOT, 'public'); os.makedirs(pub, exist_ok=True)
-    rounded(legacy_square().resize((192, 192), Image.LANCZOS), 0.22).save(os.path.join(pub, 'favicon.png'))
-    print('brand icon -> src/assets/brand-icon.png')
+    if os.path.isdir(BRAND):
+        copies = {
+            os.path.join(BRAND, 'web', 'mark_256_transparent.png'): os.path.join(out_dir, 'brand-icon.png'),
+            os.path.join(BRAND, 'web', 'favicon-48.png'): os.path.join(pub, 'favicon.png'),
+            os.path.join(BRAND, 'logos', 'bwise_horizontal_color.png'): os.path.join(pub, 'horizontal-colored-logo.png'),
+            os.path.join(BRAND, 'logos', 'bwise_horizontal_white.png'): os.path.join(pub, 'horizontal-logo.png'),
+            os.path.join(BRAND, 'web', 'apple-touch-icon-180.png'): os.path.join(pub, 'apple-touch-icon.png'),
+            os.path.join(BRAND, 'web', 'icon-192.png'): os.path.join(pub, 'icon-192.png'),
+            os.path.join(BRAND, 'web', 'icon-512.png'): os.path.join(pub, 'icon-512.png'),
+            os.path.join(BRAND, 'web', 'icon-512-maskable.png'): os.path.join(pub, 'icon-512-maskable.png')
+        }
+        for source, destination in copies.items():
+            shutil.copy2(source, destination)
+    else:
+        img = rounded(legacy_square().resize((192, 192), Image.LANCZOS), 0.22)
+        img.save(os.path.join(out_dir, 'brand-icon.png'), optimize=True)
+        img.save(os.path.join(pub, 'favicon.png'), optimize=True)
+    print('brand assets copied into src/assets and public/')
 
 def make_android():
     res = os.path.join(ROOT, 'android', 'app', 'src', 'main', 'res')
     if not os.path.isdir(res):
         print('android/ not found - skipping launcher icons (run `npx cap add android` first)'); return
+    brand_res = os.path.join(BRAND, 'android', 'res')
+    if os.path.isdir(brand_res):
+        for current, _, files in os.walk(brand_res):
+            relative = os.path.relpath(current, brand_res)
+            destination_dir = os.path.join(res, relative) if relative != '.' else res
+            os.makedirs(destination_dir, exist_ok=True)
+            for filename in files:
+                shutil.copy2(os.path.join(current, filename), os.path.join(destination_dir, filename))
+        for path in ('drawable-v24/ic_launcher_foreground.xml',):
+            generated = os.path.join(res, path)
+            if os.path.exists(generated):
+                os.remove(generated)
+        print('official Android launcher assets copied from', brand_res)
+        return
+
     legacy = {'mdpi': 48, 'hdpi': 72, 'xhdpi': 96, 'xxhdpi': 144, 'xxxhdpi': 192}
     adaptive = {'mdpi': 108, 'hdpi': 162, 'xhdpi': 216, 'xxhdpi': 324, 'xxxhdpi': 432}
     sq = legacy_square()

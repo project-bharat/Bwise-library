@@ -17,11 +17,9 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import './index.css';
 
 import App from './App';
-import { installGasShim } from './native/gasShim';
 import { initNative } from './native/init';
 
 window.html2pdf = html2pdf;
-installGasShim();      // legacy UI API shape -> local-first on-device database
 initNative();          // status bar, external links, splash
 
 class AppRenderBoundary extends React.Component {
