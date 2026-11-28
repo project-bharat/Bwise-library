@@ -29,6 +29,7 @@ export function subscribeLanguage(listener) {
 }
 
 function resolveKey(resource, key) {
+  if (String(key).startsWith('legacy.')) return resource.legacy?.[key.slice(7)];
   return String(key).split('.').reduce((value, part) => value && value[part], resource);
 }
 

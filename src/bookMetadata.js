@@ -1,3 +1,4 @@
+import { compactCover } from './coverImage';
 import { isbn13 } from './isbn';
 
 const cacheName = 'bwise-editions-v1';
@@ -20,9 +21,17 @@ async function request(url, type = 'json') {
 async function findEdition(isbn) {
   const cache = await opening();
   const cached = await cache?.match(path(isbn, 'info'));
-  if (cached) return cached.json();
+  if (cached) {
+    const info = await cached.json();
+    if (!info.coverData) {
+      const image = await cache.match(path(isbn, 'cover'));
+      if (image) info.coverData = await compactCover(await image.blob()).catch(() => null);
+    }
+    return info;
+  }
   if (!navigator.onLine) throw new Error('lookupUnavailable');
   let info, image;
+  let primaryUnavailable = false;
   try {
     const data = await request('https://www.googleapis.com/books/v1/volumes?q=isbn:' + isbn);
     const volume = data.items?.map(item => item.volumeInfo).find(book =>
@@ -31,19 +40,23 @@ async function findEdition(isbn) {
       info = { title: volume.title, author: (volume.authors || []).join(', ') };
       image = volume.imageLinks?.thumbnail?.replace(/^http:/, 'https:');
     }
-  } catch { /* Open Library also indexes editions by ISBN. */ }
+  } catch { primaryUnavailable = true; }
   if (!info) {
     const data = await request('https://openlibrary.org/api/books?format=json&jscmd=data&bibkeys=ISBN:' + isbn);
     const edition = data['ISBN:' + isbn];
-    if (!edition?.title) return null;
+    if (!edition?.title) {
+      if (primaryUnavailable) throw new Error('lookupUnavailable');
+      return null;
+    }
     info = { title: edition.title, author: (edition.authors || []).map(author => author.name).join(', ') };
     image = edition.cover?.medium;
   }
-  if (cache && image?.startsWith('https://')) {
+  if (image?.startsWith('https://')) {
     try {
       const blob = await request(image, 'blob');
       if (/^image\/(jpeg|png|webp)$/.test(blob.type) && blob.size < 2000000) {
-        await cache.put(path(isbn, 'cover'), new Response(blob));
+        info.coverData = await compactCover(blob);
+        await cache?.put(path(isbn, 'cover'), new Response(blob));
       }
     } catch { /* A missing cover does not prevent saving the edition. */ }
   }

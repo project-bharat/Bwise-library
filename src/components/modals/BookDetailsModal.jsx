@@ -1,3 +1,6 @@
+import { compactCover } from '../../coverImage';
+import { canScan, scanEdition } from '../../native/shelfScanner';
+import { categoryLabel } from '../../genres';
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from '../../i18n/useTranslation';
 
@@ -13,13 +16,32 @@ export default function BookDetailsModal({ isNew, initial, config, onClose, onSu
   const [feedback, setFeedback] = useState('');
   const lookupId = useRef(0);
   useEffect(() => () => { lookupId.current++; }, []);
-  async function lookup() {
+  const [coverData, setCover] = useState(initial.coverData || '');
+  const [coverBusy, setCoverBusy] = useState(false);
+  const [scanBusy, setScanBusy] = useState(false);
+  async function scan() {
+    setScanBusy(true);
+    try {
+      const { isbn: scanned } = await scanEdition(t('shelf.scan'));
+      if (!scanned) return;
+      const code = isbn13(scanned);
+      if (!code) { setFeedback('invalid'); return; }
+      setIsbn(code);
+      await lookup(code);
+    } catch { setFeedback('camera'); }
+    finally { setScanBusy(false); }
+  }
+  useEffect(() => {
+    if (isNew && isbn13(initial.isbn) && !initial.title) lookup(initial.isbn);
+  }, []);
+  async function lookup(code) {
     const id = ++lookupId.current;
     setFeedback('loading');
     try {
-      const result = await lookupEdition(isbn);
+      const result = await lookupEdition(code);
       if (lookupId.current !== id) return;
       if (result) {
+        if (result.coverData) setCover(value => value || result.coverData);
         setTitle(value => value.trim() ? value : result.title);
         setAuthor(value => value.trim() ? value : result.author);
       }
@@ -52,6 +74,7 @@ export default function BookDetailsModal({ isNew, initial, config, onClose, onSu
     setIsSubmitting(true);
     const payload = {
       ...initial,
+      coverData,
       isbn: isbn13(isbn),
       rating: rating ? Number(rating) : null,
       tags: [...new Set(tags.split(',').map(tag => tag.trim()).filter(Boolean))],
@@ -87,6 +110,7 @@ export default function BookDetailsModal({ isNew, initial, config, onClose, onSu
           <h2 className="text-xs font-black uppercase text-forest tracking-wide">
             {isNew ? t('legacy.New Book Entry') : t('legacy.Edit Book Details')}
           </h2>
+          {isNew && canScan && <button type="button" disabled={scanBusy} className="ml-auto mr-2 rounded-lg bg-ochre px-3 py-2 text-xs font-bold text-white" onClick={scan}><i className="fa-solid fa-barcode mr-2" />{t('shelf.scan')}</button>}
           <button onClick={onClose} className="text-stone-400 hover:text-stone-700 p-1" title={t('legacy.Close (Esc)')}><i className="fa-solid fa-xmark text-sm"></i></button>
         </div>
 
@@ -96,9 +120,21 @@ export default function BookDetailsModal({ isNew, initial, config, onClose, onSu
             <input type="text" required={!isbn13(isbn)} autoFocus value={title} onChange={e => setTitle(e.target.value)} className="w-full bg-alabaster border border-sand/60 rounded px-2.5 py-1.5 font-bold text-xs" />
           </div>
 
+          <label className="flex cursor-pointer items-center gap-2 rounded-lg border p-2">
+            {coverData ? <img alt="" className="h-12 w-9 object-contain" src={coverData} /> : <i className="fa-solid fa-image text-ochre" />}
+            {t('meta.cover')}
+            <input className="sr-only" type="file" accept="image/jpeg,image/png,image/webp" disabled={coverBusy} onChange={async e => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              setCoverBusy(true);
+              try { setCover(await compactCover(file)); }
+              catch { setFeedback('coverError'); }
+              finally { setCoverBusy(false); }
+            }} />
+          </label>
           <label className="block font-bold">ISBN <input value={isbn} onChange={e => { lookupId.current++; setFeedback(''); setIsbn(e.target.value); }} className="w-full rounded border bg-alabaster p-1.5" /></label>
-          {isbn13(isbn) && <button type="button" disabled={feedback === 'loading'} className="font-bold text-ochre" onClick={lookup}>{t('meta.lookup')}</button>}
-          {feedback && <p role="status">{t('meta.' + feedback)}</p>}
+          {isbn13(isbn) && <button type="button" disabled={feedback === 'loading'} className="font-bold text-ochre" onClick={() => lookup(isbn)}>{t('meta.lookup')}</button>}
+          {feedback && <p role="status">{t((['invalid','camera'].includes(feedback) ? 'shelf.' : 'meta.') + feedback)}</p>}
           <div className="flex gap-2">
             <label>{t('meta.rating')}<select className="block rounded border p-1" value={rating} onChange={e => setRating(e.target.value)}>
               <option value="">—</option>{[1,2,3,4,5].map(n => <option key={n} value={n}>{n} ★</option>)}</select></label>
@@ -113,7 +149,7 @@ export default function BookDetailsModal({ isNew, initial, config, onClose, onSu
             <div>
               <label className="text-[8px] font-black uppercase text-stone-500">{t('legacy.Category')}</label>
               <select value={category} onChange={e => setCategory(e.target.value)} className="w-full bg-alabaster border border-sand/60 rounded px-2 py-1 text-xs">
-                {((config && config.categories) || []).map(c => <option key={c}>{c}</option>)}
+                {((config && config.categories) || []).map(c => <option key={c} value={c}>{categoryLabel(c)}</option>)}
               </select>
             </div>
             <div>
@@ -151,7 +187,7 @@ export default function BookDetailsModal({ isNew, initial, config, onClose, onSu
 
           <div className="pt-2 flex items-center space-x-2">
             <button type="button" onClick={onClose} className="w-1/3 py-2 bg-stone-100 text-stone-700 font-bold rounded text-xs uppercase active:scale-95">{t('legacy.Cancel')}</button>
-            <button type="submit" disabled={isSubmitting} className="w-2/3 py-2 bg-forest text-alabaster font-black rounded text-xs uppercase tracking-wider active:scale-95 shadow">
+            <button type="submit" disabled={isSubmitting || coverBusy || scanBusy || feedback === 'loading'} className="w-2/3 py-2 bg-forest text-alabaster font-black rounded text-xs uppercase tracking-wider active:scale-95 shadow">
               {isSubmitting ? 'Saving...' : 'Save Book Details'}
             </button>
           </div>

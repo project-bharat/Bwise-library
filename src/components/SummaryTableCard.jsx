@@ -1,3 +1,4 @@
+import { categoryLabel } from '../genres';
 import React, { useState } from 'react';
 import { flushSync } from 'react-dom';
 import { formatLocaleNumber } from '../i18n';
@@ -78,9 +79,9 @@ export default function SummaryTableCard({ id, title, badge, rows, onRowClick, o
                         data-pdf-text
                         onClick={(e) => onOpenTag('category', b.category, e)}
                         className="text-forest font-bold hover:underline hover:text-ochre"
-                        title={`${t('legacy.Filter category:')} ${b.category}`}
+                        title={`${t('legacy.Filter category:')} ${categoryLabel(b.category)}`}
                       >
-                        {b.category || t('legacy.General')}
+                        {categoryLabel(b.category) || t('legacy.General')}
                       </button>
                       <span>•</span>
                       <span>{b.language || t('legacy.English')}</span>

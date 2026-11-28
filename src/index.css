@@ -27,3 +27,15 @@ input, select, textarea { user-select: auto; }
   margin: 0 !important;
   z-index: 40;
 }
+
+.floating-library-nav {
+  bottom: max(.5rem, env(safe-area-inset-bottom));
+  background: rgba(23, 51, 51, .91);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,.25);
+}
+.nav-flip { position: relative; width: 26px; height: 26px; transform-style: preserve-3d; animation: library-flip 9s ease-in-out infinite; }
+.nav-flip > * { position: absolute; inset: 0; width: 100%; height: 100%; line-height: 26px; font-size: 24px; backface-visibility: hidden; }
+.nav-flip img { object-fit: contain; transform: rotateY(180deg); }
+@keyframes library-flip { 0%,35% {transform: rotateY(0)} 50%,85% {transform: rotateY(180deg)} 100% {transform: rotateY(360deg)} }
+@media (prefers-reduced-motion: reduce) { .nav-flip { animation: none; } }

@@ -1,3 +1,4 @@
+import { categoryLabel } from './genres';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import html2pdf from 'html2pdf.js';
 import { App as CapApp } from '@capacitor/app';
@@ -362,7 +363,7 @@ export default function App() {
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     const dueDate = `${String(d.getDate()).padStart(2, '0')}-${months[d.getMonth()]}-${d.getFullYear()}`;
     const authorStr = (book.author && book.author !== book.title) ? ` by ${book.author}` : '';
-    const catStr = (book.category && book.category !== book.title) ? ` (${book.category})` : '';
+    const catStr = (book.category && book.category !== book.title) ? ` (${categoryLabel(book.category)})` : '';
     const msg = `Hi ${borrowerName}, you have borrowed "${book.title}"${authorStr}${catStr} from my library. Please return it by ${dueDate}. Thank you!`;
     const waUrl = phone ? `https://wa.me/91${phone.slice(-10)}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`;
     window.location.href = waUrl; // Follow the WhatsApp universal link so Android can open the installed app.
@@ -557,7 +558,7 @@ This is a gentle reminder regarding the books borrowed from my library:
     return (appData.books || []).filter(b => {
       if (!b) return false;
       const searchHaystack = [
-        b.title, b.author, b.category, b.language,
+        b.title, b.author, categoryLabel(b.category), b.category, b.language,
         b.currentStatus, b.location, b.person, b.notes, b.isbn, ...(b.tags || [])
       ].map(val => val || '').join(' ').toLowerCase();
 
@@ -570,7 +571,7 @@ This is a gentle reminder regarding the books borrowed from my library:
       if (activeTab === 'books') return b.currentStatus !== 'WISHLISTED';
       return true;
     });
-  }, [appData.books, searchQuery, bookFilters, activeTab]);
+  }, [appData.books, searchQuery, bookFilters, activeTab, language]);
 
   const bookFilterGroups = useMemo(() => {
     const books = appData.books || [];
@@ -771,7 +772,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                   const matchBooks = (appData.books || []).filter(b =>
                     (b.title || '').toLowerCase().includes(q) ||
                     (b.author || '').toLowerCase().includes(q) ||
-                    (b.category || '').toLowerCase().includes(q) ||
+                    (categoryLabel(b.category) || '').toLowerCase().includes(q) ||
                     (b.location || '').toLowerCase().includes(q)
                   ).slice(0, 4);
 
@@ -798,7 +799,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                         >
                           <div className="max-w-[70%]">
                             <p className="text-[11px] font-black truncate text-forest leading-tight">{b.title}</p>
-                            <p className="text-[9px] text-stone-500 truncate">{b.author} • {b.category}</p>
+                            <p className="text-[9px] text-stone-500 truncate">{b.author} • {categoryLabel(b.category)}</p>
                           </div>
                           <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-sand/30 text-stone-700">{b.location}</span>
                         </div>
@@ -879,7 +880,7 @@ This is a gentle reminder regarding the books borrowed from my library:
         )}
 
         {/* DARK GRADIENT TOP KPI CARD (Dynamic Titles per Active Screen) */}
-        {activeTab !== 'readingYear' && activeTab !== 'personDetail' && activeTab !== 'bookDetail' && (
+        {activeTab !== 'shelfCheck' && activeTab !== 'readingYear' && activeTab !== 'personDetail' && activeTab !== 'bookDetail' && (
           <div
             className="mt-3 mx-3.5 shadow-[0_4px_16px_rgba(4,115,114,0.35)] border border-white/15 rounded-2xl grid grid-cols-5 divide-x divide-white/10 text-center py-3 text-white flex-none"
             style={{ background: 'linear-gradient(to right, #033636 0%, #047372 45%, #0e4e4e 75%, #052626 100%)' }}
@@ -1029,9 +1030,9 @@ This is a gentle reminder regarding the books borrowed from my library:
                                   data-pdf-text
                                   onClick={(e) => handleOpenTagView('category', b.category, e)}
                                   className="text-forest font-bold hover:underline hover:text-ochre"
-                                  title={`Filter category: ${b.category}`}
+                                  title={`Filter category: ${categoryLabel(b.category)}`}
                                 >
-                                  {b.category || t('legacy.General')}
+                                  {categoryLabel(b.category) || t('legacy.General')}
                                 </button>
                               </p>
                             </td>
@@ -1232,9 +1233,9 @@ This is a gentle reminder regarding the books borrowed from my library:
                                         data-pdf-text
                                         onClick={(e) => handleOpenTagView('category', w.category, e)}
                                         className="font-bold text-forest block truncate max-w-fit hover:underline hover:text-ochre"
-                                        title={`Filter category: ${w.category}`}
+                                        title={`Filter category: ${categoryLabel(w.category)}`}
                                       >
-                                        {w.category || t('legacy.General')}
+                                        {categoryLabel(w.category) || t('legacy.General')}
                                       </button>
                                       <span className="text-[9px] text-stone-500 mt-0.5 block truncate">{w.language || t('legacy.English')}</span>
                                     </td>
@@ -1411,7 +1412,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                   <span>{t('legacy.Back to Collections')}</span>
                 </button>
                 <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded-full bg-forest text-alabaster border border-white/20">
-                  {selectedTag.type === 'author' ? t('legacy.Author') : t('legacy.Category')}: {selectedTag.value}
+                  {selectedTag.type === 'author' ? t('legacy.Author') : t('legacy.Category')}: {selectedTag.type === 'category' ? categoryLabel(selectedTag.value) : selectedTag.value}
                 </span>
               </div>
 
@@ -1419,7 +1420,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                 <div className="flex justify-between items-center px-3 py-2 bg-stone-100 border-b border-sand/40">
                   <div>
                     <h2 className="text-xs font-black uppercase tracking-wider text-forest">
-                      {selectedTag.value}
+                      {selectedTag.type === 'category' ? categoryLabel(selectedTag.value) : selectedTag.value}
                     </h2>
                     <p className="text-[9px] text-stone-500">
                       {selectedTag.type === 'author' ? t('legacy.Books written by this author') : t('legacy.Books categorized under this genre')}
@@ -1486,7 +1487,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                                   onClick={(e) => handleOpenTagView('category', b.category, e)}
                                   className="text-forest font-bold hover:underline hover:text-ochre"
                                 >
-                                  {b.category || t('legacy.General')}
+                                  {categoryLabel(b.category) || t('legacy.General')}
                                 </button>
                               </p>
                             </td>
@@ -1518,6 +1519,7 @@ This is a gentle reminder regarding the books borrowed from my library:
           {/* TAB 6: DEDICATED SINGLE BOOK JOURNEY & LIFECYCLE TIMELINE PAGE */}
           {activeTab === 'bookDetail' && selectedBook && (
             <BookJourneyPage
+              onUpdated={setAppData}
               book={(appData.books || []).find(b => b.id === selectedBook.id) || selectedBook}
               onBack={() => setActiveTab('books')}
               onEditDetails={() => setBookModal({ isNew: false, book: (appData.books || []).find(b => b.id === selectedBook.id) || selectedBook })}
@@ -1541,7 +1543,7 @@ This is a gentle reminder regarding the books borrowed from my library:
       </div>
 
       {/* DARK BOTTOM NAVIGATION BAR WITH ENLARGED CENTER PLUS FAB */}
-      <nav className="fixed bottom-0 left-0 right-0 max-w-xl mx-auto bg-forest text-alabaster h-[64px] flex items-center justify-around z-40 px-2 shadow-[0_-4px_20px_rgba(0,0,0,0.25)]">
+      <nav className="floating-library-nav fixed inset-x-3 max-w-xl mx-auto rounded-3xl text-alabaster h-[64px] flex items-center justify-around z-40 px-2 shadow-[0_-4px_20px_rgba(0,0,0,0.25)]">
         {/* Helper style object for the dark-to-white gradient icon */}
         {(() => {
           const activeIconGradient = {
@@ -1591,7 +1593,7 @@ This is a gentle reminder regarding the books borrowed from my library:
                   style={{ background: 'linear-gradient(135deg, #047372 0%, #38D0C9 100%)' }}
                   title={t('legacy.New Entry')}
                 >
-                  <i className="fa-solid fa-plus text-2xl font-black drop-shadow-sm"></i>
+                  <span aria-hidden="true" className="nav-flip"><i className="fa-solid fa-plus" /><img src="/brand-white.png" alt="" /></span>
                 </button>
               </div>
 

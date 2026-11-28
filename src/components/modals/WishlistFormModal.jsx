@@ -1,3 +1,4 @@
+import { categoryLabel } from '../../genres';
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from '../../i18n/useTranslation';
 
@@ -81,7 +82,7 @@ export default function WishlistFormModal({ isNew, initial, config, onClose, onS
             <div>
               <label className="text-[9px] font-black uppercase text-stone-500">{t('legacy.Category')}</label>
               <select value={category} onChange={e => setCategory(e.target.value)} className="w-full bg-alabaster border border-sand/60 rounded px-2 py-1.5 text-xs">
-                {((config && config.categories) || []).map(c => <option key={c}>{c}</option>)}
+                {((config && config.categories) || []).map(c => <option key={c} value={c}>{categoryLabel(c)}</option>)}
               </select>
             </div>
             <div>
